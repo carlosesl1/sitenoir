@@ -2,7 +2,7 @@
 
 ## Objective
 
-Replace only the footer contact model's current silver material with polished mirror chrome matching the supplied reference. Preserve the hero, model geometry, lighting interaction, flare behavior, animation, scale, and layout.
+Replace only the footer contact model's current silver material with polished mirror chrome matching the supplied reference. Preserve the hero, model geometry, spectral flare behavior, animation, scale, and layout. The contact surface itself becomes view-dependent rather than light-dependent; the existing pointer-driven flare remains a separate overlay.
 
 ## Visual Direction
 
@@ -10,20 +10,20 @@ The material should produce strong white and black reflections, sharp edge highl
 
 ## Technical Design
 
-- Keep the existing `MeshPhysicalMaterial` pipeline for the contact asset.
-- Use a neutral near-white metal base, `metalness: 1`, low roughness between `0.06` and `0.1`, and a restrained clearcoat.
-- Generate a studio-style PMREM environment once from Three.js `RoomEnvironment`.
-- Assign that environment map only to the contact material; do not set `scene.environment`.
-- Dispose the PMREM render target and temporary environment resources when the contact asset unmounts.
-- Do not add an external HDRI, texture download, CubeCamera, or per-frame reflection render.
+- Replace the contact asset's `MeshPhysicalMaterial` with `MeshMatcapMaterial` only for the footer model.
+- Generate a small procedural matcap texture once with a bright silver crown, a dark mirrored middle band, narrow white highlights, and bright edge falloff.
+- Keep the matcap neutral grayscale so the existing spectral flare remains the only colored light treatment.
+- Reuse the original physical-material path for the hero, cursor, and every non-contact asset.
+- Dispose the generated matcap texture and footer material when the contact asset unmounts.
+- Do not add an external HDRI, texture download, CubeCamera, PMREM, or per-frame reflection render.
 
 ## Performance Constraints
 
-The environment is generated once during model initialization. The finished material uses a static filtered cubemap and introduces no additional render pass per frame. The implementation must reuse the existing demand-driven canvas and must not affect hero rendering.
+The 256 px matcap is generated once during contact-model initialization. The finished material uses one small static texture, introduces no additional render pass, and is cheaper than the current PMREM path. The implementation must reuse the existing demand-driven canvas and must not affect hero rendering.
 
 ## Verification
 
 - Run the existing Biome check and production build.
 - Inspect the footer at the desktop localhost viewport.
-- Confirm chrome has white/black reflected bands, defined edges, and visible extrusion depth.
+- Confirm chrome has a bright silver body, black mirrored bands, defined white edges, and visible extrusion depth across the model's pointer-driven rotation.
 - Confirm the hero remains visually unchanged and the browser console has no errors.
