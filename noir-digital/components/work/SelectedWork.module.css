@@ -68,6 +68,54 @@
   outline-offset: 0.18em;
 }
 
+.serviceIndex {
+  display: none;
+}
+
+.serviceIndex a {
+  position: relative;
+  width: 100%;
+  padding: 4px 8px 4px 18px;
+  border: 2px dotted transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-interface);
+  font-size: 0.875rem;
+  line-height: 1.25;
+  text-decoration: none;
+  transition: color var(--duration-micro) var(--ease-standard);
+}
+
+.serviceIndex a::before {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+  opacity: 0;
+  transform: translateY(-50%);
+}
+
+.serviceIndex a[aria-current="location"] {
+  color: var(--text-primary);
+  font-weight: 650;
+}
+
+.serviceIndex a[aria-current="location"]::before {
+  opacity: 1;
+}
+
+.serviceIndex a:hover {
+  color: var(--text-primary);
+}
+
+.serviceIndex a:focus-visible {
+  border-color: currentColor;
+  outline: none;
+}
+
 .projectGrid {
   position: relative;
   z-index: 2;
@@ -81,9 +129,10 @@
 .serviceGroup {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 96px var(--grid-gutter);
+  gap: clamp(24px, 2.75vw, 44px) var(--grid-gutter);
   align-items: start;
   min-width: 0;
+  scroll-margin-top: 7rem;
 }
 
 .serviceHeading {
@@ -107,7 +156,7 @@
   margin: 0;
   color: var(--text-primary);
   font-family: var(--font-interface);
-  font-size: clamp(1rem, 1.35vw, 1.25rem);
+  font-size: clamp(1.375rem, 2.05vw, 2rem);
   font-weight: 650;
   line-height: 1;
   letter-spacing: -0.025em;
@@ -275,6 +324,14 @@
     width: 100%;
   }
 
+  .serviceIndex {
+    display: flex;
+    width: min(100%, 13rem);
+    margin-top: clamp(28px, 4vh, 48px);
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .statement[data-service-pin-state="pinned"] {
     position: fixed;
     top: 7rem;
@@ -318,12 +375,12 @@
 
   .serviceGroup {
     grid-template-columns: minmax(0, 1fr);
-    gap: 32px;
+    gap: 18px;
   }
 
   .serviceHeading {
     grid-column: 1 / -1;
-    padding-bottom: 8px;
+    padding-bottom: 0;
   }
 
   .projectCard {
@@ -351,6 +408,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .serviceIndex a,
   .primaryImage,
   .hoverImage {
     transition: none;

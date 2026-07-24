@@ -21,6 +21,7 @@ export function SelectedWork() {
 
             return (
               <section
+                id={`service-${group.id}`}
                 key={group.id}
                 className={styles["serviceGroup"]}
                 aria-labelledby={headingId}

@@ -1,15 +1,33 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { cleanup, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { TrustStrip } from "@/components/trust/TrustStrip";
 import { SelectedWork } from "@/components/work/SelectedWork";
 import { clientLogos, serviceContent } from "@/data/content";
 import { groupProjectsByService, projects, serviceGroups } from "@/data/projects";
 
-afterEach(cleanup);
+const serviceIndexMocks = vi.hoisted(() => ({
+  activeId: "service-sites",
+  scrollToSelector: vi.fn(),
+}));
+
+vi.mock("@/features/scroll/ScrollProvider", () => ({
+  useScroll: () => ({ scrollToSelector: serviceIndexMocks.scrollToSelector }),
+}));
+
+vi.mock("@/features/scroll/use-scroll-spy", () => ({
+  useScrollSpy: () => serviceIndexMocks.activeId,
+}));
+
+afterEach(() => {
+  cleanup();
+  serviceIndexMocks.activeId = "service-sites";
+  serviceIndexMocks.scrollToSelector.mockClear();
+  window.history.replaceState(null, "", "/");
+});
 
 describe("TrustStrip", () => {
   it("renders every approved logo once for assistive technology", () => {
@@ -67,6 +85,34 @@ describe("TrustStrip", () => {
 });
 
 describe("SelectedWork", () => {
+  it("renders a desktop service index in project-group order", () => {
+    render(<SelectedWork />);
+    const index = screen.getByLabelText("Índice de serviços");
+    const links = within(index).getAllByRole("link", { hidden: true });
+
+    expect(links.map((link) => link.textContent)).toEqual(
+      serviceGroups.map(({ title }) => title),
+    );
+    expect(links[0]).toHaveAttribute("aria-current", "location");
+    expect(links.map((link) => link.getAttribute("href"))).toEqual(
+      serviceGroups.map(({ id }) => `#service-${id}`),
+    );
+  });
+
+  it("scrolls smoothly when a service-index item is selected", () => {
+    render(<SelectedWork />);
+    const index = screen.getByLabelText("Índice de serviços");
+    const videoLink = Array.from(index.querySelectorAll("a")).find(
+      (link) => link.textContent === "Vídeos",
+    );
+
+    expect(videoLink).toBeDefined();
+    fireEvent.click(videoLink as HTMLAnchorElement);
+
+    expect(serviceIndexMocks.scrollToSelector).toHaveBeenCalledWith("#service-videos");
+    expect(window.location.hash).toBe("#service-videos");
+  });
+
   it("pins the statement within a dedicated rail while the cards scroll", () => {
     const view = render(<SelectedWork />);
     const section = view.container.querySelector("#selected-work");
@@ -115,6 +161,10 @@ describe("SelectedWork", () => {
     );
     expect(css).toMatch(
       /@media \(max-width:\s*767px\)[\s\S]*\.projectCard\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/,
+    );
+    expect(css).toMatch(/\.serviceIndex\s*\{[^}]*display:\s*none/);
+    expect(css).toMatch(
+      /@media \(min-width:\s*1024px\)[\s\S]*\.serviceIndex\s*\{[^}]*display:\s*flex/,
     );
   });
 
