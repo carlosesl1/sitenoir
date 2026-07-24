@@ -1,0 +1,358 @@
+.selectedWork {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  overflow: clip;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gutter);
+  align-items: start;
+  padding: 160px 56px 192px;
+  color: var(--text-primary);
+}
+
+.workCardCanvas {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.workCardCanvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.statementRail {
+  position: relative;
+  z-index: 2;
+  grid-column: 1 / span 4;
+  grid-row: 1;
+  align-self: stretch;
+  min-width: 0;
+}
+
+.statement {
+  position: static;
+  margin-left: calc(var(--header-brand-text-inset) - 56px);
+  padding-right: 32px;
+}
+
+.statement p {
+  margin: 0 0 18px;
+  color: var(--text-secondary);
+  font-family: var(--font-pixel);
+  font-size: 0.625rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.statement h2 {
+  max-width: 21rem;
+  margin: 0;
+  font-size: clamp(2.5rem, 3.75vw, 4rem);
+  font-weight: 560;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.statementLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.statementLink:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 0.18em;
+}
+
+.projectGrid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-column: 5 / -1;
+  grid-row: 1;
+  gap: clamp(160px, 14vw, 240px);
+  align-items: start;
+}
+
+.serviceGroup {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 96px var(--grid-gutter);
+  align-items: start;
+  min-width: 0;
+}
+
+.serviceHeading {
+  display: grid;
+  grid-column: 1 / span 4;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+  color: var(--text-secondary);
+  font-family: var(--font-pixel);
+  text-transform: uppercase;
+}
+
+.serviceHeading span {
+  font-size: 0.5625rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+.serviceHeading h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-family: var(--font-interface);
+  font-size: clamp(1rem, 1.35vw, 1.25rem);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.projectCard {
+  grid-column: span 4;
+  min-width: 0;
+}
+
+.featuredCard {
+  grid-column: 1 / -1;
+}
+
+.serviceGroup .projectCard:nth-of-type(2n + 3):not(.featuredCard) {
+  margin-top: 120px;
+}
+
+.projectLink {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  border: 2px dotted transparent;
+}
+
+.projectLink:focus-visible,
+.projectLink:active {
+  outline: none;
+  border-color: currentColor;
+}
+
+.imageFrame {
+  position: relative;
+  display: block;
+  overflow: visible;
+  aspect-ratio: 1;
+}
+
+.imageClip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--surface-elevated);
+}
+
+.imageFrame[data-canvas-active="true"] .imageClip {
+  opacity: 0;
+}
+
+.featuredCard .imageFrame {
+  aspect-ratio: 1;
+}
+
+.primaryImage,
+.hoverImage {
+  object-fit: cover;
+  transition:
+    opacity var(--duration-standard) var(--ease-standard),
+    transform var(--duration-standard) var(--ease-standard);
+}
+
+.curlCanvas {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.hoverRevealHost {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  left: -8vw;
+  right: -8vw;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.hoverRevealCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.hoverImage {
+  opacity: 0;
+  transform: scale(1.012);
+}
+
+.projectLink:hover .primaryImage,
+.projectLink:focus-visible .primaryImage {
+  opacity: 0;
+  transform: scale(0.995);
+}
+
+.projectLink:hover .hoverImage,
+.projectLink:focus-visible .hoverImage {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.projectLink:hover .imageFrame[data-hover-reveal-ready="true"] .primaryImage,
+.projectLink:focus-visible .imageFrame[data-hover-reveal-ready="true"] .primaryImage {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.projectLink:hover .imageFrame[data-hover-reveal-ready="true"] .hoverImage,
+.projectLink:focus-visible .imageFrame[data-hover-reveal-ready="true"] .hoverImage {
+  opacity: 0;
+  transform: scale(1.012);
+}
+
+.projectMeta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 16px;
+  padding-top: 12px;
+  font-family: var(--font-interface);
+  font-size: 0.6875rem;
+  line-height: 1.2;
+}
+
+.projectMeta > span:last-child {
+  grid-column: 1 / -1;
+  color: var(--text-secondary);
+  font-family: var(--font-pixel);
+  font-size: 0.5625rem;
+  letter-spacing: 0.04em;
+}
+
+.projectTitle {
+  font-weight: 650;
+}
+
+@media (min-width: 1024px) {
+  .selectedWork {
+    min-height: 180vh;
+  }
+
+  .statement h2 {
+    max-width: none;
+    font-size: clamp(3.5rem, 5.6vw, 5rem);
+  }
+
+  .statement h2 span {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .statement {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .statement[data-service-pin-state="pinned"] {
+    position: fixed;
+    top: 7rem;
+    left: var(--service-pin-left);
+    width: var(--service-pin-width);
+  }
+
+  .statement[data-service-pin-state="after"] {
+    top: auto;
+    bottom: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .selectedWork {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 72px 12px;
+    padding: 96px 16px 120px;
+  }
+
+  .statementRail {
+    grid-column: 1 / -1;
+  }
+
+  .statement {
+    position: static;
+    margin-left: calc(var(--header-brand-text-inset) - 16px);
+    padding-right: 0;
+  }
+
+  .statement h2 {
+    max-width: 22rem;
+    font-size: clamp(2.25rem, 10.5vw, 3.25rem);
+  }
+
+  .projectGrid {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    gap: 104px;
+  }
+
+  .serviceGroup {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .serviceHeading {
+    grid-column: 1 / -1;
+    padding-bottom: 8px;
+  }
+
+  .projectCard {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+
+  .featuredCard {
+    grid-column: 1 / -1;
+  }
+
+  .serviceGroup .projectCard:nth-of-type(2n + 3):not(.featuredCard) {
+    margin-top: 0;
+  }
+
+  .featuredCard .imageFrame {
+    aspect-ratio: 1;
+  }
+
+  .projectMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryImage,
+  .hoverImage {
+    transition: none;
+  }
+}

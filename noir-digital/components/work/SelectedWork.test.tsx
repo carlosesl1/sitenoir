@@ -99,6 +99,25 @@ describe("SelectedWork", () => {
     expect(css).toMatch(/@media \(max-width: 767px\)[\s\S]*\.projectGrid\s*\{[^}]*grid-row:\s*2/);
   });
 
+  it("uses the approved service-group grid at desktop and mobile", () => {
+    const css = readFileSync(
+      join(process.cwd(), "components/work/SelectedWork.module.css"),
+      "utf8",
+    );
+
+    expect(css).toMatch(
+      /\.serviceGroup\s*\{[^}]*grid-template-columns:\s*repeat\(8,\s*minmax\(0,\s*1fr\)\)/,
+    );
+    expect(css).toMatch(/\.serviceHeading\s*\{[^}]*grid-column:\s*1\s*\/\s*span\s*4/);
+    expect(css).toMatch(/\.featuredCard\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/);
+    expect(css).toMatch(
+      /@media \(max-width:\s*767px\)[\s\S]*\.serviceGroup\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/,
+    );
+    expect(css).toMatch(
+      /@media \(max-width:\s*767px\)[\s\S]*\.projectCard\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/,
+    );
+  });
+
   it("locks the desktop service statement into the four requested lines", () => {
     render(<SelectedWork />);
 

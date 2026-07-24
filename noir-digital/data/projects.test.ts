@@ -22,9 +22,7 @@ describe("projects", () => {
 
   it("places every visible project in exactly one non-empty service group", () => {
     const grouped = groupProjectsByService(projects);
-    const groupedSlugs = grouped.flatMap((group) =>
-      group.projects.map((project) => project.slug),
-    );
+    const groupedSlugs = grouped.flatMap((group) => group.projects.map((project) => project.slug));
 
     expect(grouped.map((group) => group.projects.length)).toEqual([3, 2, 2, 3]);
     expect(groupedSlugs).toHaveLength(projects.length);
