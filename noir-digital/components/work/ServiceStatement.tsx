@@ -14,7 +14,7 @@ const DESKTOP_PIN_QUERY = "(min-width: 1024px)";
 const PIN_OFFSET_REM = 7;
 type ServiceAnchorId = `service-${ServiceId}`;
 const serviceAnchorIds: readonly ServiceAnchorId[] = serviceGroups.map(
-  ({ id }) => `service-${id}`,
+  ({ id }) => `service-${id}` as ServiceAnchorId,
 );
 const INITIAL_SERVICE_ANCHOR: ServiceAnchorId = "service-sites";
 
