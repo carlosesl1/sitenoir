@@ -110,7 +110,7 @@ const googleCta = {
   body: "Estruture as informações que ajudam clientes locais a encontrar e escolher sua empresa.",
 } as const;
 
-export const caseStudiesV2 = [
+export const caseStudiesV2: readonly CaseStudyV2[] = [
   {
     slug: "together-site",
     categoryLayout: "site",
@@ -822,7 +822,7 @@ export const caseStudiesV2 = [
     seoDescription:
       "Case de presença no Google do Posto Ipiranga, com localização, fotos e rota organizadas.",
   },
-] as const satisfies readonly CaseStudyV2[];
+];
 
 export function getCaseStudyV2(slug: string): CaseStudyV2 | undefined {
   return caseStudiesV2.find((study) => study.slug === slug);

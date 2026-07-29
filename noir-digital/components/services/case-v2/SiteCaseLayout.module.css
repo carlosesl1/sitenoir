@@ -1,0 +1,255 @@
+.layout {
+  display: grid;
+  gap: clamp(96px, 13vw, 176px);
+}
+
+.hero {
+  display: grid;
+  min-height: min(820px, calc(100svh - 168px));
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: end;
+}
+
+.heroCopy {
+  padding-bottom: 34px;
+}
+
+.heroCopy > p:first-child,
+.eyebrow,
+.sectionHeading > span,
+.heroCopy dt {
+  color: var(--text-secondary);
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.heroCopy > p:first-child {
+  margin: 0 0 28px;
+}
+
+.heroCopy > p:first-child span {
+  color: var(--case-accent);
+}
+
+.heroCopy h1 {
+  max-width: 9.2ch;
+  margin: 0;
+  font-size: clamp(3.5rem, 6.5vw, 6.7rem);
+  line-height: 0.87;
+  letter-spacing: -0.055em;
+}
+
+.summary {
+  max-width: 45ch;
+  margin: 28px 0 0;
+  color: var(--text-secondary);
+  font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+  line-height: 1.6;
+}
+
+.heroCopy dl {
+  display: grid;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-default);
+  margin: 36px 0 0;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: 16px;
+}
+
+.heroCopy dl div {
+  min-width: 0;
+}
+
+.heroCopy dt,
+.heroCopy dd {
+  margin: 0;
+}
+
+.heroCopy dd {
+  margin-top: 8px;
+  font-size: 0.78rem;
+}
+
+.heroMedia {
+  min-width: 0;
+}
+
+.heroMedia figure > div {
+  border-color: color-mix(in srgb, var(--case-accent) 45%, var(--border-default));
+}
+
+.copy {
+  display: grid;
+  padding-block: clamp(48px, 8vw, 84px);
+  border-block: 1px solid var(--border-default);
+  grid-template-columns: minmax(170px, 0.65fr) minmax(0, 1.35fr);
+  gap: clamp(32px, 6vw, 96px);
+}
+
+.copy > div:first-child {
+  display: flex;
+  justify-content: space-between;
+}
+
+.copy > div:first-child > span {
+  color: var(--case-accent);
+  font-size: 1.25rem;
+}
+
+.copy h2,
+.sectionHeading h2 {
+  margin: 0;
+  font-size: clamp(2.4rem, 5vw, 5.2rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+}
+
+.copy > div:last-child > p {
+  max-width: 60ch;
+  margin: 28px 0 0;
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 1.5vw, 1.18rem);
+  line-height: 1.65;
+}
+
+.evidenceSection,
+.insights {
+  display: grid;
+  gap: clamp(40px, 6vw, 72px);
+}
+
+.sectionHeading {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.4fr) minmax(0, 1.6fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.sectionHeading > span {
+  padding-top: 10px;
+  color: var(--case-accent);
+}
+
+.evidence {
+  display: grid;
+  gap: clamp(32px, 6vw, 80px);
+}
+
+.evidence > :nth-child(even) {
+  width: min(82%, 920px);
+  margin-left: auto;
+}
+
+.evidence[data-presentation="device-comparison"] {
+  grid-template-columns: minmax(0, 1.55fr) minmax(190px, 0.45fr);
+  align-items: end;
+}
+
+.evidence[data-presentation="device-comparison"] > :nth-child(even) {
+  width: 100%;
+  margin-left: 0;
+}
+
+.insights ol {
+  display: grid;
+  padding: 0;
+  border-top: 1px solid var(--border-default);
+  margin: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+}
+
+.insights li {
+  min-height: 250px;
+  padding: 20px;
+  border-right: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.insights li:last-child {
+  border-right: 0;
+}
+
+.insights li > span {
+  color: var(--case-accent);
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+}
+
+.insights h3 {
+  margin: 72px 0 12px;
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.insights p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .heroCopy {
+    padding-bottom: 0;
+  }
+
+  .heroCopy h1 {
+    max-width: 11ch;
+  }
+}
+
+@media (max-width: 767px) {
+  .layout {
+    gap: 96px;
+  }
+
+  .hero {
+    gap: 48px;
+  }
+
+  .heroCopy h1 {
+    font-size: clamp(3rem, 14vw, 4.5rem);
+  }
+
+  .copy,
+  .sectionHeading {
+    grid-template-columns: 1fr;
+  }
+
+  .copy {
+    gap: 32px;
+  }
+
+  .copy > div:first-child {
+    justify-content: flex-start;
+    gap: 24px;
+  }
+
+  .evidence[data-presentation],
+  .insights ol {
+    grid-template-columns: 1fr;
+  }
+
+  .evidence > :nth-child(even) {
+    width: 100%;
+  }
+
+  .insights li {
+    min-height: 210px;
+    border-right: 0;
+  }
+
+  .insights h3 {
+    margin-top: 48px;
+  }
+}
