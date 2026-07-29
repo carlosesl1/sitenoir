@@ -78,11 +78,9 @@ describe("AiServicesSection", () => {
     const mobileSource = view.container.querySelector('source[media="(max-width: 767px)"]');
 
     expect(image).toHaveAttribute("src", "/assets/v1/ai-services/ascii-wave-desktop.svg");
+    expect(image).toHaveAttribute("aria-hidden", "true");
     expect(image).toHaveAttribute("loading", "lazy");
-    expect(mobileSource).toHaveAttribute(
-      "srcset",
-      "/assets/v1/ai-services/ascii-wave-mobile.svg",
-    );
+    expect(mobileSource).toHaveAttribute("srcset", "/assets/v1/ai-services/ascii-wave-mobile.svg");
     expect(view.container.querySelector("svg")).not.toBeInTheDocument();
     expect(view.container.querySelector("canvas")).not.toBeInTheDocument();
   });
@@ -98,10 +96,12 @@ describe("AiServicesSection", () => {
     );
 
     expect(css).toMatch(/min-height:\s*max\(100svh,\s*820px\)/);
+    expect(css).toMatch(/\.section\s*\{[^}]*z-index:\s*2/);
     expect(css).toMatch(/grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\)/);
     expect(css).toMatch(/@media \(max-width:\s*1023px\)/);
     expect(css).toMatch(/@media \(max-width:\s*767px\)/);
     expect(css).toMatch(/aspect-ratio:\s*720\s*\/\s*1120/);
+    expect(css).toMatch(/object-position:\s*80%\s+center/);
     expect(css).toMatch(/@media \(prefers-reduced-motion:\s*reduce\)/);
     expect(css).not.toMatch(/animation-iteration-count:\s*infinite/i);
     expect(component).not.toMatch(/requestAnimationFrame|<canvas|webgl/i);

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { NoirControl } from "@/components/primitives/NoirControl";
-import { aiServices, type AiServiceId } from "@/data/ai-services";
+import { type AiServiceId, aiServices } from "@/data/ai-services";
 
 import styles from "./AiServicesSection.module.css";
 
@@ -67,7 +67,7 @@ export function AiServicesSection() {
       </div>
 
       <div className={styles["visual"]}>
-        <picture aria-hidden="true">
+        <picture>
           <source
             media="(max-width: 767px)"
             srcSet="/assets/v1/ai-services/ascii-wave-mobile.svg"
@@ -76,6 +76,7 @@ export function AiServicesSection() {
             className={styles["wave"]}
             src="/assets/v1/ai-services/ascii-wave-desktop.svg"
             alt=""
+            aria-hidden="true"
             width="1600"
             height="900"
             loading="lazy"

@@ -1,5 +1,6 @@
 .section {
   position: relative;
+  z-index: 2;
   isolation: isolate;
   display: grid;
   min-height: max(100svh, 820px);
@@ -100,7 +101,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: 80% center;
 }
 
 .markers {

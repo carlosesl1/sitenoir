@@ -72,9 +72,7 @@ function buildWave({ width, height, columns, rows, cursor }) {
       const nx = column / (columns - 1);
       const ny = row / (rows - 1);
       const wave =
-        0.5 +
-        Math.sin(nx * Math.PI * 2.3 + 0.45) * 0.13 +
-        Math.sin(nx * Math.PI * 5.1) * 0.045;
+        0.5 + Math.sin(nx * Math.PI * 2.3 + 0.45) * 0.13 + Math.sin(nx * Math.PI * 5.1) * 0.045;
       const thickness = 0.13 + Math.sin(nx * Math.PI) * 0.09;
       const distance = Math.abs(ny - wave);
       const random = hash(column, row);
