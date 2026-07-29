@@ -1,0 +1,39 @@
+.section {
+  position: relative;
+}
+
+.copy {
+  position: relative;
+}
+
+.eyebrow,
+.body {
+  margin: 0;
+}
+
+.visual,
+.markers {
+  position: relative;
+}
+
+.wave {
+  display: block;
+  max-width: 100%;
+}
+
+.marker {
+  position: relative;
+}
+
+.markerButton {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.detailReserve {
+  position: relative;
+}
+
+.detail {
+  position: relative;
+}
