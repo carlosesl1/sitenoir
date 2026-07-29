@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -82,5 +85,25 @@ describe("AiServicesSection", () => {
     );
     expect(view.container.querySelector("svg")).not.toBeInTheDocument();
     expect(view.container.querySelector("canvas")).not.toBeInTheDocument();
+  });
+
+  it("uses the approved responsive and reduced-motion contracts", () => {
+    const css = readFileSync(
+      join(process.cwd(), "components/ai-services/AiServicesSection.module.css"),
+      "utf8",
+    );
+    const component = readFileSync(
+      join(process.cwd(), "components/ai-services/AiServicesSection.tsx"),
+      "utf8",
+    );
+
+    expect(css).toMatch(/min-height:\s*max\(100svh,\s*820px\)/);
+    expect(css).toMatch(/grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\)/);
+    expect(css).toMatch(/@media \(max-width:\s*1023px\)/);
+    expect(css).toMatch(/@media \(max-width:\s*767px\)/);
+    expect(css).toMatch(/aspect-ratio:\s*720\s*\/\s*1120/);
+    expect(css).toMatch(/@media \(prefers-reduced-motion:\s*reduce\)/);
+    expect(css).not.toMatch(/animation-iteration-count:\s*infinite/i);
+    expect(component).not.toMatch(/requestAnimationFrame|<canvas|webgl/i);
   });
 });

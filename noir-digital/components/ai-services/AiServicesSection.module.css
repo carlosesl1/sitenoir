@@ -1,39 +1,480 @@
 .section {
   position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: max(100svh, 820px);
+  overflow: clip;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--grid-gutter);
+  padding: clamp(96px, 11vh, 144px) var(--page-inline);
+  background: var(--color-noir-black);
+  color: var(--color-noir-warm-white);
+}
+
+.section::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image:
+    linear-gradient(rgb(168 173 178 / 9%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(168 173 178 / 9%) 1px, transparent 1px);
+  background-size: calc(100% / 12) 25%;
+  content: "";
+  pointer-events: none;
 }
 
 .copy {
   position: relative;
+  z-index: 3;
+  grid-column: 1 / span 6;
+  align-self: center;
+  max-width: 44rem;
 }
 
-.eyebrow,
-.body {
+.eyebrow {
+  margin: 0 0 var(--space-16);
+  color: var(--color-noir-optical-blue);
+  font-family: var(--font-pixel);
+  font-size: var(--type-label);
+  line-height: var(--leading-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  margin-right: var(--space-3);
+  color: var(--color-spectral-blue);
+  content: "[+]";
+}
+
+.copy h2 {
+  max-width: 12ch;
   margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3.1rem, 5.1vw, 5.5rem);
+  font-stretch: 120%;
+  font-weight: 700;
+  font-variation-settings: "wdth" 120;
+  line-height: 0.94;
+  letter-spacing: -0.055em;
 }
 
-.visual,
-.markers {
-  position: relative;
+.body {
+  max-width: 43ch;
+  margin: var(--space-10) 0;
+  color: rgb(244 244 240 / 72%);
+  font-family: var(--font-display);
+  font-size: var(--type-body-large);
+  line-height: 1.55;
+}
+
+.visual {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+}
+
+.visual::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    var(--color-noir-black) 0%,
+    rgb(3 3 3 / 95%) 22%,
+    rgb(3 3 3 / 68%) 37%,
+    transparent 61%
+  );
+  content: "";
+  pointer-events: none;
+}
+
+.visual picture {
+  position: absolute;
+  inset: 0;
+  display: block;
 }
 
 .wave {
   display: block;
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.markers {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
 }
 
 .marker {
-  position: relative;
+  --marker-x: 50%;
+  --marker-y: 50%;
+
+  position: absolute;
+  top: var(--marker-y);
+  left: var(--marker-x);
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
 }
 
 .markerButton {
+  appearance: none;
+  display: flex;
   min-width: 44px;
   min-height: 44px;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid rgb(244 244 240 / 34%);
+  background: rgb(3 3 3 / 84%);
+  color: var(--color-noir-warm-white);
+  cursor: pointer;
+  font-family: var(--font-pixel);
+  font-size: 0.6875rem;
+  line-height: 1.25;
+  letter-spacing: 0.055em;
+  text-align: left;
+  text-transform: uppercase;
+  transition:
+    color var(--duration-micro) var(--ease-standard),
+    border-color var(--duration-micro) var(--ease-standard),
+    transform var(--duration-micro) var(--ease-standard);
+}
+
+.markerButton > span:first-child {
+  color: var(--color-spectral-blue);
+  font-family: var(--font-interface);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.markerButton:hover,
+.markerButton[aria-expanded="true"] {
+  border-color: var(--color-spectral-blue);
+  color: var(--color-noir-optical-blue);
+  transform: translateY(-2px);
+}
+
+.markerButton:focus-visible {
+  border-color: var(--color-spectral-blue);
+  outline: 1px dotted var(--color-noir-warm-white);
+  outline-offset: var(--focus-offset);
+}
+
+.marker[data-ai-service="custom-software"] {
+  --marker-x: 55%;
+  --marker-y: 20%;
+}
+
+.marker[data-ai-service="process-automation"] {
+  --marker-x: 78%;
+  --marker-y: 29%;
+}
+
+.marker[data-ai-service="agents-copilots"] {
+  --marker-x: 49%;
+  --marker-y: 56%;
+}
+
+.marker[data-ai-service="ai-implementation"] {
+  --marker-x: 68%;
+  --marker-y: 47%;
+}
+
+.marker[data-ai-service="smart-integrations"] {
+  --marker-x: 82%;
+  --marker-y: 64%;
+}
+
+.marker[data-ai-service="operational-optimization"] {
+  --marker-x: 61%;
+  --marker-y: 79%;
 }
 
 .detailReserve {
-  position: relative;
+  position: absolute;
+  z-index: 4;
+  top: var(--detail-y, 66%);
+  left: var(--detail-x, 64%);
+  width: min(22rem, calc(100% - 112px));
+  pointer-events: none;
+}
+
+.section[data-active-service="custom-software"] {
+  --detail-x: 47%;
+  --detail-y: 29%;
+}
+
+.section[data-active-service="process-automation"] {
+  --detail-x: 68%;
+  --detail-y: 38%;
+}
+
+.section[data-active-service="agents-copilots"] {
+  --detail-x: 39%;
+  --detail-y: 64%;
+}
+
+.section[data-active-service="ai-implementation"] {
+  --detail-x: 58%;
+  --detail-y: 55%;
+}
+
+.section[data-active-service="smart-integrations"] {
+  --detail-x: 70%;
+  --detail-y: 72%;
+}
+
+.section[data-active-service="operational-optimization"] {
+  --detail-x: 50%;
+  --detail-y: 84%;
 }
 
 .detail {
-  position: relative;
+  padding: var(--space-4);
+  border-left: 1px solid var(--color-spectral-blue);
+  background: rgb(3 3 3 / 94%);
+  animation: detail-in var(--duration-standard) var(--ease-standard) both;
+  pointer-events: auto;
+}
+
+.detail strong {
+  font-family: var(--font-interface);
+  font-size: var(--type-label);
+  font-weight: 650;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.detail p {
+  margin: var(--space-2) 0 0;
+  color: rgb(244 244 240 / 72%);
+  font-family: var(--font-display);
+  font-size: var(--type-body);
+  line-height: var(--leading-body);
+}
+
+@keyframes detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1023px) {
+  .section {
+    min-height: max(100svh, 900px);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    padding-block: 96px;
+  }
+
+  .section::before {
+    background-size: calc(100% / 6) 20%;
+  }
+
+  .copy {
+    grid-column: 1 / span 3;
+    max-width: 31rem;
+  }
+
+  .copy h2 {
+    max-width: 11ch;
+    font-size: clamp(3rem, 7vw, 4.5rem);
+  }
+
+  .body {
+    max-width: 36ch;
+    font-size: var(--type-body);
+  }
+
+  .visual::after {
+    background: linear-gradient(
+      90deg,
+      var(--color-noir-black) 0%,
+      rgb(3 3 3 / 94%) 26%,
+      rgb(3 3 3 / 64%) 48%,
+      transparent 72%
+    );
+  }
+
+  .markerButton {
+    max-width: 12rem;
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.625rem;
+  }
+
+  .marker[data-ai-service="custom-software"] {
+    --marker-x: 59%;
+    --marker-y: 18%;
+  }
+
+  .marker[data-ai-service="process-automation"] {
+    --marker-x: 80%;
+    --marker-y: 30%;
+  }
+
+  .marker[data-ai-service="agents-copilots"] {
+    --marker-x: 52%;
+    --marker-y: 54%;
+  }
+
+  .marker[data-ai-service="ai-implementation"] {
+    --marker-x: 72%;
+    --marker-y: 46%;
+  }
+
+  .marker[data-ai-service="smart-integrations"] {
+    --marker-x: 80%;
+    --marker-y: 67%;
+  }
+
+  .marker[data-ai-service="operational-optimization"] {
+    --marker-x: 61%;
+    --marker-y: 80%;
+  }
+
+  .detailReserve {
+    width: min(18rem, calc(100% - 32px));
+  }
+}
+
+@media (max-width: 767px) {
+  .section {
+    display: flex;
+    min-height: auto;
+    padding: 96px 16px 120px;
+    flex-direction: column;
+  }
+
+  .section::before {
+    background-size: 50% 12.5%;
+  }
+
+  .copy {
+    width: 100%;
+    max-width: none;
+  }
+
+  .copy h2 {
+    max-width: 11.5ch;
+    font-size: clamp(2.6rem, 13vw, 4rem);
+  }
+
+  .eyebrow {
+    margin-bottom: var(--space-10);
+  }
+
+  .body {
+    max-width: 34rem;
+    margin-block: var(--space-8);
+  }
+
+  .visual {
+    position: relative;
+    width: calc(100% + 32px);
+    margin: var(--space-16) -16px 0;
+    aspect-ratio: 720 / 1120;
+  }
+
+  .visual::after {
+    background: linear-gradient(
+      180deg,
+      var(--color-noir-black) 0%,
+      transparent 24%,
+      transparent 82%,
+      var(--color-noir-black) 100%
+    );
+  }
+
+  .markerButton {
+    max-width: 9.5rem;
+    padding: var(--space-2);
+    font-size: 0.625rem;
+    line-height: 1.25;
+  }
+
+  .marker[data-ai-service="custom-software"] {
+    --marker-x: 28%;
+    --marker-y: 16%;
+  }
+
+  .marker[data-ai-service="process-automation"] {
+    --marker-x: 69%;
+    --marker-y: 28%;
+  }
+
+  .marker[data-ai-service="agents-copilots"] {
+    --marker-x: 30%;
+    --marker-y: 43%;
+  }
+
+  .marker[data-ai-service="ai-implementation"] {
+    --marker-x: 69%;
+    --marker-y: 56%;
+  }
+
+  .marker[data-ai-service="smart-integrations"] {
+    --marker-x: 31%;
+    --marker-y: 70%;
+  }
+
+  .marker[data-ai-service="operational-optimization"] {
+    --marker-x: 66%;
+    --marker-y: 83%;
+  }
+
+  .detailReserve {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    min-height: 9rem;
+    margin-top: var(--space-6);
+  }
+
+  .detail {
+    min-height: 7rem;
+  }
+}
+
+@media (max-width: 359px) {
+  .copy h2 {
+    font-size: 2.5rem;
+  }
+
+  .markerButton {
+    max-width: 8.75rem;
+    font-size: 0.5625rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .markerButton {
+    transition: none;
+  }
+
+  .markerButton:hover,
+  .markerButton[aria-expanded="true"] {
+    transform: none;
+  }
+
+  .detail {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .markerButton,
+  .detail {
+    border: 1px solid CanvasText;
+  }
 }
