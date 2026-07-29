@@ -17,4 +17,23 @@ describe("V2 case assets", () => {
       expect(metadata.height).toBe(study.hero.height);
     }
   });
+
+  it("publishes Dolomon's shared production portrait", async () => {
+    const videoCase = caseStudiesV2.find(
+      (study) => study.categoryLayout === "video",
+    );
+    const portrait = videoCase?.credit?.portrait;
+
+    if (!portrait) {
+      throw new Error("Expected a shared video credit portrait");
+    }
+
+    const file = path.join(process.cwd(), "public", portrait.src);
+    await access(file);
+    const metadata = await sharp(file).metadata();
+
+    expect(metadata.width).toBe(portrait.width);
+    expect(metadata.height).toBe(portrait.height);
+    expect(metadata.format).toBe("webp");
+  });
 });

@@ -240,3 +240,19 @@ for (const hero of heroes) {
 
   console.log(`Generated ${path.relative(root, outputFile)} (${width}x${height})`);
 }
+
+const creditOutputDirectory = resolveProjectPath("public/cases-v2/shared");
+const creditOutputFile = path.join(creditOutputDirectory, "dolomon.webp");
+await mkdir(creditOutputDirectory, { recursive: true });
+
+await sharp(resolveProjectPath("asset-sources/people/dolomon/portrait-original.png"))
+  .rotate()
+  .resize(960, 960, {
+    fit: "cover",
+    position: "attention",
+    withoutEnlargement: false,
+  })
+  .webp({ quality: 90, effort: 6 })
+  .toFile(creditOutputFile);
+
+console.log(`Generated ${path.relative(root, creditOutputFile)} (960x960)`);

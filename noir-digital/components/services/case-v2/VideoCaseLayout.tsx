@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import type {
   EvidenceSection,
   InsightSection,
@@ -118,8 +120,14 @@ export function VideoCaseLayout({
       <Films section={evidence} />
 
       <aside className={styles["credit"]}>
-        <div className={styles["portrait"]} aria-hidden="true">
-          D
+        <div className={styles["portrait"]}>
+          <Image
+            src={study.credit.portrait.src}
+            alt={study.credit.portrait.alt}
+            width={study.credit.portrait.width}
+            height={study.credit.portrait.height}
+            sizes="(max-width: 767px) calc(100vw - 82px), 240px"
+          />
         </div>
         <div>
           <p>Crédito de produção</p>

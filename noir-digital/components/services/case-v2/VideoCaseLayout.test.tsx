@@ -30,5 +30,9 @@ describe("VideoCaseLayout", () => {
     }
     expect(screen.getByRole("heading", { name: "Dolomon" })).toBeVisible();
     expect(screen.getByText("Design, motion design e edição de vídeo")).toBeVisible();
+    const portrait = screen.getByRole("img", { name: "Retrato de Dolomon" });
+    expect(decodeURIComponent(portrait.getAttribute("src") ?? "")).toContain(
+      "/cases-v2/shared/dolomon.webp",
+    );
   });
 });

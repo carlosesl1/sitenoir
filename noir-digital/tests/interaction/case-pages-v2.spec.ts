@@ -41,6 +41,27 @@ test("Strong keeps three controllable portrait videos", async ({ page }) => {
   }
 });
 
+test("video cases share Dolomon's real production portrait", async ({ page }) => {
+  for (const slug of ["strong", "together-motion", "ecox-hostel-cabanas"]) {
+    await page.goto(`/services/${slug}`);
+
+    const portrait = page.getByRole("img", { name: "Retrato de Dolomon" });
+    await expect(portrait).toBeVisible();
+    await expect(portrait).toHaveAttribute("src", /dolomon\.webp/i);
+    await portrait.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        portrait.evaluate(
+          (image) =>
+            image instanceof HTMLImageElement &&
+            image.complete &&
+            image.naturalWidth > 0,
+        ),
+      )
+      .toBe(true);
+  }
+});
+
 test("mobile layouts have no horizontal overflow", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
 

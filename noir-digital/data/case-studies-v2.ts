@@ -81,6 +81,12 @@ export type CaseStudyV2 = {
     readonly name: "Dolomon";
     readonly role: "Design, motion design e edição de vídeo";
     readonly contribution: string;
+    readonly portrait: {
+      readonly src: "/cases-v2/shared/dolomon.webp";
+      readonly alt: "Retrato de Dolomon";
+      readonly width: 960;
+      readonly height: 960;
+    };
   };
   readonly cta: {
     readonly label: string;
@@ -93,6 +99,12 @@ const videoCredit = (contribution: string) => ({
   name: "Dolomon" as const,
   role: "Design, motion design e edição de vídeo" as const,
   contribution,
+  portrait: {
+    src: "/cases-v2/shared/dolomon.webp" as const,
+    alt: "Retrato de Dolomon" as const,
+    width: 960 as const,
+    height: 960 as const,
+  },
 });
 
 const siteCta = {
