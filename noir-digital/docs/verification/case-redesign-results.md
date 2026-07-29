@@ -43,6 +43,10 @@ the same template by obligation.
   routes.
 - **Typography:** editorial headings use semibold (`600`) rather than bold
   weights.
+- **Hero containment:** Site and Google titles now use a bounded editorial scale
+  and a wider copy track. Painted text stays inside its own column instead of
+  crossing over the hero media; video titles keep their full-width composition
+  with a safe long-word fallback.
 
 ## Hybrid image system
 
@@ -72,8 +76,12 @@ the same template by obligation.
 ## Verification
 
 - `npm run build`: passed; all nine case routes were statically generated.
-- Production E2E:
-  `28 passed` across desktop and mobile Chromium.
+- Production heading-containment E2E: passed across all nine routes at `390`,
+  `768`, `900`, `1024`, `1280`, `1366`, `1440`, `1536`, and `1920` pixels
+  (`81` case/viewport combinations).
+- Full case-page E2E against the active local server:
+  `25 passed`, with the duplicate mobile-project execution of the
+  multi-viewport test intentionally skipped.
 - Dolomon portrait E2E: `2 passed` across desktop and mobile Chromium, covering
   all three video cases.
 - Focused unit/component/data/asset verification:

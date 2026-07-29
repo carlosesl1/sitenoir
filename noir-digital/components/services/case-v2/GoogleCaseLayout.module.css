@@ -5,9 +5,13 @@
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(260px, 0.76fr) minmax(0, 1.24fr);
-  gap: clamp(32px, 6vw, 88px);
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  gap: clamp(32px, 5vw, 64px);
   align-items: center;
+}
+
+.heroCopy {
+  min-width: 0;
 }
 
 .heroCopy > p:first-child,
@@ -22,11 +26,12 @@
 }
 
 .hero h1 {
-  max-width: 9.5ch;
+  max-width: 100%;
   margin: 28px 0 0;
-  font-size: clamp(3.7rem, 7.2vw, 7.3rem);
-  line-height: 0.86;
-  letter-spacing: -0.058em;
+  overflow-wrap: anywhere;
+  font-size: clamp(3rem, 4.5vw, 4.75rem);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
 }
 
 .summary {
@@ -188,7 +193,7 @@
   }
 
   .hero h1 {
-    max-width: 11ch;
+    max-width: 12ch;
   }
 }
 

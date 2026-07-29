@@ -6,12 +6,13 @@
 .hero {
   display: grid;
   min-height: min(820px, calc(100svh - 168px));
-  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
-  gap: clamp(32px, 6vw, 96px);
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  gap: clamp(32px, 5vw, 64px);
   align-items: end;
 }
 
 .heroCopy {
+  min-width: 0;
   padding-bottom: 34px;
 }
 
@@ -35,11 +36,12 @@
 }
 
 .heroCopy h1 {
-  max-width: 9.2ch;
+  max-width: 100%;
   margin: 0;
-  font-size: clamp(3.5rem, 6.5vw, 6.7rem);
-  line-height: 0.87;
-  letter-spacing: -0.055em;
+  overflow-wrap: anywhere;
+  font-size: clamp(3rem, 4.5vw, 4.75rem);
+  line-height: 0.9;
+  letter-spacing: -0.05em;
 }
 
 .summary {
@@ -204,7 +206,7 @@
   }
 
   .heroCopy h1 {
-    max-width: 11ch;
+    max-width: 12ch;
   }
 }
 
