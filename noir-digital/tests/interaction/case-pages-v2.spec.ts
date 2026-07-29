@@ -33,11 +33,11 @@ test("Strong keeps three controllable portrait videos", async ({ page }) => {
   }
 });
 
-test("video cases share Dolomon's real production portrait", async ({ page }) => {
+test("video cases share DOLA's real production portrait", async ({ page }) => {
   for (const slug of ["strong", "together-motion", "ecox-hostel-cabanas"]) {
     await page.goto(`/services/${slug}`);
 
-    const portrait = page.getByRole("img", { name: "Retrato de Dolomon" });
+    const portrait = page.getByRole("img", { name: "Retrato de DOLA" });
     await expect(portrait).toBeVisible();
     await expect(portrait).toHaveAttribute("src", /dolomon\.webp/i);
     await portrait.scrollIntoViewIfNeeded();

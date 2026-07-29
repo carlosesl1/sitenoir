@@ -22,7 +22,7 @@ test("a portfolio card opens its V2 case in the current tab", async ({ page }) =
 test("site cases do not expose video credits", async ({ page }) => {
   await page.goto("/services/together-site");
 
-  await expect(page.getByRole("heading", { name: "Dolomon" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "DOLA" })).toHaveCount(0);
 });
 
 test("reduced motion keeps authored Google evidence visible", async ({ page }) => {

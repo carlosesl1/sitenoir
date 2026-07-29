@@ -78,12 +78,12 @@ export type CaseStudyV2 = {
   readonly hero: EditorialImage;
   readonly sections: readonly CaseSection[];
   readonly credit?: {
-    readonly name: "Dolomon";
+    readonly name: "DOLA";
     readonly role: "Design, motion design e edição de vídeo";
     readonly contribution: string;
     readonly portrait: {
       readonly src: "/cases-v2/shared/dolomon.webp";
-      readonly alt: "Retrato de Dolomon";
+      readonly alt: "Retrato de DOLA";
       readonly width: 960;
       readonly height: 960;
     };
@@ -96,12 +96,12 @@ export type CaseStudyV2 = {
 };
 
 const videoCredit = (contribution: string) => ({
-  name: "Dolomon" as const,
+  name: "DOLA" as const,
   role: "Design, motion design e edição de vídeo" as const,
   contribution,
   portrait: {
     src: "/cases-v2/shared/dolomon.webp" as const,
-    alt: "Retrato de Dolomon" as const,
+    alt: "Retrato de DOLA" as const,
     width: 960 as const,
     height: 960 as const,
   },

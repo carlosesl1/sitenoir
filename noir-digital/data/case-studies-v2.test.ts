@@ -27,13 +27,13 @@ describe("caseStudiesV2", () => {
     }
   });
 
-  it("credits Dolomon only on video cases", () => {
+  it("credits DOLA only on video cases", () => {
     for (const study of caseStudiesV2) {
       expect(Boolean(study.credit)).toBe(study.categoryLayout === "video");
       if (study.credit) {
         expect(study.credit.portrait).toEqual({
           src: "/cases-v2/shared/dolomon.webp",
-          alt: "Retrato de Dolomon",
+          alt: "Retrato de DOLA",
           width: 960,
           height: 960,
         });

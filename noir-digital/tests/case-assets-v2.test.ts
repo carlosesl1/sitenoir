@@ -18,7 +18,7 @@ describe("V2 case assets", () => {
     }
   });
 
-  it("publishes Dolomon's shared production portrait", async () => {
+  it("publishes DOLA's shared production portrait", async () => {
     const videoCase = caseStudiesV2.find(
       (study) => study.categoryLayout === "video",
     );

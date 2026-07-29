@@ -32,7 +32,7 @@ the same template by obligation.
 - **Videos:** campaign-led first fold, real controllable videos, portrait rhythm,
   and a dedicated production-credit block. Strong is the principal video case
   and opens with all three products as a single campaign.
-- **Dolomon:** the shared production credit now uses his real optimized portrait
+- **DOLA:** the shared production credit now uses his real optimized portrait
   in Strong, Together Motion, and ECOX, with the same crop on desktop and mobile.
 - **Google:** search-to-decision journey, real Google captures, explicit
   discovery/verification/action logic, and a client-specific accent.
@@ -82,7 +82,7 @@ the same template by obligation.
 - Full case-page E2E against the active local server:
   `25 passed`, with the duplicate mobile-project execution of the
   multi-viewport test intentionally skipped.
-- Dolomon portrait E2E: `2 passed` across desktop and mobile Chromium, covering
+- DOLA portrait E2E: `2 passed` across desktop and mobile Chromium, covering
   all three video cases.
 - Focused unit/component/data/asset verification:
   `27 passed` across eight files.

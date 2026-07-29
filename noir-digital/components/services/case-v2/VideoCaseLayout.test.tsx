@@ -28,9 +28,9 @@ describe("VideoCaseLayout", () => {
       expect(video).toHaveAttribute("controls");
       expect(video).not.toHaveAttribute("autoplay");
     }
-    expect(screen.getByRole("heading", { name: "Dolomon" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "DOLA" })).toBeVisible();
     expect(screen.getByText("Design, motion design e edição de vídeo")).toBeVisible();
-    const portrait = screen.getByRole("img", { name: "Retrato de Dolomon" });
+    const portrait = screen.getByRole("img", { name: "Retrato de DOLA" });
     expect(decodeURIComponent(portrait.getAttribute("src") ?? "")).toContain(
       "/cases-v2/shared/dolomon.webp",
     );
