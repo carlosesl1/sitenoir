@@ -142,7 +142,7 @@ jobs:
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
-            open ftp://${FTP_HOST}:${FTP_PORT};
+            open -p ${FTP_PORT} ${FTP_HOST};
             get ${FTP_TARGET}/.htaccess -o ${local_backup}/.htaccess;
             bye;
           "
@@ -154,7 +154,7 @@ jobs:
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
-            open ftp://${FTP_HOST}:${FTP_PORT};
+            open -p ${FTP_PORT} ${FTP_HOST};
             get ${FTP_TARGET}/index.html -o ${local_backup}/index.html;
             bye;
           "; then
@@ -172,7 +172,7 @@ jobs:
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
-            open ftp://${FTP_HOST}:${FTP_PORT};
+            open -p ${FTP_PORT} ${FTP_HOST};
             mkdir -p ${remote_backup};
             put ${local_backup}/.htaccess -o ${remote_backup}/.htaccess;
             put ${local_backup}/had-index-html -o ${remote_backup}/had-index-html;
@@ -185,7 +185,7 @@ jobs:
               set ftp:ssl-force true;
               set ftp:ssl-protect-data true;
               set ssl:verify-certificate yes;
-              open ftp://${FTP_HOST}:${FTP_PORT};
+              open -p ${FTP_PORT} ${FTP_HOST};
               put ${local_backup}/index.html -o ${remote_backup}/index.html;
               bye;
             "
@@ -207,7 +207,7 @@ jobs:
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
-            open ftp://${FTP_HOST}:${FTP_PORT};
+            open -p ${FTP_PORT} ${FTP_HOST};
             mirror --reverse --parallel=4 --verbose=1 \
               --exclude '^index\.html$' \
               --exclude '^\.htaccess$' \
@@ -258,7 +258,7 @@ jobs:
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
-            open ftp://${FTP_HOST}:${FTP_PORT};
+            open -p ${FTP_PORT} ${FTP_HOST};
             put ${LOCAL_BACKUP}/.htaccess -o ${FTP_TARGET}/.htaccess;
             bye;
           "
@@ -269,7 +269,7 @@ jobs:
               set ftp:ssl-force true;
               set ftp:ssl-protect-data true;
               set ssl:verify-certificate yes;
-              open ftp://${FTP_HOST}:${FTP_PORT};
+              open -p ${FTP_PORT} ${FTP_HOST};
               put ${LOCAL_BACKUP}/index.html -o ${FTP_TARGET}/index.html;
               bye;
             "
@@ -279,7 +279,7 @@ jobs:
               set ftp:ssl-force true;
               set ftp:ssl-protect-data true;
               set ssl:verify-certificate yes;
-              open ftp://${FTP_HOST}:${FTP_PORT};
+              open -p ${FTP_PORT} ${FTP_HOST};
               rm ${FTP_TARGET}/index.html;
               bye;
             "
@@ -290,7 +290,7 @@ jobs:
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
-            open ftp://${FTP_HOST}:${FTP_PORT};
+            open -p ${FTP_PORT} ${FTP_HOST};
             rm ${FTP_TARGET}/deploy-manifest.json;
             bye;
           "
