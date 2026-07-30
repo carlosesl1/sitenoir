@@ -3,7 +3,8 @@
 Este projeto usa exportação estática porque o plano Web/WordPress da Hostinger
 não executa um servidor Node.js. O workflow
 `.github/workflows/deploy-hostinger.yml` valida o projeto, gera
-`noir-digital/out` e publica esse diretório por FTPS em `public_html`.
+`noir-digital/out` e publica esse diretório por FTPS na raiz da conta. Nesta
+conta da Hostinger, a raiz FTP já corresponde a `public_html`.
 
 ## Segurança da migração
 
@@ -15,7 +16,7 @@ Antes de cada publicação, o workflow:
 
 1. baixa o `.htaccess` e o `index.html` atuais, caso exista;
 2. guarda uma cópia remota em
-   `public_html/.noir-rollback/<run-id>-<tentativa>`;
+   `.noir-rollback/<run-id>-<tentativa>` dentro de `public_html`;
 3. envia assets e páginas sem excluir os arquivos antigos;
 4. publica `index.html` e `.htaccess` por último;
 5. verifica o SHA exato, a página inicial e `/services/`;
@@ -27,8 +28,8 @@ Cadastre no GitHub, em **Settings > Environments > production**:
 
 Secrets:
 
-- `HOSTINGER_FTP_HOST`: `noirdigital.com.br` ou o host FTP informado pelo
-  hPanel;
+- `HOSTINGER_FTP_HOST`: o host nativo informado pelo servidor da Hostinger
+  (`srv1437-files.hstgr.io` neste plano);
 - `HOSTINGER_FTP_USER`;
 - `HOSTINGER_FTP_PASSWORD`.
 

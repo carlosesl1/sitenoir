@@ -90,7 +90,8 @@ jobs:
       FTP_USER: ${{ secrets.HOSTINGER_FTP_USER }}
       FTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
       FTP_PORT: ${{ vars.HOSTINGER_FTP_PORT }}
-      FTP_TARGET: public_html
+      # This FTP account is chrooted directly into Hostinger's public_html.
+      FTP_TARGET: .
       PRODUCTION_URL: https://noirdigital.com.br
     steps:
       - name: Download export artifact
@@ -108,7 +109,7 @@ jobs:
           FTP_PORT="${FTP_PORT:-21}"
 
           [[ "${FTP_PORT}" =~ ^[0-9]{1,5}$ ]]
-          [[ "${FTP_TARGET}" == "public_html" ]]
+          [[ "${FTP_TARGET}" == "." ]]
           [[ "${PRODUCTION_URL}" == "https://noirdigital.com.br" ]]
 
           echo "FTP_PORT=${FTP_PORT}" >>"${GITHUB_ENV}"
