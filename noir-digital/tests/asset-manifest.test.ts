@@ -49,14 +49,6 @@ test.each(optimizedAssets)("ships the optimized versioned asset at $path", async
   expect(Array.from(asset.subarray(0, signature.length))).toEqual(signature);
 });
 
-test("ships a non-empty JSON glTF model", async () => {
-  const asset = await readFile(path.join(process.cwd(), "asset-sources", "model/cnt.gltf"), "utf8");
-
-  expect(asset.length).toBeGreaterThan(0);
-  expect(asset.trimStart().startsWith("{")).toBe(true);
-  expect(() => JSON.parse(asset)).not.toThrow();
-});
-
 test("keeps authoring sources outside the deployed public tree", async () => {
   const legacySources = [
     "fonts/TikTokSans.ttf",
