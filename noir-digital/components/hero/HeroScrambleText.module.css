@@ -1,0 +1,52 @@
+.root {
+  --scramble-primary: #c0fe04;
+  --scramble-secondary: #dfff81;
+  position: relative;
+  display: inline-block;
+}
+
+:global([data-theme="light"]) .root {
+  --scramble-secondary: #607f02;
+}
+
+.measure {
+  visibility: hidden;
+}
+
+.measure::before {
+  content: attr(data-text);
+}
+
+.visual {
+  position: absolute;
+  inset: 0;
+}
+
+.glyph[data-phase="hidden"] {
+  opacity: 0;
+}
+
+.glyph[data-phase="primary"] {
+  color: var(--scramble-primary);
+}
+
+.glyph[data-phase="secondary"] {
+  color: var(--scramble-secondary);
+}
+
+.screenReaderText {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root[data-scramble-state="waiting"] .measure {
+    visibility: visible;
+  }
+}

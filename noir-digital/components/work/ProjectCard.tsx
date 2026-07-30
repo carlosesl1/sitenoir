@@ -94,7 +94,7 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
       const height = Math.max(1, Math.round(rect.height));
       const overscan = viewportWidth * 0.08;
       const canvasWidth = Math.max(1, Math.round(width + overscan * 2));
-      const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
       const hoverProgress = hoverRevealProgressRef.current;
       const previousRender = lastCanvasRenderRef.current;
       const needsRedraw =
@@ -129,6 +129,7 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
       if (!context) return;
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
       context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
       context.clearRect(0, 0, canvasWidth, height);
 
       const preparedPrimary = prepareWorkCardImage({
@@ -273,7 +274,7 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
     : styles["projectCard"];
   const sizes = featured
     ? "(max-width: 767px) calc(100vw - 32px), calc(66.7vw - 75px)"
-    : "(max-width: 767px) calc(100vw - 32px), calc(33.3vw - 49px)";
+    : "(max-width: 767px) calc((100vw - 44px) / 2), (max-width: 1279px) calc(33.3vw - 49px), calc(25vw - 42px)";
 
   return (
     <article
@@ -319,6 +320,7 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
               alt={project.imageAlt}
               fill
               sizes={sizes}
+              unoptimized
             />
             <Image
               ref={hoverImageRef}
@@ -329,6 +331,7 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
               aria-hidden="true"
               fill
               sizes={sizes}
+              unoptimized
             />
           </span>
           <CardHoverRevealCanvas
@@ -344,9 +347,11 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
         </span>
 
         <span className={styles["projectMeta"]}>
-          <span className={styles["projectTitle"]}>{project.title}</span>
+          <span className={styles["projectTitle"]} data-project-client>
+            {project.client}
+          </span>
           <span>{project.year}</span>
-          <span>{[project.client, ...project.deliveryLabels].join(" / ")}</span>
+          <span>{project.deliveryLabels.join(" / ")}</span>
         </span>
       </a>
     </article>

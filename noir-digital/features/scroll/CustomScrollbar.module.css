@@ -1,0 +1,39 @@
+.track {
+  position: fixed;
+  z-index: 70;
+  top: 50%;
+  right: 12px;
+  width: 6px;
+  height: clamp(150px, 30vh, 220px);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-primary) 22%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: opacity 180ms ease;
+}
+
+.track[data-scrollable="true"] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.thumb {
+  width: 100%;
+  min-height: 26px;
+  border-radius: inherit;
+  background: var(--text-primary);
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+}
+
+.thumb:active {
+  cursor: grabbing;
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  .track {
+    display: none;
+  }
+}

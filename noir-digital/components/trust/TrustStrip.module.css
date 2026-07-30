@@ -1,0 +1,144 @@
+.trustStrip {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  padding: 56px 0 64px;
+  border-block: 1px solid var(--border-default);
+  color: var(--text-primary);
+}
+
+.eyebrow {
+  margin: 0 0 36px;
+  text-align: center;
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.marqueeViewport {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 var(--site-grid-inset),
+    #000 calc(100% - var(--site-grid-inset)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 var(--site-grid-inset),
+    #000 calc(100% - var(--site-grid-inset)),
+    transparent
+  );
+}
+
+.marqueeTrack {
+  display: flex;
+  width: max-content;
+  animation: logo-marquee 34s linear infinite;
+  will-change: transform;
+}
+
+.logoSequence {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: clamp(24px, 3vw, 48px);
+  margin: 0;
+  padding: 0 clamp(24px, 3vw, 48px) 0 0;
+  list-style: none;
+}
+
+.logoItem {
+  display: grid;
+  flex: none;
+  width: clamp(104px, 9vw, 148px);
+  place-items: center;
+}
+
+.logo {
+  display: block;
+  width: 100%;
+  height: clamp(32px, 2.6vw, 44px);
+  background-color: color-mix(in srgb, var(--text-primary) 76%, transparent);
+  -webkit-mask-image: var(--client-logo);
+  mask-image: var(--client-logo);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  transition: background-color var(--duration-standard) var(--ease-standard);
+}
+
+.logo[data-client-logo="together"] {
+  -webkit-mask-size: auto 92%;
+  mask-size: auto 92%;
+}
+
+.logo[data-client-logo="ecohotel-cabanas"] {
+  transform: scale(1.12);
+}
+
+.trustStrip:hover .logo {
+  background-color: var(--text-primary);
+}
+
+@keyframes logo-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-25%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marqueeViewport {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .marqueeTrack {
+    width: auto;
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+
+  .logoSequence {
+    flex: 1;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0 var(--page-inline);
+  }
+
+  .logoSequence[aria-hidden="true"] {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .trustStrip {
+    padding: 40px 0 44px;
+  }
+
+  .eyebrow {
+    margin-bottom: 28px;
+  }
+
+  .logoSequence {
+    gap: 28px;
+    padding-right: 28px;
+  }
+
+  .logo {
+    height: 30px;
+  }
+}

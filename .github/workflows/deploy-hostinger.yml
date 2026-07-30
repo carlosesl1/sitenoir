@@ -1,0 +1,307 @@
+name: Deploy Noir Digital to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "noir-digital/**"
+      - ".github/workflows/deploy-hostinger.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: noir-digital-hostinger-production
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Validate and export
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SITE_URL: https://noirdigital.com.br
+    defaults:
+      run:
+        shell: bash
+        working-directory: noir-digital
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: noir-digital/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build static export
+        run: npm run build
+
+      - name: Verify export
+        run: |
+          test -f out/index.html
+          test -f out/.htaccess
+          test -d out/_next/static
+          grep -q "NOIR DIGITAL" out/index.html
+
+      - name: Write deployment manifest
+        run: |
+          printf '{"sha":"%s","run_id":"%s","run_attempt":"%s"}\n' \
+            "${GITHUB_SHA}" \
+            "${GITHUB_RUN_ID}" \
+            "${GITHUB_RUN_ATTEMPT}" \
+            > out/deploy-manifest.json
+
+      - name: Upload export artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: noir-digital-static-${{ github.sha }}
+          path: noir-digital/out
+          if-no-files-found: error
+          retention-days: 7
+          include-hidden-files: true
+
+  deploy_production:
+    name: Deploy production with rollback
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://noirdigital.com.br
+    env:
+      FTP_HOST: ${{ secrets.HOSTINGER_FTP_HOST }}
+      FTP_USER: ${{ secrets.HOSTINGER_FTP_USER }}
+      FTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+      FTP_PORT: ${{ vars.HOSTINGER_FTP_PORT }}
+      FTP_TARGET: public_html
+      PRODUCTION_URL: https://noirdigital.com.br
+    steps:
+      - name: Download export artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: noir-digital-static-${{ github.sha }}
+          path: out
+
+      - name: Validate production target
+        run: |
+          : "${FTP_HOST:?Configure o secret HOSTINGER_FTP_HOST.}"
+          : "${FTP_USER:?Configure o secret HOSTINGER_FTP_USER.}"
+          : "${FTP_PASSWORD:?Configure o secret HOSTINGER_FTP_PASSWORD.}"
+
+          FTP_PORT="${FTP_PORT:-21}"
+
+          [[ "${FTP_PORT}" =~ ^[0-9]{1,5}$ ]]
+          [[ "${FTP_TARGET}" == "public_html" ]]
+          [[ "${PRODUCTION_URL}" == "https://noirdigital.com.br" ]]
+
+          echo "FTP_PORT=${FTP_PORT}" >>"${GITHUB_ENV}"
+
+      - name: Install lftp
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes lftp
+
+      - name: Configure FTP credentials
+        run: |
+          umask 077
+          {
+            printf 'machine %s\n' "${FTP_HOST}"
+            printf 'login %s\n' "${FTP_USER}"
+            printf 'password %s\n' "${FTP_PASSWORD}"
+          } >"${HOME}/.netrc"
+
+      - name: Back up current entry files
+        id: backup
+        run: |
+          local_backup="${RUNNER_TEMP}/hostinger-backup"
+          remote_backup="${FTP_TARGET}/.noir-rollback/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p "${local_backup}"
+
+          lftp -e "
+            set cmd:fail-exit yes;
+            set net:max-retries 2;
+            set net:timeout 20;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate yes;
+            open ftp://${FTP_HOST}:${FTP_PORT};
+            get ${FTP_TARGET}/.htaccess -o ${local_backup}/.htaccess;
+            bye;
+          "
+
+          if lftp -e "
+            set cmd:fail-exit yes;
+            set net:max-retries 2;
+            set net:timeout 20;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate yes;
+            open ftp://${FTP_HOST}:${FTP_PORT};
+            get ${FTP_TARGET}/index.html -o ${local_backup}/index.html;
+            bye;
+          "; then
+            had_index_html=1
+          else
+            had_index_html=0
+          fi
+
+          printf '%s\n' "${had_index_html}" >"${local_backup}/had-index-html"
+
+          lftp -e "
+            set cmd:fail-exit yes;
+            set net:max-retries 2;
+            set net:timeout 20;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate yes;
+            open ftp://${FTP_HOST}:${FTP_PORT};
+            mkdir -p ${remote_backup};
+            put ${local_backup}/.htaccess -o ${remote_backup}/.htaccess;
+            put ${local_backup}/had-index-html -o ${remote_backup}/had-index-html;
+            bye;
+          "
+
+          if [[ "${had_index_html}" == "1" ]]; then
+            lftp -e "
+              set cmd:fail-exit yes;
+              set ftp:ssl-force true;
+              set ftp:ssl-protect-data true;
+              set ssl:verify-certificate yes;
+              open ftp://${FTP_HOST}:${FTP_PORT};
+              put ${local_backup}/index.html -o ${remote_backup}/index.html;
+              bye;
+            "
+          fi
+
+          {
+            echo "LOCAL_BACKUP=${local_backup}"
+            echo "REMOTE_BACKUP=${remote_backup}"
+            echo "HAD_INDEX_HTML=${had_index_html}"
+          } >>"${GITHUB_ENV}"
+
+      - name: Deploy static export
+        id: publish
+        run: |
+          lftp -e "
+            set cmd:fail-exit yes;
+            set net:max-retries 2;
+            set net:timeout 20;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate yes;
+            open ftp://${FTP_HOST}:${FTP_PORT};
+            mirror --reverse --parallel=4 --verbose=1 \
+              --exclude '^index\.html$' \
+              --exclude '^\.htaccess$' \
+              out/ ${FTP_TARGET}/;
+            put out/index.html -o ${FTP_TARGET}/index.html;
+            put out/.htaccess -o ${FTP_TARGET}/.htaccess;
+            bye;
+          "
+
+      - name: Verify exact production release
+        run: |
+          manifest_file="${RUNNER_TEMP}/deploy-manifest.json"
+          response_file="${RUNNER_TEMP}/noir-production.html"
+
+          curl --fail --silent --show-error \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 30 \
+            -H "Cache-Control: no-cache" \
+            "${PRODUCTION_URL}/deploy-manifest.json?deploy=${GITHUB_SHA}" \
+            --output "${manifest_file}"
+          grep -q "\"sha\":\"${GITHUB_SHA}\"" "${manifest_file}"
+
+          curl --fail --silent --show-error \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 30 \
+            -H "Cache-Control: no-cache" \
+            "${PRODUCTION_URL}/?deploy=${GITHUB_SHA}" \
+            --output "${response_file}"
+          grep -q "NOIR DIGITAL" "${response_file}"
+
+          curl --fail --silent --show-error \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 30 \
+            -H "Cache-Control: no-cache" \
+            "${PRODUCTION_URL}/services/?deploy=${GITHUB_SHA}" \
+            --output /dev/null
+
+      - name: Roll back entry files after a failed publication
+        if: failure() && steps.publish.outcome != 'skipped'
+        run: |
+          lftp -e "
+            set cmd:fail-exit yes;
+            set net:max-retries 2;
+            set net:timeout 20;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate yes;
+            open ftp://${FTP_HOST}:${FTP_PORT};
+            put ${LOCAL_BACKUP}/.htaccess -o ${FTP_TARGET}/.htaccess;
+            bye;
+          "
+
+          if [[ "${HAD_INDEX_HTML}" == "1" ]]; then
+            lftp -e "
+              set cmd:fail-exit yes;
+              set ftp:ssl-force true;
+              set ftp:ssl-protect-data true;
+              set ssl:verify-certificate yes;
+              open ftp://${FTP_HOST}:${FTP_PORT};
+              put ${LOCAL_BACKUP}/index.html -o ${FTP_TARGET}/index.html;
+              bye;
+            "
+          else
+            lftp -e "
+              set cmd:fail-exit no;
+              set ftp:ssl-force true;
+              set ftp:ssl-protect-data true;
+              set ssl:verify-certificate yes;
+              open ftp://${FTP_HOST}:${FTP_PORT};
+              rm ${FTP_TARGET}/index.html;
+              bye;
+            "
+          fi
+
+          lftp -e "
+            set cmd:fail-exit no;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate yes;
+            open ftp://${FTP_HOST}:${FTP_PORT};
+            rm ${FTP_TARGET}/deploy-manifest.json;
+            bye;
+          "
+
+          curl --fail --silent --show-error \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 30 \
+            -H "Cache-Control: no-cache" \
+            "${PRODUCTION_URL}/?rollback=${GITHUB_SHA}" \
+            --output /dev/null
+
+      - name: Remove local FTP credentials
+        if: always()
+        run: rm -f "${HOME}/.netrc"

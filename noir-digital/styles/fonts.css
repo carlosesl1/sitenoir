@@ -1,0 +1,24 @@
+@font-face {
+  font-family: "TikTok Sans";
+  src: url("/assets/v1/fonts/TikTokSans.woff2") format("woff2");
+  font-stretch: 100% 120%;
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/assets/v1/fonts/GeistMono.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 650;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Departure Mono";
+  src: url("/assets/v1/fonts/DepartureMono.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}

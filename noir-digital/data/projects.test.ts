@@ -11,12 +11,11 @@ import {
 } from "@/data/projects";
 
 describe("projects", () => {
-  it("publishes the four services in the approved order", () => {
+  it("publishes the three services in the approved order", () => {
     expect(serviceGroups).toEqual([
       { id: "sites", index: "01", title: "Sites" },
       { id: "videos", index: "02", title: "Vídeos" },
       { id: "google", index: "03", title: "Presença no Google" },
-      { id: "social", index: "04", title: "Redes sociais" },
     ]);
   });
 
@@ -24,10 +23,32 @@ describe("projects", () => {
     const grouped = groupProjectsByService(projects);
     const groupedSlugs = grouped.flatMap((group) => group.projects.map((project) => project.slug));
 
-    expect(grouped.map((group) => group.projects.length)).toEqual([3, 2, 2, 3]);
+    expect(grouped.map((group) => group.projects.length)).toEqual([3, 3, 3]);
     expect(groupedSlugs).toHaveLength(projects.length);
     expect(new Set(groupedSlugs).size).toBe(projects.length);
     expect(groupedSlugs.toSorted()).toEqual(projects.map((project) => project.slug).toSorted());
+  });
+
+  it("publishes the approved real clients under the correct services", () => {
+    expect(
+      groupProjectsByService(projects).map((group) => ({
+        id: group.id,
+        slugs: group.projects.map((project) => project.slug),
+      })),
+    ).toEqual([
+      {
+        id: "sites",
+        slugs: ["together-site", "madeireira-fortaleza", "jr-express"],
+      },
+      {
+        id: "videos",
+        slugs: ["strong", "together-motion", "ecox-hostel-cabanas"],
+      },
+      {
+        id: "google",
+        slugs: ["chapada-backpackers", "contabil-sudoeste", "posto-ipiranga"],
+      },
+    ]);
   });
 
   it("gives every project client and delivery metadata", () => {
@@ -46,17 +67,21 @@ describe("projects", () => {
     const uniqueSlugs = new Set(slugs);
 
     // Then no card shares a route identity.
-    expect(uniqueSlugs.size).toBe(10);
+    expect(uniqueSlugs.size).toBe(9);
     expect(uniqueSlugs.size).toBe(slugs.length);
   });
 
-  it("routes every project card to the internal services page", () => {
-    expect(projects.every((project) => project.href === "/services")).toBe(true);
+  it("routes every project card to its individual case", () => {
+    expect(projects.map(({ href }) => href)).toEqual(
+      projects.map(({ slug }) => `/services/${slug}`),
+    );
   });
 
   it.each(projects)("ships non-empty image pairs for $slug", async (project) => {
     // Given a visible project image pair.
     const assetPaths = [project.image, project.hoverImage];
+
+    expect(assetPaths.every((assetPath) => assetPath.endsWith(".webp"))).toBe(true);
 
     // When both public files are inspected.
     const assetStats = await Promise.all(
@@ -70,8 +95,8 @@ describe("projects", () => {
     }
   });
 
-  it("accounts for all work assets without fabricating a Teambition hover image", async () => {
-    // Given the visible project paths and the source-only protected item paths.
+  it("accounts for exactly the visible real-client work assets", async () => {
+    // Given the visible project paths.
     const uniqueProjectAssets = Array.from(
       new Set(projects.flatMap((project) => [project.image, project.hoverImage])),
     );
@@ -87,10 +112,10 @@ describe("projects", () => {
       .map((entry) => `/work/${entry.name}`)
       .toSorted();
 
-    // Then 19 unique visible paths plus two reserved paths cover all 21 files exactly.
-    expect(uniqueProjectAssets).toHaveLength(19);
-    expect(reservedWorkAssets).toEqual(["/work/tt01.png", "/work/tt02.png"]);
-    expect(modeledAssets).toHaveLength(21);
+    // Then the nine image pairs cover the directory exactly, with no obsolete placeholders.
+    expect(uniqueProjectAssets).toHaveLength(18);
+    expect(reservedWorkAssets).toEqual([]);
+    expect(modeledAssets).toHaveLength(18);
     expect(modeledAssets.toSorted()).toEqual(publicWorkAssets);
   });
 });

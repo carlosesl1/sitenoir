@@ -1,0 +1,249 @@
+.brandMark {
+  display: inline-flex;
+  max-width: 100%;
+  flex-wrap: wrap;
+  min-height: var(--control-min-size);
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: transform var(--duration-micro) var(--ease-standard);
+}
+
+.brandName {
+  max-width: 100%;
+  border-bottom: var(--stroke-hairline) dotted var(--border-default);
+  font-family: var(--font-display);
+  font-size: var(--type-body-large);
+  font-weight: var(--weight-display);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-solid);
+  transition: border-color var(--duration-micro) var(--ease-standard);
+  overflow-wrap: anywhere;
+}
+
+.brandMeta,
+.controlMeta,
+.typeMeta,
+.gridLabel {
+  color: var(--text-secondary);
+  font-family: var(--font-interface);
+  font-size: var(--type-micro);
+  font-weight: var(--weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: var(--leading-label);
+  text-transform: uppercase;
+}
+
+.brandMark:hover .brandName {
+  border-color: var(--border-strong);
+}
+
+.brandMark:active {
+  transform: translateY(var(--space-1));
+}
+
+.brandMark:active .brandName {
+  border-color: var(--focus-color);
+}
+
+.brandMark:focus-visible,
+.control:focus-visible {
+  outline: var(--stroke-hairline) dotted var(--focus-color);
+  outline-offset: var(--focus-offset);
+}
+
+.control {
+  position: relative;
+  display: inline-grid;
+  isolation: isolate;
+  min-width: var(--control-min-width);
+  min-height: var(--control-min-size);
+  padding: var(--space-0);
+  border: var(--space-0);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-pixel);
+  font-size: var(--type-label);
+  font-weight: var(--weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: var(--leading-label);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.controlFace {
+  position: relative;
+  z-index: var(--layer-face);
+  display: inline-flex;
+  width: 100%;
+  min-height: var(--control-min-size);
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border: var(--stroke-hairline) solid var(--border-default);
+  border-radius: var(--radius-control);
+  background: var(--surface-elevated);
+  color: inherit;
+  overflow-wrap: anywhere;
+  transition:
+    transform var(--duration-micro) var(--ease-standard),
+    border-color var(--duration-micro) var(--ease-standard),
+    background-color var(--duration-micro) var(--ease-standard),
+    color var(--duration-micro) var(--ease-standard);
+}
+
+.control::before {
+  position: absolute;
+  z-index: var(--layer-plate);
+  inset: var(--space-1) calc(var(--space-1) * -1) calc(var(--space-1) * -1) var(--space-1);
+  border: var(--stroke-hairline) solid var(--border-default);
+  border-radius: var(--radius-control);
+  background: var(--surface-active);
+  content: "";
+}
+
+.control:hover .controlFace {
+  border-color: var(--border-strong);
+  transform: translateY(calc(var(--space-1) * -1));
+}
+
+.control:active .controlFace {
+  transform: translate(var(--space-1), var(--space-1));
+}
+
+.control:disabled {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+.control:disabled .controlFace {
+  border-color: var(--border-default);
+  transform: none;
+}
+
+.control:disabled::before {
+  display: none;
+}
+
+.quiet .controlFace {
+  background: var(--surface-primary);
+}
+
+.link .controlFace {
+  border-style: dotted;
+}
+
+.gridGuide {
+  position: relative;
+  min-height: var(--guide-min-height);
+  overflow: hidden;
+  border: var(--stroke-hairline) solid var(--border-default);
+  background: var(--surface-primary);
+}
+
+.gridGuide::before,
+.gridGuide::after {
+  position: absolute;
+  background: var(--border-strong);
+  content: "";
+}
+
+.gridGuide::before {
+  top: var(--space-0);
+  bottom: var(--space-0);
+  left: 50%;
+  width: var(--stroke-hairline);
+}
+
+.gridGuide::after {
+  top: 50%;
+  right: var(--space-0);
+  left: var(--space-0);
+  height: var(--stroke-hairline);
+}
+
+.line::after {
+  display: none;
+}
+
+.field {
+  outline: var(--stroke-hairline) dotted var(--border-default);
+  outline-offset: calc(var(--space-2) * -1);
+}
+
+.gridLabel {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+}
+
+.typeSample {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  margin: var(--space-0);
+}
+
+.typeSample p,
+.typeSample h3 {
+  margin: var(--space-0);
+}
+
+.display {
+  max-width: var(--measure-display);
+  font-family: var(--font-display);
+  font-size: var(--type-heading);
+  font-weight: var(--weight-heading);
+  letter-spacing: var(--tracking-heading);
+  line-height: var(--leading-heading);
+  overflow-wrap: anywhere;
+}
+
+.body {
+  max-width: var(--measure-body);
+  font-family: var(--font-display);
+  font-size: var(--type-body);
+  font-weight: var(--weight-body);
+  line-height: var(--leading-body);
+}
+
+.interface {
+  font-family: var(--font-interface);
+  font-size: var(--type-label);
+  font-weight: var(--weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: var(--leading-body);
+  text-transform: uppercase;
+}
+
+.pixel {
+  font-family: var(--font-pixel);
+  font-size: var(--type-label);
+  font-weight: var(--weight-label);
+  letter-spacing: var(--tracking-label);
+  line-height: var(--leading-body);
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brandMark,
+  .brandName,
+  .controlFace {
+    transition-duration: var(--duration-none);
+  }
+
+  .brandMark:active,
+  .control:hover .controlFace,
+  .control:active .controlFace {
+    transform: none;
+  }
+
+  .control:active .controlFace {
+    border-color: var(--border-strong);
+    background: var(--surface-active);
+  }
+}

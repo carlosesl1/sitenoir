@@ -1,35 +1,52 @@
 export const aiServices = [
   {
-    id: "custom-software",
-    label: "Software sob medida",
-    description: "Sistemas e ferramentas construídos para o fluxo real da sua operação.",
-  },
-  {
     id: "process-automation",
     label: "Automação de processos",
-    description: "Integrações que eliminam tarefas repetitivas e reduzem gargalos.",
+    code: "AUTOMATION",
+    glyph: "automation",
+    description:
+      "Eliminamos tarefas repetitivas e construímos fluxos inteligentes para ganhar tempo, reduzir erros e escalar com eficiência.",
   },
   {
-    id: "agents-copilots",
-    label: "Agentes e copilotos",
-    description: "Assistentes com contexto do negócio para apoiar equipes e decisões.",
+    id: "custom-software",
+    label: "Softwares sob medida",
+    code: "SOFTWARE",
+    glyph: "software",
+    description:
+      "Soluções inteligentes e personalizadas com IA no core, alinhadas aos seus objetivos, dados e processos.",
   },
   {
-    id: "ai-implementation",
-    label: "Implantação de IA",
-    description: "Diagnóstico, priorização e implantação segura de casos de uso.",
+    id: "ai-copilots",
+    label: "Copilotos de IA",
+    code: "COPILOTS",
+    glyph: "copilots",
+    description:
+      "Assistentes inteligentes que trabalham com seu time, aceleram entregas e elevam a produtividade.",
   },
   {
-    id: "smart-integrations",
-    label: "Integrações inteligentes",
-    description: "Conectamos dados, sistemas e modelos sem romper sua operação atual.",
+    id: "ai-agents",
+    label: "Agentes de IA",
+    code: "AGENTS",
+    glyph: "agents",
+    description:
+      "Agentes autônomos que executam, monitoram e otimizam processos com autonomia e consistência.",
   },
   {
-    id: "operational-optimization",
-    label: "Otimização operacional",
-    description: "Monitoramento e melhoria contínua para ampliar produtividade e margem.",
+    id: "smart-integration",
+    label: "Integração inteligente",
+    code: "INTEGRATION",
+    glyph: "integration",
+    description:
+      "Conectamos a IA aos seus sistemas, dados e ferramentas para uma operação fluida e centralizada.",
+  },
+  {
+    id: "ai-first-company",
+    label: "Empresa AI First",
+    code: "AI FIRST",
+    glyph: "ai-first",
+    description:
+      "Transformamos sua cultura, estratégia e operação para colocar a IA no centro das decisões e do crescimento.",
   },
 ] as const;
 
 export type AiService = (typeof aiServices)[number];
-export type AiServiceId = AiService["id"];

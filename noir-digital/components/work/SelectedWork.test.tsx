@@ -35,7 +35,7 @@ describe("TrustStrip", () => {
 
     const list = screen.getByRole("list", { name: "Clientes" });
     expect(screen.getByRole("heading", { name: "Empresas que confiam" })).toBeInTheDocument();
-    expect(within(list).getAllByRole("listitem")).toHaveLength(11);
+    expect(within(list).getAllByRole("listitem")).toHaveLength(13);
     for (const client of clientLogos) {
       expect(within(list).getByRole("img", { name: client.label })).toHaveStyle({
         "--client-logo": `url(${client.image})`,
@@ -90,9 +90,7 @@ describe("SelectedWork", () => {
     const index = screen.getByLabelText("Índice de serviços");
     const links = within(index).getAllByRole("link", { hidden: true });
 
-    expect(links.map((link) => link.textContent)).toEqual(
-      serviceGroups.map(({ title }) => title),
-    );
+    expect(links.map((link) => link.textContent)).toEqual(serviceGroups.map(({ title }) => title));
     expect(links[0]).toHaveAttribute("aria-current", "location");
     expect(links.map((link) => link.getAttribute("href"))).toEqual(
       serviceGroups.map(({ id }) => `#service-${id}`),
@@ -155,12 +153,28 @@ describe("SelectedWork", () => {
       /\.serviceGroup\s*\{[^}]*grid-template-columns:\s*repeat\(8,\s*minmax\(0,\s*1fr\)\)/,
     );
     expect(css).toMatch(/\.serviceHeading\s*\{[^}]*grid-column:\s*1\s*\/\s*span\s*4/);
+    expect(css).toMatch(/\.projectCard\s*\{[^}]*grid-column:\s*span\s*4/);
     expect(css).toMatch(/\.featuredCard\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/);
+    expect(css).toMatch(/\.imageFrame\s*\{[^}]*aspect-ratio:\s*1/);
+    expect(css).toMatch(/\.featuredCard\s+\.imageFrame\s*\{[^}]*aspect-ratio:\s*1332\s*\/\s*750/);
     expect(css).toMatch(
-      /@media \(max-width:\s*767px\)[\s\S]*\.serviceGroup\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/,
+      /@media \(min-width:\s*1280px\)[\s\S]*\.projectCard:not\(\.featuredCard\)\s*\{[^}]*grid-column:\s*span\s*3/,
     );
     expect(css).toMatch(
-      /@media \(max-width:\s*767px\)[\s\S]*\.projectCard\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/,
+      /@media \(min-width:\s*1280px\)[\s\S]*\.serviceGroup\s+\.projectCard:nth-of-type\(2\):not\(\.featuredCard\)\s*\{[^}]*grid-column:\s*1\s*\/\s*span\s*3/,
+    );
+    expect(css).toMatch(
+      /@media \(min-width:\s*1280px\)[\s\S]*\.serviceGroup\s+\.projectCard:nth-of-type\(3\):not\(\.featuredCard\)\s*\{[^}]*grid-column:\s*5\s*\/\s*span\s*3/,
+    );
+    expect(css).not.toMatch(/\.serviceGroup\s+\.projectCard[^}]*\{[^}]*margin-top:\s*120px/);
+    expect(css).toMatch(
+      /@media \(max-width:\s*767px\)[\s\S]*\.serviceGroup\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/,
+    );
+    expect(css).toMatch(
+      /@media \(max-width:\s*767px\)[\s\S]*\.projectCard\s*\{[^}]*grid-column:\s*span\s*1/,
+    );
+    expect(css).toMatch(
+      /@media \(max-width:\s*767px\)[\s\S]*\.featuredCard\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/,
     );
     expect(css).toMatch(/\.serviceIndex\s*\{[^}]*display:\s*none/);
     expect(css).toMatch(
@@ -220,18 +234,32 @@ describe("SelectedWork", () => {
   });
 
   it("renders client and delivery labels without relying on hover", () => {
-    render(<SelectedWork />);
+    const view = render(<SelectedWork />);
+    const css = readFileSync(
+      join(process.cwd(), "components/work/SelectedWork.module.css"),
+      "utf8",
+    );
 
     for (const project of projects) {
       const card = screen.getByTestId(`project-${project.slug}`);
-      expect(card).toHaveTextContent(project.client);
+      const client = card.querySelector("[data-project-client]");
+
+      expect(client).toHaveTextContent(project.client);
+      expect(
+        card.textContent?.match(
+          new RegExp(project.client.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"),
+        ),
+      ).toHaveLength(1);
       for (const label of project.deliveryLabels) {
         expect(card).toHaveTextContent(label);
       }
     }
+
+    expect(view.container.querySelectorAll("[data-project-client]")).toHaveLength(projects.length);
+    expect(css).toMatch(/\.projectTitle\s*\{[^}]*text-transform:\s*uppercase/);
   });
 
-  it("provides descriptive primary images and stable hover image slots", () => {
+  it("uses the pre-optimized work assets directly in both image slots", () => {
     render(<SelectedWork />);
 
     for (const project of projects) {
@@ -243,9 +271,9 @@ describe("SelectedWork", () => {
       const imageClip = primary.parentElement;
 
       expect(primary).toHaveAttribute("data-image-role", "primary");
-      expect(primary.getAttribute("src")).toContain(encodeURIComponent(project.image));
+      expect(primary).toHaveAttribute("src", project.image);
       expect(hover).toHaveAttribute("aria-hidden", "true");
-      expect(hover?.getAttribute("src")).toContain(encodeURIComponent(project.hoverImage));
+      expect(hover).toHaveAttribute("src", project.hoverImage);
       expect(hoverReveal).toBeInTheDocument();
       expect(hoverReveal).toHaveAttribute("aria-hidden", "true");
       expect(frame).toContainElement(hoverReveal);
@@ -261,7 +289,7 @@ describe("SelectedWork", () => {
     for (const project of projects) {
       const card = screen.getByTestId(`project-${project.slug}`);
       const link = within(card).getByRole("link");
-      expect(link).toHaveAttribute("href", "/services");
+      expect(link).toHaveAttribute("href", `/services/${project.slug}`);
       expect(link).not.toHaveAttribute("target");
       expect(link).not.toHaveAttribute("rel");
     }

@@ -1,0 +1,325 @@
+.hero {
+  position: relative;
+  min-height: max(720px, 100svh);
+  overflow: clip;
+  background: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+.heroGrid {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  min-height: max(720px, 100svh);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "disciplines disciplines disciplines . promise promise promise . description description description description"
+    ". . . . . . . . . . . ."
+    "headline headline headline headline headline headline headline headline headline headline headline headline";
+  column-gap: var(--grid-gutter);
+  align-items: start;
+  padding: clamp(104px, 15.25vh, 128px) 56px 96px;
+}
+
+.disciplines,
+.promise,
+.description,
+.headline {
+  margin: 0;
+}
+
+.disciplines {
+  grid-area: disciplines;
+  padding: 0;
+  list-style: none;
+  padding-inline: 8px;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.35vw, 1.875rem);
+  font-weight: 520;
+  line-height: 1.22;
+  letter-spacing: -0.035em;
+}
+
+.promise {
+  display: flex;
+  grid-area: promise;
+  padding-inline: 8px;
+  flex-direction: column;
+  font-family: var(--font-interface);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.description {
+  display: flex;
+  grid-area: description;
+  flex-direction: column;
+  max-width: 34rem;
+  padding-inline: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-interface);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.headline {
+  z-index: 2;
+  display: flex;
+  grid-area: headline;
+  align-self: end;
+  flex-direction: column;
+  padding-inline: 8px;
+  font-size: 7.2svw;
+  font-weight: 700;
+  font-variation-settings:
+    "wght" 700,
+    "wdth" 120;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.actionRow {
+  display: contents;
+}
+
+.heroCtaSlot {
+  display: none;
+}
+
+.sceneAnchor {
+  position: absolute;
+  z-index: 1;
+  inset: 23% 15% 14%;
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .hero {
+    min-height: 100svh;
+  }
+
+  .desktopSupport {
+    display: none;
+  }
+
+  .heroGrid {
+    min-height: 100svh;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      "headline headline"
+      ". ."
+      "description description";
+    padding: 76px 16px 24px;
+  }
+
+  .actionRow {
+    display: flex;
+    grid-area: description;
+    align-self: end;
+    flex-direction: column;
+    gap: clamp(14px, 1.8svh, 18px);
+    margin-bottom: 24px;
+    padding-inline: 8px;
+  }
+
+  .description {
+    display: block;
+    align-self: start;
+    max-width: 28rem;
+    padding-inline: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .description > [data-hero-scramble="true"] {
+    display: inline;
+  }
+
+  .description > [data-hero-scramble="true"] [data-scramble-visual="true"] {
+    position: static;
+  }
+
+  .description
+    > [data-hero-scramble="true"][data-scramble-active="true"]
+    [data-scramble-measure="true"] {
+    display: none;
+  }
+
+  .heroCtaSlot {
+    display: block;
+    width: min(100%, 260px);
+  }
+
+  .headline {
+    display: block;
+    padding-inline: 8px;
+    font-size: 7.2vw;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  .headline > [data-hero-scramble="true"] {
+    display: inline;
+  }
+
+  .headline > [data-hero-scramble="true"] [data-scramble-visual="true"] {
+    position: static;
+  }
+
+  .headline
+    > [data-hero-scramble="true"][data-scramble-active="true"]
+    [data-scramble-measure="true"] {
+    display: none;
+  }
+
+  .sceneAnchor {
+    top: clamp(176px, 23svh, 196px);
+    right: 0;
+    bottom: auto;
+    left: 0;
+    height: clamp(292px, 40svh, 340px);
+  }
+}
+
+@media (min-width: 768px) {
+  .heroGrid {
+    display: block;
+    padding: 0;
+  }
+
+  .disciplines,
+  .promise,
+  .headline,
+  .actionRow {
+    position: absolute;
+  }
+
+  .disciplines {
+    top: 15.5svh;
+    left: var(--header-brand-text-inset);
+    padding: 0;
+    font-size: clamp(1rem, 1.35vw, 1.25rem);
+    line-height: 1.3;
+  }
+
+  .promise {
+    top: 16.5svh;
+    right: clamp(32px, 4.2vw, 64px);
+    padding: 0;
+    font-size: clamp(0.75rem, 1vw, 0.875rem);
+    line-height: 1.45;
+    text-align: right;
+    text-transform: uppercase;
+  }
+
+  .headline {
+    z-index: 3;
+    top: calc(55.5svh + 24px);
+    right: 22vw;
+    left: clamp(32px, 10.8vw, 176px);
+    padding: 0;
+    font-size: clamp(3rem, 5.15vw, 5.25rem);
+    line-height: 0.96;
+  }
+
+  .actionRow {
+    z-index: 4;
+    top: calc(81.5svh + 24px);
+    right: auto;
+    left: 50%;
+    display: grid;
+    width: calc(100vw - clamp(32px, 29vw, 470px) - clamp(48px, 12vw, 190px));
+    max-width: 760px;
+    grid-template-columns: minmax(280px, 1fr) 1px minmax(220px, 260px);
+    align-items: center;
+    column-gap: clamp(24px, 3vw, 40px);
+    transform: translateX(-50%);
+  }
+
+  .actionRow::before {
+    align-self: stretch;
+    grid-column: 2;
+    grid-row: 1;
+    width: 1px;
+    background: var(--border-default);
+    content: "";
+  }
+
+  .description {
+    display: flex;
+    grid-area: auto;
+    grid-column: 1;
+    max-width: none;
+    padding: 0;
+    padding-right: 0;
+    font-size: clamp(0.6875rem, 0.88vw, 0.8125rem);
+    line-height: 1.55;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .heroCtaSlot {
+    box-sizing: border-box;
+    display: block;
+    grid-column: 3;
+    width: 100%;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .sceneAnchor {
+    inset: 20% 8% 31%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .headline {
+    top: calc(57svh + 20px);
+    right: 32px;
+    left: 32px;
+    font-size: clamp(2.75rem, 5.4vw, 4.3rem);
+  }
+
+  .actionRow {
+    top: calc(80.5svh + 20px);
+    right: auto;
+    left: 50%;
+    width: calc(100vw - 18vw - 32px);
+    grid-template-columns: minmax(240px, 1fr) 1px minmax(220px, 230px);
+    column-gap: 24px;
+  }
+
+  .sceneAnchor {
+    inset: 21% 5% 32%;
+  }
+}
+
+@media (min-width: 768px) and (max-height: 720px) {
+  .disciplines,
+  .promise {
+    top: 14svh;
+  }
+
+  .headline {
+    top: calc(18.5svh + 20px);
+    right: clamp(90px, 16.5vw, 338px);
+    left: clamp(56px, 8.6vw, 176px);
+    font-size: clamp(2.75rem, 5.75vw, 7.4rem);
+  }
+
+  .actionRow {
+    top: calc(66.8svh + 20px);
+    right: auto;
+    left: 50%;
+    width: calc(100vw - clamp(120px, 32.5vw, 666px) - clamp(32px, 14.5vw, 297px));
+    grid-template-columns: minmax(0, 1fr) 1px minmax(220px, 260px);
+    column-gap: clamp(24px, 3vw, 40px);
+  }
+}

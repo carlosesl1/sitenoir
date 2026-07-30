@@ -107,29 +107,14 @@ const videoCredit = (contribution: string) => ({
   },
 });
 
-const siteCta = {
-  label: "Planejar um site",
-  body: "Organize sua presença digital para transformar interesse em uma conversa comercial.",
-} as const;
-
-const videoCta = {
-  label: "Criar conteúdo em vídeo",
-  body: "Apresente produtos, processos e experiências com direção, ritmo e clareza.",
-} as const;
-
-const googleCta = {
-  label: "Fortalecer presença no Google",
-  body: "Estruture as informações que ajudam clientes locais a encontrar e escolher sua empresa.",
-} as const;
-
 export const caseStudiesV2: readonly CaseStudyV2[] = [
   {
     slug: "together-site",
     categoryLayout: "site",
     accent: "together-yellow",
-    headline: "Complexidade técnica, leitura direta",
+    headline: "Privacidade explicada com clareza",
     summary:
-      "Um site que organiza privacidade, tecnologia e serviços especializados em uma jornada clara até o contato.",
+      "Um site que organiza serviços, método e conteúdo técnico para transformar dúvidas em conversas comerciais.",
     hero: {
       kind: "image",
       src: "/cases-v2/together-site/hero.webp",
@@ -144,22 +129,22 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
         type: "text",
         id: "desafio",
         eyebrow: "Desafio",
-        title: "Explicar sem simplificar demais",
+        title: "Técnico para quem entrega. Claro para quem decide.",
         paragraphs: [
-          "Privacidade e proteção de dados exigem precisão. A arquitetura editorial separa serviços, método e caminhos de contato sem transformar o site em um documento técnico.",
+          "Privacidade exige precisão, mas isso não obriga o visitante a enfrentar um labirinto de informação. A estrutura aproxima serviços, método e contato em uma jornada objetiva.",
         ],
       },
       {
         type: "evidence",
         id: "experiencia",
-        title: "Uma experiência que se adapta ao contexto",
+        title: "Clareza em qualquer contexto",
         presentation: "device-comparison",
         media: [
           {
             kind: "image",
             src: "/cases/together-site/hero.webp",
             alt: "Abertura responsiva do site da Together",
-            caption: "A proposta de valor permanece legível em desktop e mobile.",
+            caption: "Proposta de valor apresentada logo no primeiro contato.",
             width: 2400,
             height: 1350,
             fit: "contain",
@@ -168,7 +153,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "image",
             src: "/cases/together-site/mobile.webp",
             alt: "Site da Together em uma tela mobile",
-            caption: "Navegação e chamadas preservadas em telas menores.",
+            caption: "Navegação preservada em desktop e dispositivos móveis.",
             width: 900,
             height: 1600,
             fit: "contain",
@@ -178,34 +163,37 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
       {
         type: "insights",
         id: "decisoes",
-        title: "Decisões do projeto",
+        title: "Decisões que apoiam a conversa",
         items: [
           {
             label: "Conteúdo",
-            body: "Hierarquia para serviços técnicos e metodologia.",
+            body: "Serviços e método aparecem na ordem em que ajudam a decisão.",
           },
           {
             label: "Experiência",
-            body: "Chamadas comerciais próximas do contexto.",
+            body: "Cada página conduz naturalmente ao próximo passo.",
           },
           {
-            label: "Base",
-            body: "Componentes responsivos preparados para evolução.",
+            label: "Estrutura",
+            body: "Uma base preparada para crescer sem perder consistência.",
           },
         ],
       },
     ],
-    cta: siteCta,
+    cta: {
+      label: "Planejar meu site",
+      body: "Vamos estruturar um site que explique serviços complexos e facilite o início de uma conversa comercial.",
+    },
     seoDescription:
-      "Case editorial do site da Together, com arquitetura de conteúdo e desenvolvimento responsivo.",
+      "Case do site da Together com arquitetura de conteúdo, experiência responsiva e uma jornada criada para apresentar serviços técnicos com clareza.",
   },
   {
     slug: "madeireira-fortaleza",
     categoryLayout: "site",
     accent: "madeireira-green",
-    headline: "Produto, confiança e orçamento no mesmo percurso",
+    headline: "Escolher madeira começa no site",
     summary:
-      "Um site que transforma variedade de produtos, confiança local e atendimento em um percurso direto até o orçamento.",
+      "Um site que aproxima produtos, aplicações e atendimento para tornar o orçamento um passo natural da jornada.",
     hero: {
       kind: "image",
       src: "/cases-v2/madeireira-fortaleza/hero.webp",
@@ -220,22 +208,22 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
         type: "text",
         id: "produto",
         eyebrow: "Produto",
-        title: "Mostrar a madeira antes de iniciar a conversa",
+        title: "Produto antes do discurso",
         paragraphs: [
-          "A experiência aproxima produto e aplicação. Categorias, texturas e chamadas comerciais aparecem na ordem em que ajudam o cliente a avaliar e pedir atendimento.",
+          "Quem compra madeira quer entender rapidamente o que atende sua necessidade. A navegação aproxima categorias, aplicações e atendimento sem criar barreiras desnecessárias.",
         ],
       },
       {
         type: "evidence",
         id: "catalogo",
-        title: "Do material ao pedido de orçamento",
+        title: "Da escolha ao orçamento",
         presentation: "wide-sequence",
         media: [
           {
             kind: "image",
             src: "/cases/madeireira-fortaleza/hero.webp",
             alt: "Abertura do site da Madeireira Fortaleza",
-            caption: "Posicionamento e produto na primeira dobra.",
+            caption: "Produtos ganham destaque logo na abertura da página.",
             width: 1600,
             height: 900,
             fit: "contain",
@@ -244,7 +232,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "image",
             src: "/cases/madeireira-fortaleza/products.webp",
             alt: "Catálogo de produtos da Madeireira Fortaleza",
-            caption: "Categorias e aplicações organizam a exploração.",
+            caption: "Categorias facilitam comparar aplicações e materiais.",
             width: 1600,
             height: 900,
             fit: "contain",
@@ -253,7 +241,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "image",
             src: "/cases/madeireira-fortaleza/contact.webp",
             alt: "Área de contato e orçamento da Madeireira Fortaleza",
-            caption: "A decisão encontra um caminho direto para atendimento.",
+            caption: "O orçamento aparece no momento em que a decisão acontece.",
             width: 1600,
             height: 900,
             fit: "contain",
@@ -263,34 +251,37 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
       {
         type: "insights",
         id: "decisoes",
-        title: "Decisões do projeto",
+        title: "Decisões que facilitam a escolha",
         items: [
           {
             label: "Produto",
-            body: "Categorias e aplicações ocupam o centro da narrativa.",
+            body: "O catálogo organiza a exploração sem sobrecarregar o visitante.",
           },
           {
             label: "Confiança",
-            body: "A linguagem visual reforça materialidade e procedência.",
+            body: "A apresentação aproxima a qualidade do material da credibilidade da empresa.",
           },
           {
-            label: "Contato",
-            body: "WhatsApp e orçamento aparecem próximos da decisão.",
+            label: "Atendimento",
+            body: "WhatsApp e orçamento permanecem próximos da decisão.",
           },
         ],
       },
     ],
-    cta: siteCta,
+    cta: {
+      label: "Criar meu site",
+      body: "Vamos transformar seus produtos em uma jornada mais simples até o orçamento.",
+    },
     seoDescription:
-      "Case do site da Madeireira Fortaleza, com catálogo, confiança local e jornada de orçamento.",
+      "Case do site da Madeireira Fortaleza com organização de catálogo, aplicações dos produtos e uma jornada pensada para facilitar solicitações de orçamento.",
   },
   {
     slug: "jr-express",
     categoryLayout: "site",
     accent: "jr-red-blue",
-    headline: "Da necessidade logística à cotação",
+    headline: "Cotar começa com confiança",
     summary:
-      "Uma presença digital que organiza capacidade logística e conduz a necessidade do cliente até uma cotação estruturada.",
+      "Um site que apresenta capacidade logística com clareza antes de conduzir o cliente para solicitar uma cotação.",
     hero: {
       kind: "image",
       src: "/cases-v2/jr-express/hero.webp",
@@ -305,22 +296,22 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
         type: "text",
         id: "necessidade",
         eyebrow: "Necessidade",
-        title: "Responder rápido ao que importa na logística",
+        title: "Responder antes de pedir",
         paragraphs: [
-          "A página apresenta atuação, serviços e segurança antes de solicitar origem, destino e detalhes da carga.",
+          "Quem procura uma transportadora quer entender se ela atende sua operação. O site apresenta serviços, cobertura e processo antes da solicitação da carga.",
         ],
       },
       {
         type: "evidence",
         id: "cotacao",
-        title: "Informação suficiente antes do formulário",
+        title: "Cotação com contexto",
         presentation: "wide-sequence",
         media: [
           {
             kind: "image",
             src: "/cases/jr-express/hero.webp",
             alt: "Abertura do site da JR Express",
-            caption: "Proposta de valor e acesso rápido à cotação.",
+            caption: "A proposta de valor aparece antes do formulário.",
             width: 1600,
             height: 900,
             fit: "contain",
@@ -329,7 +320,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "image",
             src: "/cases/jr-express/services.webp",
             alt: "Serviços apresentados no site da JR Express",
-            caption: "A operação é explicada antes da conversão.",
+            caption: "Os serviços explicam a operação de forma objetiva.",
             width: 1600,
             height: 900,
             fit: "contain",
@@ -338,7 +329,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "image",
             src: "/cases/jr-express/quote.webp",
             alt: "Formulário de cotação da JR Express",
-            caption: "Os dados essenciais chegam organizados para o atendimento.",
+            caption: "A solicitação reúne apenas as informações essenciais.",
             width: 1600,
             height: 900,
             fit: "contain",
@@ -348,34 +339,37 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
       {
         type: "insights",
         id: "decisoes",
-        title: "Decisões do projeto",
+        title: "Decisões que preparam a cotação",
         items: [
           {
             label: "Clareza",
-            body: "Serviços e áreas de atuação são apresentados antes do formulário.",
+            body: "A apresentação reduz dúvidas antes do contato.",
           },
           {
-            label: "Contexto",
-            body: "A interface explica a operação sem prolongar a jornada.",
+            label: "Operação",
+            body: "A jornada acompanha a lógica de quem precisa transportar.",
           },
           {
-            label: "Cotação",
-            body: "Os dados essenciais chegam organizados para o atendimento.",
+            label: "Conversão",
+            body: "O formulário recebe informações mais organizadas para o atendimento.",
           },
         ],
       },
     ],
-    cta: siteCta,
+    cta: {
+      label: "Planejar uma presença",
+      body: "Vamos criar um site que ajude seu cliente a chegar à cotação com mais confiança.",
+    },
     seoDescription:
-      "Case do site da JR Express, da apresentação dos serviços logísticos à cotação estruturada.",
+      "Case do site da JR Express com arquitetura voltada à apresentação dos serviços logísticos e uma jornada construída para facilitar solicitações de cotação.",
   },
   {
     slug: "strong",
     categoryLayout: "video",
     accent: "strong-spectrum",
-    headline: "Três produtos, uma campanha em movimento",
+    headline: "Uma campanha. Três decisões de compra.",
     summary:
-      "Três peças verticais apresentam produtos, sabores e performance com unidade visual e ritmos diferentes.",
+      "Três vídeos verticais apresentam linhas de produto com unidade visual e argumentos próprios para cada versão.",
     hero: {
       kind: "image",
       src: "/cases-v2/strong/hero.webp",
@@ -390,15 +384,15 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
         type: "text",
         id: "campanha",
         eyebrow: "Campanha",
-        title: "Uma campanha que muda sem perder reconhecimento",
+        title: "Cada produto merece seu momento",
         paragraphs: [
-          "Cada vídeo parte de um atributo de produto e preserva tipografia, contraste e presença da marca no formato vertical.",
+          "Uma campanha funciona melhor quando mantém reconhecimento sem repetir a mesma peça. Cada vídeo destaca um atributo diferente enquanto preserva a identidade da marca.",
         ],
       },
       {
         type: "evidence",
         id: "filmes",
-        title: "Três ritmos para a mesma marca",
+        title: "Consistência sem repetição",
         presentation: "campaign",
         media: [
           {
@@ -406,7 +400,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             src: "/cases/strong/strong-whey-types.mp4",
             poster: "/cases/strong/strong-whey-types.webp",
             alt: "Vídeo Strong Whey Types",
-            caption: "Tipos de whey apresentados em ritmo vertical.",
+            caption: "Cada produto recebe uma narrativa própria.",
             width: 720,
             height: 1280,
           },
@@ -415,7 +409,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             src: "/cases/strong/gladiator-ultra.mp4",
             poster: "/cases/strong/gladiator-ultra.webp",
             alt: "Vídeo Gladiator Ultra da Strong",
-            caption: "Produto e performance em uma edição de alto contraste.",
+            caption: "Movimento e tipografia mantêm a marca reconhecível.",
             width: 720,
             height: 1280,
           },
@@ -424,7 +418,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             src: "/cases/strong/cinco-sabores.mp4",
             poster: "/cases/strong/cinco-sabores.webp",
             alt: "Vídeo cinco sabores da Strong",
-            caption: "Variação de sabores com unidade de campanha.",
+            caption: "A campanha preserva unidade entre diferentes versões.",
             width: 720,
             height: 1280,
           },
@@ -433,19 +427,19 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
       {
         type: "insights",
         id: "direcao",
-        title: "Direção da campanha",
+        title: "Decisões da campanha",
         items: [
           {
-            label: "Formato",
-            body: "Composição construída para consumo em 9:16.",
+            label: "Reconhecimento",
+            body: "A identidade permanece consistente mesmo com mensagens diferentes.",
           },
           {
             label: "Produto",
-            body: "Embalagem e atributo permanecem legíveis em movimento.",
+            body: "Os principais atributos continuam legíveis durante toda a edição.",
           },
           {
-            label: "Variação",
-            body: "As peças compartilham sistema sem repetir a mesma edição.",
+            label: "Campanha",
+            body: "As peças funcionam juntas sem parecer variações da mesma execução.",
           },
         ],
       },
@@ -453,17 +447,20 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
     credit: videoCredit(
       "Direção visual, motion design e edição das três peças da campanha Strong.",
     ),
-    cta: videoCta,
+    cta: {
+      label: "Criar uma campanha",
+      body: "Vamos apresentar seus produtos com vídeos pensados para gerar atenção e facilitar a escolha.",
+    },
     seoDescription:
-      "Case da campanha em vídeo da Strong, com três peças verticais de produto e performance.",
+      "Case da campanha em vídeo da Strong com três peças verticais que apresentam diferentes produtos mantendo unidade visual e reconhecimento de marca.",
   },
   {
     slug: "together-motion",
     categoryLayout: "video",
     accent: "together-blue",
-    headline: "Uma migração técnica em 44,9 segundos",
+    headline: "Um processo técnico que faz sentido",
     summary:
-      "Um motion horizontal transforma exportação, tratamento e importação em uma explicação visual objetiva.",
+      "Um motion que organiza um processo técnico em uma narrativa visual clara para facilitar sua compreensão.",
     hero: {
       kind: "image",
       src: "/cases-v2/together-motion/hero.webp",
@@ -478,15 +475,15 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
         type: "text",
         id: "sequencia",
         eyebrow: "Explicação",
-        title: "Três etapas técnicas, uma sequência legível",
+        title: "Explicar sem aumentar a complexidade",
         paragraphs: [
-          "A progressão visual reduz abstração e mantém Together e Privacy Tools identificáveis durante toda a apresentação.",
+          "Processos técnicos costumam afastar quem precisa entendê-los rapidamente. A narrativa organiza cada etapa para que o funcionamento seja compreendido antes dos detalhes.",
         ],
       },
       {
         type: "evidence",
         id: "filme",
-        title: "O processo em movimento",
+        title: "O processo em sequência",
         presentation: "single-film",
         media: [
           {
@@ -494,7 +491,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             src: "/cases/together-motion/migracao-privacy-tools.mp4",
             poster: "/cases/together-motion/migracao-privacy-tools.webp",
             alt: "Motion de migração da Together para a Privacy Tools",
-            caption: "Exportar, tratar e importar em uma sequência horizontal.",
+            caption: "Exportação, tratamento e importação apresentados em ordem.",
             width: 1280,
             height: 720,
           },
@@ -503,37 +500,40 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
       {
         type: "insights",
         id: "direcao",
-        title: "Direção do filme",
+        title: "Decisões da narrativa",
         items: [
           {
-            label: "Sequência",
-            body: "Exportar, tratar e importar aparecem em ordem explícita.",
+            label: "Clareza",
+            body: "Cada etapa prepara naturalmente a próxima.",
           },
           {
             label: "Leitura",
-            body: "Movimento orienta a atenção sem competir com a informação.",
+            body: "O movimento orienta a atenção sem competir com a informação.",
           },
           {
-            label: "Marcas",
-            body: "As duas identidades mantêm hierarquia e consistência.",
+            label: "Marca",
+            body: "Together e Privacy Tools preservam papéis e hierarquia visual.",
           },
         ],
       },
     ],
     credit: videoCredit(
-      "Design, motion design e edição da narrativa de migração para a Privacy Tools.",
+      "Design, motion design e edição da narrativa visual de migração para a Privacy Tools.",
     ),
-    cta: videoCta,
+    cta: {
+      label: "Explicar em vídeo",
+      body: "Vamos transformar processos complexos em apresentações fáceis de entender.",
+    },
     seoDescription:
-      "Case do motion de migração da Together para a Privacy Tools, com processo técnico em sequência visual.",
+      "Case do motion da Together para a Privacy Tools com narrativa visual criada para explicar um processo técnico de forma clara e organizada.",
   },
   {
     slug: "ecox-hostel-cabanas",
     categoryLayout: "video",
     accent: "ecox-earth",
-    headline: "A estadia começa antes da reserva",
+    headline: "A experiência começa antes da reserva",
     summary:
-      "Dois vídeos verticais mostram novidade, estrutura e atmosfera para antecipar a experiência da hospedagem.",
+      "Dois vídeos verticais apresentam ambiente, estrutura e atmosfera para aproximar o visitante da decisão de reservar.",
     hero: {
       kind: "image",
       src: "/cases-v2/ecox-hostel-cabanas/hero.webp",
@@ -548,15 +548,15 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
         type: "text",
         id: "experiencia",
         eyebrow: "Experiência",
-        title: "Fazer o público imaginar a estadia",
+        title: "Mostrar antes de convencer",
         paragraphs: [
-          "A edição alterna ambiente, detalhes e informação prática para aproximar descoberta e intenção de reserva.",
+          "Quem procura hospedagem tenta imaginar como será a experiência. Os vídeos combinam cenário, detalhes e informação prática para tornar essa decisão mais natural.",
         ],
       },
       {
         type: "evidence",
         id: "filmes",
-        title: "Novidade e estrutura em duas narrativas",
+        title: "Atmosfera que aproxima",
         presentation: "paired-films",
         media: [
           {
@@ -564,7 +564,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             src: "/cases/ecox-hostel-cabanas/nova-cabana.mp4",
             poster: "/cases/ecox-hostel-cabanas/nova-cabana.webp",
             alt: "Vídeo da nova cabana da ECOX",
-            caption: "A novidade apresentada por ambiente e atmosfera.",
+            caption: "A novidade é apresentada por ambientes e detalhes.",
             width: 720,
             height: 1280,
           },
@@ -573,7 +573,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             src: "/cases/ecox-hostel-cabanas/o-que-voce-encontra.mp4",
             poster: "/cases/ecox-hostel-cabanas/o-que-voce-encontra.webp",
             alt: "Vídeo sobre a estrutura das cabanas da ECOX",
-            caption: "Comodidades e detalhes ajudam a antecipar a estadia.",
+            caption: "As comodidades aparecem dentro da experiência.",
             width: 720,
             height: 1280,
           },
@@ -582,37 +582,38 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
       {
         type: "insights",
         id: "direcao",
-        title: "Direção dos filmes",
+        title: "Decisões dos filmes",
         items: [
           {
-            label: "Atmosfera",
-            body: "Luz, madeira e paisagem apresentam a sensação do espaço.",
+            label: "Experiência",
+            body: "Os ambientes ajudam o visitante a imaginar a estadia.",
           },
           {
             label: "Estrutura",
-            body: "Comodidades aparecem dentro de uma narrativa de experiência.",
+            body: "As comodidades aparecem sem interromper a narrativa.",
           },
           {
             label: "Descoberta",
-            body: "As peças funcionam como conteúdo de apresentação e novidade.",
+            body: "As peças funcionam tanto para apresentação quanto para divulgação de novidades.",
           },
         ],
       },
     ],
-    credit: videoCredit(
-      "Design, motion design e edição dos vídeos de apresentação das cabanas.",
-    ),
-    cta: videoCta,
+    credit: videoCredit("Design, motion design e edição dos vídeos de apresentação das cabanas."),
+    cta: {
+      label: "Produzir vídeos",
+      body: "Vamos transformar sua hospedagem em uma experiência que começa antes da reserva.",
+    },
     seoDescription:
-      "Case dos vídeos da ECOX Hostel Cabanas, com atmosfera, novidades e estrutura em formato vertical.",
+      "Case dos vídeos da ECOX Hostel Cabanas com narrativa vertical voltada à apresentação da estrutura, atmosfera e experiência de hospedagem.",
   },
   {
     slug: "chapada-backpackers",
     categoryLayout: "google",
     accent: "chapada-green",
-    headline: "Ser encontrada no momento da viagem",
+    headline: "Ser escolhida durante a busca",
     summary:
-      "Perfil, imagens e localização organizados para quem procura hospedagem e experiências em Lençóis.",
+      "Um perfil organizado para apresentar localização, estrutura e informações essenciais quando o viajante compara hospedagens.",
     hero: {
       kind: "image",
       src: "/cases-v2/chapada-backpackers/hero.webp",
@@ -627,22 +628,22 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
         type: "text",
         id: "busca",
         eyebrow: "Buscar",
-        title: "Responder às perguntas de quem planeja a viagem",
+        title: "Responder enquanto comparam",
         paragraphs: [
-          "O perfil reúne fotos, categoria, mapa e contato no mesmo contexto em que a pessoa compara opções locais.",
+          "Quem procura hospedagem quer confirmar rapidamente se encontrou o lugar certo. O perfil reúne informações, imagens e localização no momento em que essa decisão acontece.",
         ],
       },
       {
         type: "evidence",
         id: "jornada",
-        title: "Da pesquisa à rota",
+        title: "Da pesquisa à reserva",
         presentation: "search-journey",
         media: [
           {
             kind: "image",
             src: "/cases/chapada-backpackers/search.webp",
             alt: "Busca local pela Chapada Backpackers",
-            caption: "Encontrar: identidade e presença ligadas à busca.",
+            caption: "Identidade e categoria apresentadas com clareza.",
             width: 1265,
             height: 712,
             fit: "contain",
@@ -651,7 +652,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "image",
             src: "/cases/chapada-backpackers/profile.webp",
             alt: "Perfil da Chapada Backpackers no Google",
-            caption: "Verificar e decidir: fotos, localização e contato no perfil.",
+            caption: "Fotos, localização e contato permanecem acessíveis durante a decisão.",
             width: 1600,
             height: 900,
             fit: "contain",
@@ -661,34 +662,37 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
       {
         type: "insights",
         id: "presenca",
-        title: "O que a presença organiza",
+        title: "Decisões para a busca local",
         items: [
           {
             label: "Descoberta",
-            body: "O perfil conecta a busca à presença real do negócio.",
+            body: "O perfil acompanha quem pesquisa hospedagem na região.",
           },
           {
-            label: "Verificação",
-            body: "Fotos e localização ajudam a avaliar a hospedagem.",
+            label: "Confiança",
+            body: "Imagens e informações reduzem dúvidas antes do contato.",
           },
           {
             label: "Ação",
-            body: "Rota, site e contato permanecem próximos da decisão.",
+            body: "Mapa, site e canais de atendimento ficam próximos da decisão.",
           },
         ],
       },
     ],
-    cta: googleCta,
+    cta: {
+      label: "Fortalecer meu perfil",
+      body: "Vamos organizar sua presença no Google para facilitar que novos clientes encontrem e escolham seu negócio.",
+    },
     seoDescription:
-      "Case de presença no Google da Chapada Backpackers, com busca, perfil e localização organizados.",
+      "Case da presença no Google da Chapada Backpackers com perfil estruturado para apresentar hospedagem, localização e informações essenciais na busca.",
   },
   {
     slug: "contabil-sudoeste",
     categoryLayout: "google",
     accent: "contabil-gold",
-    headline: "Confiança local antes do primeiro contato",
+    headline: "Confiança antes da primeira ligação",
     summary:
-      "Identidade, endereço e contato organizados para reforçar a presença regional do escritório.",
+      "Um perfil organizado para confirmar identidade, localização e atendimento antes mesmo do primeiro contato com o escritório.",
     hero: {
       kind: "image",
       src: "/cases-v2/contabil-sudoeste/hero.webp",
@@ -703,22 +707,22 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
         type: "text",
         id: "busca",
         eyebrow: "Verificar",
-        title: "Ser encontrada e verificada antes do atendimento",
+        title: "Transmitir segurança na busca",
         paragraphs: [
-          "A estrutura local facilita confirmar nome, atividade, localização e canais de contato sem depender de informações dispersas.",
+          "Antes de entrar em contato, muitas empresas verificam se o escritório existe, onde está e como atende. O perfil concentra essas informações de forma clara e consistente.",
         ],
       },
       {
         type: "evidence",
         id: "jornada",
-        title: "Da busca à confirmação do escritório",
+        title: "Informação que confirma",
         presentation: "search-journey",
         media: [
           {
             kind: "image",
             src: "/cases/contabil-sudoeste/search.webp",
             alt: "Busca local pela Contábil Sudoeste",
-            caption: "Encontrar: nome e atividade apresentados de forma consistente.",
+            caption: "Nome e atividade apresentados de forma consistente.",
             width: 1265,
             height: 720,
             fit: "contain",
@@ -727,7 +731,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "image",
             src: "/cases/contabil-sudoeste/profile.webp",
             alt: "Perfil da Contábil Sudoeste no Google",
-            caption: "Verificar: endereço, fotos e canais de contato disponíveis.",
+            caption: "Endereço, imagens e contato reforçam a presença local.",
             width: 1600,
             height: 900,
             fit: "contain",
@@ -737,34 +741,37 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
       {
         type: "insights",
         id: "presenca",
-        title: "O que a presença organiza",
+        title: "Decisões que reforçam confiança",
         items: [
           {
             label: "Identidade",
-            body: "Nome e atividade aparecem de forma consistente.",
+            body: "As informações ajudam a reconhecer o escritório com facilidade.",
           },
           {
-            label: "Região",
-            body: "Endereço e contexto local aproximam a busca do escritório.",
+            label: "Presença local",
+            body: "O endereço reforça a atuação regional.",
           },
           {
             label: "Contato",
-            body: "Os canais de atendimento ficam disponíveis no painel.",
+            body: "Os canais de atendimento ficam disponíveis no momento da decisão.",
           },
         ],
       },
     ],
-    cta: googleCta,
+    cta: {
+      label: "Organizar meu Google",
+      body: "Vamos organizar seu Perfil da Empresa para transmitir confiança antes da primeira ligação.",
+    },
     seoDescription:
-      "Case de presença no Google da Contábil Sudoeste, com identidade, endereço e contato organizados.",
+      "Case da presença no Google da Contábil Sudoeste com perfil estruturado para reforçar identidade, localização e canais de atendimento.",
   },
   {
     slug: "posto-ipiranga",
     categoryLayout: "google",
     accent: "ipiranga-yellow-blue",
-    headline: "Informação útil antes de seguir a rota",
+    headline: "Informação útil no caminho",
     summary:
-      "Localização, fotos e informações do estabelecimento reunidas para buscas de proximidade.",
+      "Um perfil pensado para quem precisa confirmar localização, estrutura e serviços antes de seguir a rota.",
     hero: {
       kind: "image",
       src: "/cases-v2/posto-ipiranga/hero.webp",
@@ -779,22 +786,22 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
         type: "text",
         id: "busca",
         eyebrow: "Decidir",
-        title: "Informação prática para uma decisão imediata",
+        title: "Decidir com poucos cliques",
         paragraphs: [
-          "Quem procura abastecimento precisa confirmar rota, estrutura e disponibilidade com poucos passos antes da visita.",
+          "Quem procura um posto normalmente precisa decidir rápido. O perfil reúne informações práticas para confirmar o destino antes do deslocamento.",
         ],
       },
       {
         type: "evidence",
         id: "jornada",
-        title: "Da proximidade ao deslocamento",
+        title: "Da busca à rota",
         presentation: "search-journey",
         media: [
           {
             kind: "image",
             src: "/cases/posto-ipiranga/search.webp",
             alt: "Busca local pelo Posto Ipiranga",
-            caption: "Encontrar: resultado local ligado ao contexto de proximidade.",
+            caption: "Localização apresentada no contexto da pesquisa.",
             width: 1425,
             height: 900,
             fit: "contain",
@@ -803,7 +810,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "image",
             src: "/cases/posto-ipiranga/profile.webp",
             alt: "Perfil do Posto Ipiranga no Google",
-            caption: "Decidir: endereço, rota, fotos e produtos no perfil.",
+            caption: "Fotos, endereço e rota permanecem acessíveis durante a decisão.",
             width: 1600,
             height: 900,
             fit: "contain",
@@ -813,26 +820,29 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
       {
         type: "insights",
         id: "presenca",
-        title: "O que a presença organiza",
+        title: "Decisões para quem está em movimento",
         items: [
           {
             label: "Proximidade",
-            body: "O perfil responde a buscas ligadas à localização.",
+            body: "O perfil responde às buscas feitas durante o deslocamento.",
           },
           {
-            label: "Rota",
-            body: "Mapa e endereço ajudam a planejar o deslocamento.",
+            label: "Verificação",
+            body: "Fotos e informações ajudam o motorista a confirmar que chegou ao lugar certo.",
           },
           {
-            label: "Estrutura",
-            body: "Fotos e produtos antecipam o que existe no local.",
+            label: "Decisão",
+            body: "As informações essenciais permanecem disponíveis em um único lugar.",
           },
         ],
       },
     ],
-    cta: googleCta,
+    cta: {
+      label: "Melhorar minha presença",
+      body: "Vamos estruturar seu perfil para facilitar que clientes encontrem seu negócio quando mais precisam.",
+    },
     seoDescription:
-      "Case de presença no Google do Posto Ipiranga, com localização, fotos e rota organizadas.",
+      "Case da presença no Google do Posto Ipiranga com perfil organizado para apresentar localização, estrutura e informações úteis em buscas locais.",
   },
 ];
 
@@ -844,9 +854,6 @@ export function getCaseStudyV2Navigation(slug: CaseStudySlug) {
   const index = caseStudiesV2.findIndex((study) => study.slug === slug);
   return {
     previous: index > 0 ? caseStudiesV2[index - 1] : undefined,
-    next:
-      index >= 0 && index < caseStudiesV2.length - 1
-        ? caseStudiesV2[index + 1]
-        : undefined,
+    next: index >= 0 && index < caseStudiesV2.length - 1 ? caseStudiesV2[index + 1] : undefined,
   };
 }

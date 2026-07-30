@@ -1,0 +1,155 @@
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-noir-black: #030303;
+  --color-noir-graphite: #0b0d0e;
+  --color-noir-carbon: #151719;
+  --color-noir-warm-white: #f4f4f0;
+  --color-noir-paper: #f3fbf9;
+  --color-noir-light-elevated: #e8e8e2;
+  --color-noir-soft-gray: #a8adb2;
+  --color-noir-optical-blue: #bfdff3;
+  --color-noir-optical-cream: #fff4da;
+  --color-noir-optical-white: #dde0e4;
+  --color-optical-dark-background: #030303;
+  --color-optical-dark-vignette: #a8adb2;
+  --color-optical-dark-output: #dde0e4;
+  --color-optical-light-background: #ffead6;
+  --color-optical-light-vignette: #6196ff;
+  --color-optical-light-output: #acffb9;
+  --color-pointer-stain: #c0fe04;
+  --color-flare-tail-dark: #1600ff;
+  --color-flare-tail-light: #ffa300;
+  --color-spectral-red: #f2383a;
+  --color-spectral-orange: #ff8a2a;
+  --color-spectral-yellow: #f7d94a;
+  --color-spectral-green: #55d86a;
+  --color-spectral-cyan: #22d6d6;
+  --color-spectral-blue: #2f80ff;
+  --color-spectral-violet: #a855f7;
+  --surface-primary: var(--color-noir-black);
+  --surface-elevated: var(--color-noir-graphite);
+  --surface-active: var(--color-noir-carbon);
+  --text-primary: rgb(244 244 240 / 96%);
+  --text-secondary: rgb(168 173 178 / 68%);
+  --text-disabled: rgb(168 173 178 / 36%);
+  --border-default: rgb(168 173 178 / 16%);
+  --border-strong: rgb(168 173 178 / 44%);
+  --focus-color: var(--color-noir-warm-white);
+  --selection-background: var(--color-spectral-red);
+  --selection-foreground: var(--color-noir-black);
+  --font-display: "TikTok Sans", Arial, sans-serif;
+  --font-interface: "Geist Mono", "Courier New", monospace;
+  --font-pixel: "Departure Mono", "Courier New", monospace;
+  --page-inline: 56px;
+  --page-block: 24px;
+  --site-grid-inset: 56px;
+  --header-brand-text-inset: 26px;
+  --grid-columns: 12;
+  --grid-gutter: var(--space-6);
+  --line: color-mix(in srgb, currentColor 13%, transparent);
+  --display-xl: clamp(3.75rem, 5.1vw, 5rem);
+  --body: 1rem;
+  --mono: 0.875rem;
+  --ease-noir: cubic-bezier(0.66, 0, 0.01, 1);
+  --type-display-xl: clamp(3rem, 8vw, 7rem);
+  --type-display: clamp(2.5rem, 6vw, 5rem);
+  --type-heading: clamp(1.75rem, 3vw, 3rem);
+  --type-body-large: 1.125rem;
+  --type-body: 1rem;
+  --type-label: 0.75rem;
+  --type-micro: 0.6875rem;
+  --weight-body: 450;
+  --weight-label: 500;
+  --weight-heading: 650;
+  --weight-display: 700;
+  --leading-solid: 1;
+  --leading-display: 0.92;
+  --leading-heading: 1;
+  --leading-body: 1.55;
+  --leading-label: 1.2;
+  --tracking-tight: -0.025em;
+  --tracking-display: -0.035em;
+  --tracking-heading: -0.025em;
+  --tracking-label: 0.08em;
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --stroke-hairline: 1px;
+  --focus-offset: var(--space-1);
+  --control-min-size: 44px;
+  --control-min-width: 192px;
+  --guide-min-height: 192px;
+  --intro-min-height: 320px;
+  --content-max: 1440px;
+  --measure-display: 16ch;
+  --measure-body: 60ch;
+  --radius-none: 0;
+  --radius-control: 2px;
+  --duration-none: 0ms;
+  --duration-micro: 120ms;
+  --duration-standard: 240ms;
+  --duration-emphasis: 480ms;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+  --layer-plate: 0;
+  --layer-face: 1;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --surface-primary: var(--color-noir-warm-white);
+  --surface-elevated: var(--color-noir-light-elevated);
+  --surface-active: var(--color-noir-paper);
+  --text-primary: rgb(3 3 3 / 96%);
+  --text-secondary: rgb(21 23 25 / 68%);
+  --text-disabled: rgb(21 23 25 / 38%);
+  --border-default: rgb(3 3 3 / 14%);
+  --border-strong: rgb(3 3 3 / 48%);
+  --focus-color: var(--color-noir-black);
+  --selection-background: var(--color-noir-black);
+  --selection-foreground: var(--color-noir-warm-white);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-brand-text-inset: 66px;
+  }
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --page-inline: 16px;
+    --page-block: 20px;
+    --grid-columns: 6;
+    --grid-gutter: var(--space-4);
+    --display-xl: clamp(2.25rem, 10vw, 3.25rem);
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --site-grid-inset: 16px;
+  }
+}
+
+@media (max-width: 639px) {
+  :root {
+    --grid-columns: 2;
+  }
+}
+
+@media (max-width: 359px) {
+  :root {
+    --header-brand-text-inset: 18px;
+  }
+}

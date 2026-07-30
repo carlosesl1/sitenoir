@@ -1,0 +1,270 @@
+.story {
+  position: relative;
+  height: var(--principles-story-height, 800svh);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+.stickyFrame {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  min-height: var(--principles-viewport-height, 100svh);
+  overflow: clip;
+  background: transparent;
+  color: var(--text-primary);
+  transition: color 300ms linear;
+}
+
+.stickyFrame[data-cursor-fullscreen="true"] {
+  color: var(--color-noir-warm-white);
+}
+
+.panel {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 96px 56px;
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 230ms linear;
+}
+
+.activePanel {
+  opacity: 1;
+}
+
+.exitPanel {
+  opacity: 1;
+}
+
+:global(html[data-effects="off"]) .stickyFrame,
+:global(html[data-effects="failed"]) .stickyFrame {
+  background: var(--color-noir-black);
+  color: var(--color-noir-warm-white);
+}
+
+.stageCopy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  margin: 0;
+  flex-direction: column;
+  text-align: center;
+  font-size: 6.8svw;
+  font-stretch: 120%;
+  font-weight: 700;
+  font-variation-settings: "wdth" 120;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.copyLine {
+  display: block;
+}
+
+.copyCharacter {
+  display: inline-block;
+  opacity: 0;
+  will-change: opacity;
+}
+
+.activePanel .copyCharacter {
+  animation: characterReveal 230ms linear var(--character-delay) both;
+}
+
+.exitPanel .copyCharacter {
+  animation: characterHide 230ms linear var(--character-exit-delay) both;
+}
+
+@keyframes characterReveal {
+  0% {
+    opacity: 0;
+  }
+
+  32% {
+    opacity: 0.22;
+  }
+
+  62% {
+    opacity: 0.55;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes characterHide {
+  from {
+    opacity: 1;
+  }
+
+  38% {
+    opacity: 0.55;
+  }
+
+  68% {
+    opacity: 0.22;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.principleOrbit {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: min(28vw, 344px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+  fill: none;
+  stroke: #a855f7;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.statementGrid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: repeat(6, 1fr);
+}
+
+.statementGrid p {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  align-self: center;
+  flex-direction: column;
+  justify-self: start;
+  padding: 8px;
+  font-size: 1.875rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.statementGrid p[data-contrast-surface="diffuse"]::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: rgb(0 0 0 / 66%);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 24%);
+  backdrop-filter: blur(8px);
+  content: "";
+  pointer-events: none;
+}
+
+.statementGrid p:nth-child(1) {
+  grid-column: 7 / span 4;
+  grid-row: 2;
+}
+
+.statementGrid p:nth-child(2) {
+  grid-column: 9 / span 4;
+  grid-row: 3;
+}
+
+.statementGrid p:nth-child(3) {
+  grid-column: 2 / span 4;
+  grid-row: 4;
+}
+
+.statementGrid p:nth-child(4) {
+  grid-column: 4 / span 4;
+  grid-row: 5;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 767px) {
+  .panel {
+    padding: 72px 16px;
+  }
+
+  .stageCopy {
+    font-size: 7.2vw;
+  }
+
+  .principleOrbit {
+    width: min(58vw, 300px);
+  }
+
+  .statementGrid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .statementGrid p {
+    font-size: 5.6svw;
+    line-height: 1.25;
+  }
+
+  .statementGrid p:nth-child(1) {
+    grid-column: 1 / span 8;
+  }
+
+  .statementGrid p:nth-child(2) {
+    grid-column: 5 / span 8;
+  }
+
+  .statementGrid p:nth-child(3) {
+    grid-column: 1 / span 8;
+  }
+
+  .statementGrid p:nth-child(4) {
+    grid-column: 5 / span 8;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story {
+    height: auto;
+  }
+
+  .stickyFrame {
+    position: relative;
+    min-height: auto;
+    padding: 64px 0;
+    background: var(--color-noir-black);
+    color: var(--color-noir-warm-white);
+  }
+
+  .panel {
+    position: relative;
+    min-height: 76svh;
+    opacity: 1;
+    transition: none;
+  }
+
+  .copyCharacter {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+:global(html[data-effects="failed"]) .copyCharacter {
+  opacity: 1;
+  transform: none;
+}

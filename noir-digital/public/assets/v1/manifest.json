@@ -1,0 +1,35 @@
+{
+  "pipeline": 1,
+  "assets": [
+    {
+      "path": "audio/bgm.mp3",
+      "bytes": 935442,
+      "sha256": "e7d844e5313e2c6318916738b35eee92c7bb609cde7fd6e87871e07f5badcb89"
+    },
+    {
+      "path": "fonts/DepartureMono.woff2",
+      "bytes": 10244,
+      "sha256": "1fe93d86d2a662bd0849f3f484b865ddd5633a7947a4806a64d154ffa5f57926"
+    },
+    {
+      "path": "fonts/GeistMono.woff2",
+      "bytes": 32700,
+      "sha256": "a74fc4b9d0d0c87465a7765fe0a6cbfd55c5d1b79fc3e16dfeae6633dd84ad0d"
+    },
+    {
+      "path": "fonts/TikTokSans.woff2",
+      "bytes": 173856,
+      "sha256": "ef8c69095138cdfb16734b8fe101fbc1e0ea4c31175083d3b006379c9ecda77b"
+    },
+    {
+      "path": "model/contact.glb",
+      "bytes": 10688,
+      "sha256": "551d0148de55b6c39f9ac420de57c83fb12181ba77a9b882fc39ad14b4e24d6b"
+    },
+    {
+      "path": "stickers/atlas.webp",
+      "bytes": 1721102,
+      "sha256": "d4087230b57ff98e8c0d3839222a1017ba43449234d07d559c5ca1b654f780ac"
+    }
+  ]
+}

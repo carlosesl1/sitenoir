@@ -1,0 +1,20 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  overflow: hidden;
+  background: transparent;
+  pointer-events: auto;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    display: none;
+  }
+}

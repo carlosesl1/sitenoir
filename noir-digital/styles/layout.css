@@ -1,0 +1,108 @@
+/* biome-ignore-all lint/complexity/noImportantStyles: reduced-motion overrides must win over authored component and inline timing. */
+
+html {
+  min-width: 320px;
+  max-width: 100%;
+  overflow-x: clip;
+  background: var(--surface-primary);
+}
+
+body {
+  min-height: 100dvh;
+  max-width: 100%;
+  overflow-x: clip;
+  margin: var(--space-0);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: var(--type-body);
+  font-weight: var(--weight-body);
+  line-height: var(--leading-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.technicalGrid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gutter);
+}
+
+.gridCross {
+  position: relative;
+  inline-size: var(--space-4);
+  block-size: var(--space-4);
+}
+
+.gridCross::before,
+.gridCross::after {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  background: var(--line);
+  content: "";
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.gridCross::before {
+  inline-size: 100%;
+  block-size: var(--stroke-hairline);
+}
+
+.gridCross::after {
+  inline-size: var(--stroke-hairline);
+  block-size: 100%;
+}
+
+.screenSection {
+  min-block-size: 100dvh;
+  padding-block: var(--page-block);
+  padding-inline: var(--page-inline);
+}
+
+.visuallyHidden {
+  position: absolute;
+  overflow: hidden;
+  inline-size: var(--stroke-hairline);
+  block-size: var(--stroke-hairline);
+  padding: var(--space-0);
+  border: var(--space-0);
+  margin: calc(var(--stroke-hairline) * -1);
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: var(--selection-background);
+}
+
+button {
+  font: inherit;
+}
+
+::selection {
+  background: var(--selection-background);
+  color: var(--selection-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-delay: 0s !important;
+    transition-duration: 0s !important;
+  }
+}

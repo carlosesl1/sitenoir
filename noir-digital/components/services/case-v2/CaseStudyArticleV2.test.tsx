@@ -4,9 +4,9 @@ import { afterEach, describe, expect, it } from "vitest";
 import { CaseMediaV2 } from "@/components/services/case-v2/CaseMediaV2";
 import { CaseStudyArticleV2 } from "@/components/services/case-v2/CaseStudyArticleV2";
 import {
+  type EvidenceSection,
   getCaseStudyV2,
   getCaseStudyV2Navigation,
-  type EvidenceSection,
 } from "@/data/case-studies-v2";
 import { projects } from "@/data/projects";
 
@@ -26,7 +26,7 @@ describe("CaseStudyArticleV2", () => {
       (section): section is EvidenceSection => section.type === "evidence",
     );
     const media = evidence?.media[0];
-    if (!media || media.kind !== "image") throw new Error("Missing image fixture");
+    if (media?.kind !== "image") throw new Error("Missing image fixture");
 
     const { container } = render(<CaseMediaV2 media={media} />);
 
@@ -47,7 +47,7 @@ describe("CaseStudyArticleV2", () => {
       (section): section is EvidenceSection => section.type === "evidence",
     );
     const media = evidence?.media[0];
-    if (!media || media.kind !== "video") throw new Error("Missing video fixture");
+    if (media?.kind !== "video") throw new Error("Missing video fixture");
 
     const { container } = render(<CaseMediaV2 media={media} />);
     const video = container.querySelector("video");
@@ -71,12 +71,10 @@ describe("CaseStudyArticleV2", () => {
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(container.firstElementChild).toHaveAttribute("data-case-layout", "site");
     expect(screen.getByTestId("site-case-hero")).toBeVisible();
-    expect(screen.getByRole("link", { name: /Planejar um site/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /Planejar meu site/i })).toHaveAttribute(
       "href",
       "/#contact",
     );
-    expect(
-      screen.getByRole("navigation", { name: "Navegação entre cases" }),
-    ).toBeVisible();
+    expect(screen.getByRole("navigation", { name: "Navegação entre cases" })).toBeVisible();
   });
 });

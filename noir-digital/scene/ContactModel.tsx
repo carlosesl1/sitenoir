@@ -4,15 +4,18 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { type Group, MathUtils, Vector3 } from "three";
 
-import { ContactExternalGlow } from "@/scene/ContactExternalGlow";
+import { pointerStore } from "@/features/pointer/pointer-store";
+import { ContactRefractiveAsset } from "@/scene/ContactRefractiveAsset";
 import { BEFORE_ROTATION_X, resolveContactModelMotion } from "@/scene/contact-model-motion";
 import { CONTACT_ASSET_PATH, resolveContactAssetScale } from "@/scene/contact-model-scale";
-import { useGraphiteAsset } from "@/scene/GraphiteAsset";
 import { resolveSceneFrameDelta } from "@/scene/scene-frame";
 import type { ModelTransform } from "@/scene/scene-layout";
 
 const CONTACT_ASSET_SCALE = resolveContactAssetScale();
 const CONTACT_DEPTH_SCALE = 3.98001451217401;
+const POINTER_ROTATION_X = MathUtils.degToRad(16);
+const POINTER_ROTATION_Y = MathUtils.degToRad(24);
+const POINTER_RESPONSE = 16;
 
 interface ContactModelProps {
   readonly layout: ModelTransform;
@@ -24,7 +27,6 @@ export function ContactModel({ layout, reducedMotion, scrollProgress }: ContactM
   const groupRef = useRef<Group>(null);
   const contactRef = useRef<HTMLElement | null>(null);
   const viewportTargetRef = useRef(new Vector3());
-  const scene = useGraphiteAsset(CONTACT_ASSET_PATH);
 
   useFrame((state, delta) => {
     const frameDelta = resolveSceneFrameDelta(delta);
@@ -59,11 +61,29 @@ export function ContactModel({ layout, reducedMotion, scrollProgress }: ContactM
     if (reducedMotion) {
       group.position.y = motion.targetY;
       group.rotation.x = MathUtils.degToRad(layout.rotation[0]);
+      group.rotation.y = MathUtils.degToRad(layout.rotation[1]);
       return;
     }
 
+    const pointer = pointerStore.getSnapshot();
+    const pointerX = pointer.inside ? pointer.normalizedX : 0;
+    const pointerY = pointer.inside ? pointer.normalizedY : 0;
+    const targetRotationX = motion.rotationX - pointerY * POINTER_ROTATION_X;
+    const targetRotationY = MathUtils.degToRad(layout.rotation[1]) + pointerX * POINTER_ROTATION_Y;
+
     group.position.y = MathUtils.damp(group.position.y, motion.targetY, 12, frameDelta);
-    group.rotation.x = MathUtils.damp(group.rotation.x, motion.rotationX, 6, frameDelta);
+    group.rotation.x = MathUtils.damp(
+      group.rotation.x,
+      targetRotationX,
+      POINTER_RESPONSE,
+      frameDelta,
+    );
+    group.rotation.y = MathUtils.damp(
+      group.rotation.y,
+      targetRotationY,
+      POINTER_RESPONSE,
+      frameDelta,
+    );
   });
 
   return (
@@ -78,15 +98,12 @@ export function ContactModel({ layout, reducedMotion, scrollProgress }: ContactM
       scale={layout.scale}
       visible={false}
     >
-      <group
-        scale={[
-          CONTACT_ASSET_SCALE,
-          CONTACT_ASSET_SCALE,
-          CONTACT_ASSET_SCALE * CONTACT_DEPTH_SCALE,
-        ]}
-      >
-        <ContactExternalGlow source={scene} />
-        <primitive object={scene} />
+      <group scale={[CONTACT_ASSET_SCALE, CONTACT_ASSET_SCALE, CONTACT_ASSET_SCALE]}>
+        <ContactRefractiveAsset
+          depthScale={CONTACT_DEPTH_SCALE}
+          path={CONTACT_ASSET_PATH}
+          reducedMotion={reducedMotion}
+        />
       </group>
     </group>
   );

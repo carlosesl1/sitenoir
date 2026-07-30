@@ -17,6 +17,7 @@ import {
   WebGLRenderTarget,
 } from "three";
 import { useTheme } from "@/features/theme/ThemeProvider";
+import { resolveFlareSourceLayer } from "@/scene/contact-flare-layer";
 import { useHeroFluid } from "@/scene/HeroFluidProvider";
 import { HERO_FLUID_CONFIG } from "@/scene/hero-fluid";
 import { HERO_EFFECT_COMPOSITE_FRAGMENT_SHADER } from "@/scene/hero-fluid-display-shader";
@@ -24,6 +25,7 @@ import {
   HERO_LENS_FLARE_FRAGMENT_SHADER,
   HERO_POST_VERTEX_SHADER,
 } from "@/scene/hero-lens-flare-shaders";
+import { resolveLensFlareTuning } from "@/scene/hero-lens-flare-tuning";
 import { sceneTransitionStore } from "@/scene/scene-transition";
 
 interface HeroLensFlareProps {
@@ -31,17 +33,26 @@ interface HeroLensFlareProps {
   readonly resolutionScale: number;
 }
 
-const CONTACT_STREAK_MULTIPLIER = 0.6;
+const CONTACT_STREAK_MULTIPLIER = 0.38;
 
-function resolveStreakScale(width: number, contactVisible: boolean): number {
+function resolveStreakScale(width: number): number {
   const compactViewportMultiplier = width < 768 ? 2 : 1;
-  const sectionMultiplier = contactVisible ? CONTACT_STREAK_MULTIPLIER : 1;
-  return 8 * (Math.max(1, width) / 1920) * compactViewportMultiplier * sectionMultiplier;
+  return 8 * (Math.max(1, width) / 1920) * compactViewportMultiplier * CONTACT_STREAK_MULTIPLIER;
 }
 
 function createTarget(): WebGLRenderTarget {
   return new WebGLRenderTarget(1, 1, {
     depthBuffer: false,
+    magFilter: LinearFilter,
+    minFilter: LinearFilter,
+    stencilBuffer: false,
+    type: UnsignedByteType,
+  });
+}
+
+function createFlareSourceTarget(): WebGLRenderTarget {
+  return new WebGLRenderTarget(1, 1, {
+    depthBuffer: true,
     magFilter: LinearFilter,
     minFilter: LinearFilter,
     stencilBuffer: false,
@@ -63,6 +74,7 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
   const size = useThree((state) => state.size);
   const frame = useRef(0);
   const baseTarget = useMemo(createTarget, []);
+  const contactFlareSourceTarget = useMemo(createFlareSourceTarget, []);
   const flareTarget = useMemo(() => {
     const target = createTarget();
     target.texture.colorSpace = LinearSRGBColorSpace;
@@ -159,17 +171,19 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
     );
     resolution.set(width, height);
     baseTarget.setSize(width, height);
+    contactFlareSourceTarget.setSize(width, height);
     flareTarget.setSize(
       Math.max(1, Math.floor(width * 0.5)),
       Math.max(1, Math.floor(height * 0.5)),
     );
     const streakScale = flareMaterial.uniforms["uStreakScale"];
     if (streakScale) {
-      streakScale.value = resolveStreakScale(size.width, false);
+      streakScale.value = resolveStreakScale(size.width);
     }
     frame.current = 0;
   }, [
     baseTarget,
+    contactFlareSourceTarget,
     flareMaterial,
     flareTarget,
     gl,
@@ -182,25 +196,35 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
   useEffect(
     () => () => {
       baseTarget.dispose();
-      compositeMaterial.dispose();
-      flareMaterial.dispose();
+      contactFlareSourceTarget.dispose();
       flareTarget.dispose();
-      geometry.dispose();
     },
-    [baseTarget, compositeMaterial, flareMaterial, flareTarget, geometry],
+    [baseTarget, contactFlareSourceTarget, flareTarget],
   );
+  useEffect(() => () => compositeMaterial.dispose(), [compositeMaterial]);
+  useEffect(() => () => flareMaterial.dispose(), [flareMaterial]);
+  useEffect(() => () => geometry.dispose(), [geometry]);
 
   useFrame(() => {
     const transition = sceneTransitionStore.getSnapshot();
     const flareEnabled =
-      active && transition.sourceVisible && !transition.solid && !transition.contactVisible;
+      active && transition.sourceVisible && (!transition.solid || transition.contactVisible);
+    const tuning = resolveLensFlareTuning(transition.contactVisible);
     const enabledUniform = flareMaterial.uniforms["uEnabled"];
     if (enabledUniform) enabledUniform.value = flareEnabled ? 1 : 0;
+    const gateUniform = flareMaterial.uniforms["uGate"];
+    if (gateUniform) gateUniform.value = tuning.gate;
+    const hotspotPowerUniform = flareMaterial.uniforms["uHotspotPower"];
+    if (hotspotPowerUniform) hotspotPowerUniform.value = tuning.hotspotPower;
+    const intensityUniform = flareMaterial.uniforms["uIntensity"];
+    if (intensityUniform) intensityUniform.value = tuning.intensity;
     const spectrumUniform = flareMaterial.uniforms["uSpectrumMix"];
-    if (spectrumUniform) spectrumUniform.value = transition.contactVisible ? 1 : 0;
+    if (spectrumUniform) spectrumUniform.value = 1;
+    const thresholdUniform = flareMaterial.uniforms["uThreshold"];
+    if (thresholdUniform) thresholdUniform.value = tuning.threshold;
     const streakScaleUniform = flareMaterial.uniforms["uStreakScale"];
     if (streakScaleUniform) {
-      streakScaleUniform.value = resolveStreakScale(size.width, transition.contactVisible);
+      streakScaleUniform.value = resolveStreakScale(size.width);
     }
     const flareCompositeUniform = compositeMaterial.uniforms["uFlareEnabled"];
     if (flareCompositeUniform) flareCompositeUniform.value = flareEnabled ? 1 : 0;
@@ -218,6 +242,23 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
     gl.render(scene, camera);
 
     if (flareEnabled && frame.current % 2 === 0) {
+      const flareSourceLayer = resolveFlareSourceLayer(transition.contactVisible);
+      const diffuseUniform = flareMaterial.uniforms["tDiffuse"];
+      if (flareSourceLayer !== null) {
+        const previousLayerMask = camera.layers.mask;
+        camera.layers.set(flareSourceLayer);
+        gl.setRenderTarget(contactFlareSourceTarget);
+        gl.getClearColor(previousClearColor);
+        const previousClearAlpha = gl.getClearAlpha();
+        gl.setClearColor(flareClearColor, 1);
+        gl.clear();
+        gl.render(scene, camera);
+        gl.setClearColor(previousClearColor, previousClearAlpha);
+        camera.layers.mask = previousLayerMask;
+        if (diffuseUniform) diffuseUniform.value = contactFlareSourceTarget.texture;
+      } else if (diffuseUniform) {
+        diffuseUniform.value = baseTarget.texture;
+      }
       quad.material = flareMaterial;
       gl.setRenderTarget(flareTarget);
       gl.getClearColor(previousClearColor);

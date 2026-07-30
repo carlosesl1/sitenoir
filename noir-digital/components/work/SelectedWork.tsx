@@ -1,8 +1,8 @@
+import { LazyWorkCardCanvas } from "@/components/work/LazyWorkCardCanvas";
 import { ProjectCard } from "@/components/work/ProjectCard";
 import { ServiceStatement } from "@/components/work/ServiceStatement";
 import { WorkCardAnimationProvider } from "@/components/work/work-card-animation-controller";
 import { groupProjectsByService } from "@/data/projects";
-import { WorkCardCanvas } from "@/scene/WorkCardCanvas";
 
 import styles from "./SelectedWork.module.css";
 
@@ -11,7 +11,7 @@ export function SelectedWork() {
 
   return (
     <section id="selected-work" className={styles["selectedWork"]} aria-labelledby="work-heading">
-      <WorkCardCanvas className={styles["workCardCanvas"]} />
+      <LazyWorkCardCanvas className={styles["workCardCanvas"]} />
       <ServiceStatement />
 
       <WorkCardAnimationProvider>
