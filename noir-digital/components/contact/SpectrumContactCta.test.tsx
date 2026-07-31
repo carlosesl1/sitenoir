@@ -5,17 +5,16 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { SpectrumContactCta } from "@/components/contact/SpectrumContactCta";
-import { contactEmail } from "@/data/content";
 
 afterEach(cleanup);
 
 describe("SpectrumContactCta", () => {
-  it("renders the approved accessible mail action", () => {
+  it("renders the approved accessible contact-page action", () => {
     render(<SpectrumContactCta />);
 
     expect(screen.getByRole("link", { name: "Entrar em contato" })).toHaveAttribute(
       "href",
-      `mailto:${contactEmail}`,
+      "/contato",
     );
   });
 

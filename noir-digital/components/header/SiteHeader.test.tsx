@@ -49,15 +49,17 @@ describe("SiteHeader", () => {
     const desktopNavigation = document.querySelector<HTMLElement>('nav[aria-label="Principal"]');
     expect(desktopNavigation).toBeInTheDocument();
     if (!desktopNavigation) return;
-    expect(within(desktopNavigation).getAllByRole("button", { hidden: true })).toHaveLength(3);
-    for (const label of ["Serviços", "Contato", "Tema"]) {
+    expect(within(desktopNavigation).getAllByRole("button", { hidden: true })).toHaveLength(2);
+    for (const label of ["Serviços", "Tema"]) {
       expect(
         within(desktopNavigation).getByRole("button", { name: label, hidden: true }),
       ).toBeInTheDocument();
     }
+    expect(
+      within(desktopNavigation).getByRole("link", { name: "Contato", hidden: true }),
+    ).toHaveAttribute("href", "/contato");
     expect(screen.getByRole("link", { name: "NOIR DIGITAL" })).toHaveAttribute("href", "#home");
     expect(screen.getByRole("button", { name: "Serviços", hidden: true })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Contato", hidden: true })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Tema", hidden: true })).toHaveAttribute(
       "aria-pressed",
       "true",
@@ -67,14 +69,17 @@ describe("SiteHeader", () => {
     expect(screen.getByText("0640 X 0360 Y")).toBeInTheDocument();
   });
 
-  it("routes Serviços and Contato through typed scroll targets", () => {
+  it("routes Serviços through the typed scroll target and Contato to its page", () => {
     render(<SiteHeader />);
 
     fireEvent.click(screen.getByRole("button", { name: "Serviços", hidden: true }));
-    fireEvent.click(screen.getByRole("button", { name: "Contato", hidden: true }));
 
-    expect(providerMocks.scrollTo).toHaveBeenNthCalledWith(1, "work");
-    expect(providerMocks.scrollTo).toHaveBeenNthCalledWith(2, "contact");
+    expect(providerMocks.scrollTo).toHaveBeenCalledOnce();
+    expect(providerMocks.scrollTo).toHaveBeenCalledWith("work");
+    expect(screen.getByRole("link", { name: "Contato", hidden: true })).toHaveAttribute(
+      "href",
+      "/contato",
+    );
   });
 
   it("renders links back to the homepage when used on an internal route", () => {
@@ -87,7 +92,7 @@ describe("SiteHeader", () => {
     );
     expect(screen.getByRole("link", { name: "Contato", hidden: true })).toHaveAttribute(
       "href",
-      "/#contact",
+      "/contato",
     );
   });
 
@@ -110,9 +115,13 @@ describe("SiteHeader", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "true");
     expect(screen.getByRole("dialog", { name: "Menu" })).toBeInTheDocument();
     const mobileNavigation = screen.getByRole("navigation", { name: "Menu móvel" });
-    for (const item of ["Início", "Serviços", "Contato"]) {
+    for (const item of ["Início", "Serviços"]) {
       expect(within(mobileNavigation).getByRole("button", { name: item })).toBeInTheDocument();
     }
+    expect(within(mobileNavigation).getByRole("link", { name: "Contato" })).toHaveAttribute(
+      "href",
+      "/contato",
+    );
     expect(within(mobileNavigation).queryByRole("button", { name: "Tema" })).toBeNull();
     expect(within(mobileNavigation).queryByRole("button", { name: "Sound" })).toBeNull();
     const dialog = screen.getByRole("dialog", { name: "Menu" });

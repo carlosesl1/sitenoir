@@ -154,6 +154,12 @@ export const contactHeadlineLines = ["O PRÓXIMO PASSO", "DO SEU NEGÓCIO", "COM
 
 export const contactEmail = "contato@noirdigital.com.br";
 
+export const contactPhoneDisplay = "+55 77 99845-3006";
+export const contactPhoneHref = "tel:+5577998453006";
+export const contactWhatsAppHref = `https://wa.me/5577998453006?text=${encodeURIComponent(
+  "Olá! Vim pelo site da NOIR Digital e gostaria de conversar sobre um projeto.",
+)}`;
+
 export const socialLinks = [
   { label: "Instagram", href: "https://www.instagram.com/agencianoirdigital/" },
   { label: "LinkedIn", href: "https://www.linkedin.com/company/noirdigital1/" },

@@ -159,7 +159,7 @@ export function LegalDocument({ document }: { readonly document: LegalDocumentCo
 
         <nav aria-label="Navegação legal final">
           <a href={document.counterpart.href}>{document.counterpart.label}</a>
-          <a href="/#contact">Contato</a>
+          <a href="/contato">Contato</a>
           <a href="/">Início</a>
         </nav>
       </footer>

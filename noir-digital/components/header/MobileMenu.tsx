@@ -94,11 +94,7 @@ export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenu
                 >
                   Serviços
                 </a>
-                <a
-                  className={styles["mobileLink"]}
-                  href={`${sectionLinksBase}${sectionSelector("contact")}`}
-                  onClick={onClose}
-                >
+                <a className={styles["mobileLink"]} href="/contato" onClick={onClose}>
                   Contato
                 </a>
               </>
@@ -118,13 +114,9 @@ export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenu
                 >
                   Serviços
                 </button>
-                <button
-                  className={styles["mobileLink"]}
-                  type="button"
-                  onClick={() => onNavigate("contact")}
-                >
+                <a className={styles["mobileLink"]} href="/contato" onClick={onClose}>
                   Contato
-                </button>
+                </a>
               </>
             )}
           </nav>

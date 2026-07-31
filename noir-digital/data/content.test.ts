@@ -4,6 +4,9 @@ import {
   clientLogos,
   contactEmail,
   contactHeadlineLines,
+  contactPhoneDisplay,
+  contactPhoneHref,
+  contactWhatsAppHref,
   heroDescriptionLines,
   heroHeadlineLines,
   heroLabels,
@@ -169,6 +172,9 @@ describe("homepage content", () => {
   it("preserves the contact headline, email, and approved social profiles", () => {
     expect(contactHeadlineLines).toEqual(["O PRÓXIMO PASSO", "DO SEU NEGÓCIO", "COMEÇA AQUI."]);
     expect(contactEmail).toBe("contato@noirdigital.com.br");
+    expect(contactPhoneDisplay).toBe("+55 77 99845-3006");
+    expect(contactPhoneHref).toBe("tel:+5577998453006");
+    expect(contactWhatsAppHref).toContain("https://wa.me/5577998453006?text=");
     expect(socialLinks).toEqual([
       { label: "Instagram", href: "https://www.instagram.com/agencianoirdigital/" },
       { label: "LinkedIn", href: "https://www.linkedin.com/company/noirdigital1/" },

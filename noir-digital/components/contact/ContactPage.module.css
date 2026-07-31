@@ -1,0 +1,563 @@
+.page {
+  position: relative;
+  z-index: 2;
+  min-height: 100dvh;
+  overflow: clip;
+  color: var(--text-primary);
+}
+
+.atmosphere {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(circle at 17% 74%, rgb(244 244 240 / 8%), transparent 29%),
+    linear-gradient(90deg, rgb(3 3 3 / 93%), rgb(3 3 3 / 76%) 48%, rgb(3 3 3 / 91%));
+  pointer-events: none;
+}
+
+:global([data-theme="light"]) .atmosphere {
+  background:
+    radial-gradient(circle at 17% 74%, rgb(3 3 3 / 8%), transparent 29%),
+    linear-gradient(
+      90deg,
+      rgb(244 244 240 / 91%),
+      rgb(244 244 240 / 76%) 48%,
+      rgb(244 244 240 / 91%)
+    );
+}
+
+.layout {
+  display: grid;
+  min-height: 100dvh;
+  grid-template-columns: 31.5% 37% 31.5%;
+  padding: 108px var(--site-grid-inset) 72px;
+  background-image:
+    linear-gradient(var(--border-default), var(--border-default)),
+    linear-gradient(var(--border-default), var(--border-default));
+  background-position:
+    0 108px,
+    0 calc(100% - 72px);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+}
+
+.intro,
+.formPanel,
+.channels {
+  min-width: 0;
+  padding: 28px clamp(22px, 2.6vw, 48px) 36px;
+}
+
+.intro,
+.formPanel {
+  border-right: 1px solid var(--border-default);
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionLabel,
+.panelHeading,
+.field > span,
+.recommended,
+.whatsAppSubtitle,
+.information,
+.privacyNote {
+  font-family: var(--font-pixel);
+  text-transform: uppercase;
+}
+
+.sectionLabel,
+.panelHeading {
+  font-size: var(--type-micro);
+  letter-spacing: 0.055em;
+  color: var(--text-secondary);
+}
+
+.intro h1 {
+  max-width: 8.5ch;
+  margin: clamp(46px, 8vh, 94px) 0 24px;
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 3.5vw, 5.2rem);
+  font-stretch: 120%;
+  font-weight: var(--weight-display);
+  font-variation-settings: "wdth" 120;
+  line-height: 0.9;
+  letter-spacing: -0.052em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.intro h1 span {
+  color: #c0fe04;
+}
+
+.intro > p {
+  max-width: 34ch;
+  margin: 0;
+  font-family: var(--font-interface);
+  font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+.brandLockup {
+  display: flex;
+  width: fit-content;
+  min-height: 52px;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  border: 1px dotted transparent;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brandLockup:focus-visible {
+  border-color: currentColor;
+  outline: none;
+}
+
+.brandLockup > img {
+  width: 27px;
+  height: auto;
+}
+
+.brandLockup > span {
+  display: grid;
+  gap: 4px;
+}
+
+.brandLockup span img {
+  width: 92px;
+  height: auto;
+}
+
+.brandLockup small {
+  max-width: 23ch;
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+:global([data-theme="light"]) .brandLockup img {
+  filter: brightness(0);
+}
+
+.formPanel,
+.channels {
+  padding-top: 28px;
+}
+
+.panelHeading {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 2px;
+}
+
+.panelHeading h2 {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.form {
+  margin-top: 32px;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 16px;
+}
+
+.field {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.field > span {
+  font-size: var(--type-micro);
+  letter-spacing: 0.035em;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  border-radius: 0;
+  outline: none;
+  background: rgb(11 13 14 / 78%);
+  color: var(--text-primary);
+  font-family: var(--font-interface);
+  font-size: 0.8125rem;
+  transition:
+    border-color var(--duration-micro) var(--ease-standard),
+    background var(--duration-micro) var(--ease-standard);
+}
+
+:global([data-theme="light"]) .field input,
+:global([data-theme="light"]) .field select,
+:global([data-theme="light"]) .field textarea {
+  background: rgb(244 244 240 / 82%);
+}
+
+.field input,
+.field select {
+  min-height: 48px;
+  padding: 0 14px;
+}
+
+.field textarea {
+  min-height: 148px;
+  resize: vertical;
+  padding: 14px;
+  line-height: 1.55;
+}
+
+.field input:hover,
+.field select:hover,
+.field textarea:hover {
+  border-color: var(--text-secondary);
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible {
+  border-color: var(--focus-color);
+  background: var(--surface-elevated);
+}
+
+.field select {
+  cursor: pointer;
+}
+
+.field textarea::placeholder {
+  color: var(--text-disabled);
+}
+
+.wideField {
+  grid-column: 1 / -1;
+}
+
+.projectSection {
+  display: grid;
+  gap: 22px;
+  margin: 32px calc(clamp(22px, 2.6vw, 48px) * -1) -36px;
+  padding: 28px clamp(22px, 2.6vw, 48px) 32px;
+  border-top: 1px solid var(--border-default);
+}
+
+.honeypot {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.submit,
+.whatsAppPanel > a {
+  display: flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  border: 1px solid var(--color-noir-warm-white);
+  border-radius: 0;
+  background: var(--color-noir-warm-white);
+  color: var(--color-noir-black);
+  font-family: var(--font-pixel);
+  font-size: 0.6875rem;
+  letter-spacing: 0.035em;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform var(--duration-micro) var(--ease-standard),
+    filter var(--duration-micro) var(--ease-standard);
+}
+
+.submit:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.submit:focus-visible,
+.whatsAppPanel > a:focus-visible {
+  outline: 2px dotted var(--focus-color);
+  outline-offset: 4px;
+}
+
+.feedback,
+.privacyNote {
+  margin: 0;
+  font-size: 0.625rem;
+  line-height: 1.55;
+  letter-spacing: 0.025em;
+}
+
+.feedback {
+  padding-left: 12px;
+  border-left: 3px solid currentColor;
+  font-family: var(--font-interface);
+}
+
+.success {
+  color: #c0fe04;
+}
+
+.error {
+  color: #ff8a72;
+}
+
+.privacyNote {
+  color: var(--text-secondary);
+}
+
+.privacyNote a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+.channels {
+  display: flex;
+  flex-direction: column;
+}
+
+.whatsAppPanel {
+  display: grid;
+  position: relative;
+  overflow: hidden;
+  min-height: 390px;
+  align-content: space-between;
+  gap: 28px;
+  margin-top: 32px;
+  padding: clamp(26px, 2.5vw, 42px);
+  border: 1px solid var(--border-strong);
+  background:
+    radial-gradient(circle at 82% 18%, rgb(192 254 4 / 10%), transparent 30%),
+    linear-gradient(135deg, rgb(21 23 25 / 96%), rgb(3 3 3 / 92%));
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+}
+
+.whatsAppPanel::before {
+  position: absolute;
+  top: -12%;
+  right: -14%;
+  width: 58%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgb(192 254 4 / 24%) 0 1px, transparent 1.4px);
+  background-size: 6px 6px;
+  content: "";
+  opacity: 0.72;
+  transform: rotate(18deg);
+}
+
+.recommended {
+  position: relative;
+  z-index: 1;
+  font-size: 0.625rem;
+  color: #c0fe04;
+}
+
+.whatsAppPanel h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.1rem, 3vw, 3.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+}
+
+.whatsAppSubtitle {
+  margin: 7px 0 0;
+  font-size: 0.625rem;
+}
+
+.whatsAppPanel > p {
+  max-width: 30ch;
+  margin: 0;
+  font-family: var(--font-interface);
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.whatsAppPanel > a {
+  position: relative;
+  z-index: 1;
+  border-color: #c0fe04;
+  background: #c0fe04;
+}
+
+.information {
+  margin-top: 34px;
+}
+
+.information dl {
+  margin: 22px 0 0;
+}
+
+.information dl div {
+  display: grid;
+  grid-template-columns: minmax(92px, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: 18px;
+  min-height: 43px;
+  border-top: 1px solid var(--border-default);
+  font-size: 0.625rem;
+  letter-spacing: 0.025em;
+}
+
+.information dt {
+  color: var(--text-secondary);
+}
+
+.information dd {
+  min-width: 0;
+  margin: 0;
+  text-align: right;
+}
+
+.information a {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+.information a:focus-visible {
+  outline: 1px dotted currentColor;
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .submit:not(:disabled):hover,
+  .whatsAppPanel > a:hover {
+    filter: brightness(0.92);
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 1199px) {
+  .layout {
+    grid-template-columns: 34% 66%;
+  }
+
+  .formPanel {
+    border-right: 0;
+  }
+
+  .channels {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+    border-top: 1px solid var(--border-default);
+  }
+
+  .channels > .panelHeading {
+    grid-column: 1 / -1;
+  }
+
+  .whatsAppPanel,
+  .information {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .atmosphere {
+    position: absolute;
+  }
+
+  .layout {
+    display: block;
+    min-height: 100dvh;
+    padding: 88px var(--site-grid-inset) 80px;
+    background-position:
+      0 88px,
+      0 calc(100% - 80px);
+  }
+
+  .intro,
+  .formPanel,
+  .channels {
+    padding: 28px 16px 36px;
+    border-right: 0;
+  }
+
+  .intro {
+    min-height: 68svh;
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .intro h1 {
+    margin-top: 54px;
+    font-size: clamp(2.65rem, 11vw, 4.4rem);
+  }
+
+  .brandLockup {
+    margin-top: 52px;
+  }
+
+  .fieldGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wideField {
+    grid-column: auto;
+  }
+
+  .projectSection {
+    margin-right: -16px;
+    margin-left: -16px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .channels {
+    display: block;
+    border-top: 1px solid var(--border-default);
+  }
+
+  .whatsAppPanel {
+    min-height: 350px;
+    margin-top: 28px;
+  }
+
+  .information {
+    margin-top: 36px;
+  }
+
+  .information dl div {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 359px) {
+  .intro h1 {
+    font-size: 2.2rem;
+  }
+
+  .information dl div {
+    display: block;
+    padding: 12px 0;
+  }
+
+  .information dd {
+    margin-top: 4px;
+    text-align: left;
+  }
+}

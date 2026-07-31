@@ -22,7 +22,7 @@ function supportsWebGl(): boolean {
   }
 }
 
-export function LazySiteCanvas() {
+export function LazySiteCanvas({ ambientOnly = false }: { readonly ambientOnly?: boolean }) {
   const [quality, setQuality] = useState<SceneQuality | null>(null);
 
   useEffect(() => {
@@ -76,5 +76,5 @@ export function LazySiteCanvas() {
     };
   }, []);
 
-  return quality ? <SiteCanvas quality={quality} /> : null;
+  return quality ? <SiteCanvas ambientOnly={ambientOnly} quality={quality} /> : null;
 }

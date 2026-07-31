@@ -6,7 +6,6 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { Hero } from "@/components/hero/Hero";
 import {
-  contactEmail,
   heroDescriptionLines,
   heroHeadlineLines,
   heroLabels,
@@ -39,7 +38,7 @@ describe("Hero", () => {
 
     expect(screen.getByRole("link", { name: "Entrar em contato", hidden: true })).toHaveAttribute(
       "href",
-      `mailto:${contactEmail}`,
+      "/contato",
     );
     expect(view.container.querySelector('[data-hero-action-row="true"]')).toBeInTheDocument();
   });

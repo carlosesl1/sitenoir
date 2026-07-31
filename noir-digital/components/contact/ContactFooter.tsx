@@ -1,7 +1,13 @@
 import Image from "next/image";
 
 import { SpectrumContactCta } from "@/components/contact/SpectrumContactCta";
-import { contactEmail, contactHeadlineLines, socialLinks } from "@/data/content";
+import {
+  contactEmail,
+  contactHeadlineLines,
+  contactPhoneDisplay,
+  contactPhoneHref,
+  socialLinks,
+} from "@/data/content";
 
 import styles from "./ContactFooter.module.css";
 
@@ -53,7 +59,10 @@ export function ContactFooter() {
 
           <section className={styles["informationCell"]} aria-labelledby="footer-contact-label">
             <h3 id="footer-contact-label">Contato</h3>
-            <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+            <div className={styles["informationList"]}>
+              <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+              <a href={contactPhoneHref}>{contactPhoneDisplay}</a>
+            </div>
           </section>
 
           <section className={styles["informationCell"]} aria-labelledby="footer-social-label">
@@ -69,8 +78,8 @@ export function ContactFooter() {
 
           <nav className={styles["informationCell"]} aria-label="Links do footer">
             <h3>Links</h3>
-            <a href="/#selected-work">Projetos</a>
-            <a href="/services">Serviços</a>
+            <a href="/contato">Contato</a>
+            <a href="/#selected-work">Serviços</a>
           </nav>
         </div>
 

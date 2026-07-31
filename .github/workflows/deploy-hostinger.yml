@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NEXT_PUBLIC_SITE_URL: https://noirdigital.com.br
+      NEXT_PUBLIC_CONTACT_ENDPOINT: https://noirdigital.com.br/wp-json/noir/v1/contact
     defaults:
       run:
         shell: bash
@@ -41,6 +42,12 @@ jobs:
           cache: npm
           cache-dependency-path: noir-digital/package-lock.json
 
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+
       - name: Install dependencies
         run: npm ci
 
@@ -50,6 +57,9 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Run WordPress contact tests
+        run: php tests/wordpress/noir-contact-endpoint.test.php
+
       - name: Build static export
         run: npm run build
 
@@ -58,6 +68,7 @@ jobs:
           test -f out/index.html
           test -f out/.htaccess
           test -d out/_next/static
+          test -f out/wp-content/mu-plugins/noir-contact-endpoint.php
           grep -q "NOIR DIGITAL" out/index.html
 
       - name: Write deployment manifest
@@ -163,7 +174,24 @@ jobs:
             had_index_html=0
           fi
 
+          if lftp -e "
+            set cmd:fail-exit yes;
+            set net:max-retries 2;
+            set net:timeout 20;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate yes;
+            open -p ${FTP_PORT} ${FTP_HOST};
+            get ${FTP_TARGET}/wp-content/mu-plugins/noir-contact-endpoint.php -o ${local_backup}/noir-contact-endpoint.php;
+            bye;
+          "; then
+            had_mu_plugin=1
+          else
+            had_mu_plugin=0
+          fi
+
           printf '%s\n' "${had_index_html}" >"${local_backup}/had-index-html"
+          printf '%s\n' "${had_mu_plugin}" >"${local_backup}/had-mu-plugin"
 
           lftp -e "
             set cmd:fail-exit yes;
@@ -176,6 +204,7 @@ jobs:
             mkdir -p ${remote_backup};
             put ${local_backup}/.htaccess -o ${remote_backup}/.htaccess;
             put ${local_backup}/had-index-html -o ${remote_backup}/had-index-html;
+            put ${local_backup}/had-mu-plugin -o ${remote_backup}/had-mu-plugin;
             bye;
           "
 
@@ -191,15 +220,33 @@ jobs:
             "
           fi
 
+          if [[ "${had_mu_plugin}" == "1" ]]; then
+            lftp -e "
+              set cmd:fail-exit yes;
+              set ftp:ssl-force true;
+              set ftp:ssl-protect-data true;
+              set ssl:verify-certificate yes;
+              open -p ${FTP_PORT} ${FTP_HOST};
+              mkdir -p ${remote_backup}/wp-content/mu-plugins;
+              put ${local_backup}/noir-contact-endpoint.php -o ${remote_backup}/wp-content/mu-plugins/noir-contact-endpoint.php;
+              bye;
+            "
+          fi
+
           {
             echo "LOCAL_BACKUP=${local_backup}"
             echo "REMOTE_BACKUP=${remote_backup}"
             echo "HAD_INDEX_HTML=${had_index_html}"
+            echo "HAD_MU_PLUGIN=${had_mu_plugin}"
           } >>"${GITHUB_ENV}"
 
-      - name: Deploy static export
+      - name: Deploy static export and mu-plugin
         id: publish
         run: |
+          local_plugin="out/wp-content/mu-plugins/noir-contact-endpoint.php"
+          remote_plugin="${FTP_TARGET}/wp-content/mu-plugins/noir-contact-endpoint.php"
+          downloaded_plugin="${RUNNER_TEMP}/noir-contact-endpoint.remote.php"
+
           lftp -e "
             set cmd:fail-exit yes;
             set net:max-retries 2;
@@ -209,13 +256,28 @@ jobs:
             set ssl:verify-certificate yes;
             open -p ${FTP_PORT} ${FTP_HOST};
             mirror --reverse --parallel=4 --verbose=1 \
+              --exclude '^wp-admin(/|$)' \
+              --exclude '^wp-content(/|$)' \
+              --exclude '^wp-includes(/|$)' \
+              --exclude '^wp-config\.php$' \
+              --exclude '^wp-.*\.php$' \
+              --exclude '^xmlrpc\.php$' \
+              --exclude '^index\.php$' \
               --exclude '^index\.html$' \
               --exclude '^\.htaccess$' \
               out/ ${FTP_TARGET}/;
             put out/index.html -o ${FTP_TARGET}/index.html;
             put out/.htaccess -o ${FTP_TARGET}/.htaccess;
+            mkdir -p ${FTP_TARGET}/wp-content/mu-plugins;
+            put ${local_plugin} -o ${remote_plugin};
+            get ${remote_plugin} -o ${downloaded_plugin};
             bye;
           "
+
+          LOCAL_PLUGIN_HASH="$(sha256sum "${local_plugin}" | awk '{print $1}')"
+          REMOTE_PLUGIN_HASH="$(sha256sum "${downloaded_plugin}" | awk '{print $1}')"
+          [[ "${LOCAL_PLUGIN_HASH}" == "${REMOTE_PLUGIN_HASH}" ]]
+          echo "REMOTE_PLUGIN_HASH=${REMOTE_PLUGIN_HASH}" >>"${GITHUB_ENV}"
 
       - name: Verify exact production release
         run: |
@@ -247,6 +309,56 @@ jobs:
             -H "Cache-Control: no-cache" \
             "${PRODUCTION_URL}/services/?deploy=${GITHUB_SHA}" \
             --output /dev/null
+
+          curl --fail --silent --show-error \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 30 \
+            -H "Cache-Control: no-cache" \
+            "${PRODUCTION_URL}/contato/?deploy=${GITHUB_SHA}" \
+            --output /dev/null
+
+          cors_headers="${RUNNER_TEMP}/noir-contact-cors.headers"
+          curl --silent --show-error \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 30 \
+            -X OPTIONS \
+            -H "Origin: https://noirdigital.com.br" \
+            -H "Access-Control-Request-Method: POST" \
+            -D "${cors_headers}" \
+            "${PRODUCTION_URL}/wp-json/noir/v1/contact" \
+            --output /dev/null
+          tr -d '\r' <"${cors_headers}" | grep -qi '^access-control-allow-origin: https://noirdigital.com.br$'
+
+          validation_response="${RUNNER_TEMP}/noir-contact-validation.json"
+          validation_status="$(curl --silent --show-error \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 30 \
+            -H "Origin: https://noirdigital.com.br" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            --data '{"firstName":"","email":"invalid","service":"","message":"","website":""}' \
+            --output "${validation_response}" \
+            --write-out '%{http_code}' \
+            "${PRODUCTION_URL}/wp-json/noir/v1/contact")"
+          [[ "${validation_status}" == "400" ]]
+          grep -q '"ok":false' "${validation_response}"
+          grep -q 'Confira os campos informados.' "${validation_response}"
+
+          blocked_status="$(curl --silent --show-error \
+            --retry 2 \
+            --retry-delay 2 \
+            --max-time 30 \
+            -H "Origin: https://attacker.example" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            --data '{"website":""}' \
+            --output /dev/null \
+            --write-out '%{http_code}' \
+            "${PRODUCTION_URL}/wp-json/noir/v1/contact")"
+          [[ "${blocked_status}" == "403" ]]
 
       - name: Roll back entry files after a failed publication
         if: failure() && steps.publish.outcome != 'skipped'
@@ -281,6 +393,29 @@ jobs:
               set ssl:verify-certificate yes;
               open -p ${FTP_PORT} ${FTP_HOST};
               rm ${FTP_TARGET}/index.html;
+              bye;
+            "
+          fi
+
+          if [[ "${HAD_MU_PLUGIN}" == "1" ]]; then
+            lftp -e "
+              set cmd:fail-exit yes;
+              set ftp:ssl-force true;
+              set ftp:ssl-protect-data true;
+              set ssl:verify-certificate yes;
+              open -p ${FTP_PORT} ${FTP_HOST};
+              mkdir -p ${FTP_TARGET}/wp-content/mu-plugins;
+              put ${LOCAL_BACKUP}/noir-contact-endpoint.php -o ${FTP_TARGET}/wp-content/mu-plugins/noir-contact-endpoint.php;
+              bye;
+            "
+          else
+            lftp -e "
+              set cmd:fail-exit no;
+              set ftp:ssl-force true;
+              set ftp:ssl-protect-data true;
+              set ssl:verify-certificate yes;
+              open -p ${FTP_PORT} ${FTP_HOST};
+              rm ${FTP_TARGET}/wp-content/mu-plugins/noir-contact-endpoint.php;
               bye;
             "
           fi

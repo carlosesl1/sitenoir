@@ -1,5 +1,3 @@
-import { contactEmail } from "@/data/content";
-
 import styles from "./SpectrumContactCta.module.css";
 
 interface SpectrumContactCtaProps {
@@ -8,7 +6,7 @@ interface SpectrumContactCtaProps {
 }
 
 export function SpectrumContactCta({
-  href = `mailto:${contactEmail}`,
+  href = "/contato",
   label = "Entrar em contato",
 }: SpectrumContactCtaProps = {}) {
   return (

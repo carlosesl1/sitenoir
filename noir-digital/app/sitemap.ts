@@ -42,6 +42,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: new URL("contato", siteUrl).href,
+      changeFrequency: "yearly",
+      priority: 0.6,
+    },
+    {
       url: new URL("privacidade", siteUrl).href,
       changeFrequency: "yearly",
       priority: 0.3,

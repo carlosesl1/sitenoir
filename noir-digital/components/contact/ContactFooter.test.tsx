@@ -5,7 +5,13 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { ContactFooter } from "@/components/contact/ContactFooter";
-import { contactEmail, contactHeadlineLines, socialLinks } from "@/data/content";
+import {
+  contactEmail,
+  contactHeadlineLines,
+  contactPhoneDisplay,
+  contactPhoneHref,
+  socialLinks,
+} from "@/data/content";
 
 afterEach(cleanup);
 
@@ -35,11 +41,15 @@ describe("ContactFooter", () => {
     const view = render(<ContactFooter />);
 
     const contactCta = screen.getByRole("link", { name: "Entrar em contato" });
-    expect(contactCta).toHaveAttribute("href", `mailto:${contactEmail}`);
+    expect(contactCta).toHaveAttribute("href", "/contato");
 
     expect(screen.getByRole("link", { name: contactEmail })).toHaveAttribute(
       "href",
       `mailto:${contactEmail}`,
+    );
+    expect(screen.getByRole("link", { name: contactPhoneDisplay })).toHaveAttribute(
+      "href",
+      contactPhoneHref,
     );
     for (const social of socialLinks) {
       expect(screen.getByRole("link", { name: social.label })).toHaveAttribute("href", social.href);
@@ -72,11 +82,11 @@ describe("ContactFooter", () => {
     expect(
       screen.getByText("© NOIR DIGITAL 2026. TODOS OS DIREITOS RESERVADOS."),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Projetos" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Contato" })).toHaveAttribute("href", "/contato");
+    expect(screen.getByRole("link", { name: "Serviços" })).toHaveAttribute(
       "href",
       "/#selected-work",
     );
-    expect(screen.getByRole("link", { name: "Serviços" })).toHaveAttribute("href", "/services");
 
     const privacyLinks = screen.getAllByRole("link", { name: "Privacidade" });
     const termsLinks = screen.getAllByRole("link", { name: "Termos" });

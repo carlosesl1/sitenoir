@@ -135,6 +135,23 @@ function SceneMilestoneMarker({ milestone }: { readonly milestone: "contact" | "
   return null;
 }
 
+function AmbientSceneReadyMarker() {
+  useEffect(() => {
+    window.__NOIR_READY__ = true;
+    window.__NOIR_DECOR_READY__ = true;
+    window.__NOIR_CONTACT_READY__ = true;
+    window.__NOIR_SCENE_STATUS__ = "ready";
+    return () => {
+      window.__NOIR_READY__ = false;
+      window.__NOIR_DECOR_READY__ = false;
+      window.__NOIR_CONTACT_READY__ = false;
+      window.__NOIR_SCENE_STATUS__ = "loading";
+    };
+  }, []);
+
+  return null;
+}
+
 function DemandFrameInvalidator({
   idleWindowMs,
   reducedMotion,
@@ -154,7 +171,13 @@ function DemandFrameInvalidator({
   return null;
 }
 
-export function SiteCanvas({ quality }: { readonly quality: SceneQuality }) {
+export function SiteCanvas({
+  ambientOnly = false,
+  quality,
+}: {
+  readonly ambientOnly?: boolean;
+  readonly quality: SceneQuality;
+}) {
   const reducedMotion = useReducedMotion() ?? false;
   const deterministicMotion = reducedMotion || VISUAL_TEST_MODE;
   const qualityConfig = resolveSceneQualityConfig(quality);
@@ -166,6 +189,7 @@ export function SiteCanvas({ quality }: { readonly quality: SceneQuality }) {
       className={styles["canvasShell"]}
       data-site-canvas="true"
       data-background-runtime="persistent"
+      data-canvas-mode={ambientOnly ? "ambient" : "full"}
       data-background-tone={principleScene.fullscreen ? "dark" : "theme"}
       data-optical-active="true"
       data-frameloop="demand"
@@ -201,32 +225,38 @@ export function SiteCanvas({ quality }: { readonly quality: SceneQuality }) {
           />
           <ambientLight intensity={0.38} />
           <directionalLight position={[-8, -4, 6]} intensity={0.72} />
-          <HeroPointerLight reducedMotion={deterministicMotion} />
-          <HeroRefractionBuffer
-            active={!principleScene.active}
-            resolutionScale={qualityConfig.refractionResolutionScale}
-          >
-            <Suspense fallback={null}>
-              <HeroSceneContent
-                reducedMotion={deterministicMotion}
-                scrollProgress={scrollYProgress}
-              />
-            </Suspense>
-            <ProgressiveSceneContent
-              principleActive={principleScene.active}
-              principleStage={principleScene.stage}
-              reducedMotion={deterministicMotion}
-              scrollProgress={scrollYProgress}
-            />
-          </HeroRefractionBuffer>
-          <Suspense fallback={null}>
-            <PrinciplePointerModel
-              reducedMotion={deterministicMotion}
-              sectionRef={principleScene.sectionRef}
-              sectionRectRef={principleScene.sectionRectRef}
-              setFullscreen={principleScene.setFullscreen}
-            />
-          </Suspense>
+          {ambientOnly ? (
+            <AmbientSceneReadyMarker />
+          ) : (
+            <>
+              <HeroPointerLight reducedMotion={deterministicMotion} />
+              <HeroRefractionBuffer
+                active={!principleScene.active}
+                resolutionScale={qualityConfig.refractionResolutionScale}
+              >
+                <Suspense fallback={null}>
+                  <HeroSceneContent
+                    reducedMotion={deterministicMotion}
+                    scrollProgress={scrollYProgress}
+                  />
+                </Suspense>
+                <ProgressiveSceneContent
+                  principleActive={principleScene.active}
+                  principleStage={principleScene.stage}
+                  reducedMotion={deterministicMotion}
+                  scrollProgress={scrollYProgress}
+                />
+              </HeroRefractionBuffer>
+              <Suspense fallback={null}>
+                <PrinciplePointerModel
+                  reducedMotion={deterministicMotion}
+                  sectionRef={principleScene.sectionRef}
+                  sectionRectRef={principleScene.sectionRectRef}
+                  setFullscreen={principleScene.setFullscreen}
+                />
+              </Suspense>
+            </>
+          )}
           <FullscreenDither />
           <HeroFluidProvider reducedMotion={deterministicMotion}>
             <HeroLensFlare active resolutionScale={qualityConfig.flareResolutionScale} />

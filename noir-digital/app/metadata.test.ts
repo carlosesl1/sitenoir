@@ -127,6 +127,11 @@ describe("search engine discovery", () => {
         priority: 0.8,
       },
       {
+        url: "https://noir.example/studio/contato",
+        changeFrequency: "yearly",
+        priority: 0.6,
+      },
+      {
         url: "https://noir.example/studio/privacidade",
         changeFrequency: "yearly",
         priority: 0.3,

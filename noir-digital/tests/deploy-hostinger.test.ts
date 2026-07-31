@@ -1,0 +1,36 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+import { describe, expect, it } from "vitest";
+
+const workflow = readFileSync(
+  resolve(process.cwd(), "..", ".github", "workflows", "deploy-hostinger.yml"),
+  "utf8",
+);
+
+describe("Hostinger deployment safety", () => {
+  it.each([
+    "wp-admin",
+    "wp-content",
+    "wp-includes",
+    "wp-config\\.php",
+    "wp-.*\\.php",
+    "xmlrpc\\.php",
+    "index\\.php",
+  ])("excludes protected WordPress target %s from the static mirror", (target) => {
+    expect(workflow).toContain(`--exclude '^${target}`);
+  });
+
+  it("publishes the mu-plugin separately and verifies the downloaded hash", () => {
+    expect(workflow).toContain("out/wp-content/mu-plugins/noir-contact-endpoint.php");
+    expect(workflow).toContain("mkdir -p " + "$" + "{FTP_TARGET}/wp-content/mu-plugins");
+    expect(workflow).toContain("sha256sum");
+    expect(workflow).toContain("REMOTE_PLUGIN_HASH");
+  });
+
+  it("proves the route without sending a valid lead or real email", () => {
+    expect(workflow).toContain("/wp-json/noir/v1/contact");
+    expect(workflow).toContain("Confira os campos informados.");
+    expect(workflow).not.toContain('"firstName":"Deploy Test"');
+  });
+});
