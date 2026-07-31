@@ -71,10 +71,9 @@ describe("CaseStudyArticleV2", () => {
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(container.firstElementChild).toHaveAttribute("data-case-layout", "site");
     expect(screen.getByTestId("site-case-hero")).toBeVisible();
-    expect(screen.getByRole("link", { name: /Planejar meu site/i })).toHaveAttribute(
-      "href",
-      "/#contact",
-    );
+    const contactAction = screen.getByRole("link", { name: /Planejar meu site/i });
+    expect(contactAction).toHaveAttribute("href", "/#contact");
+    expect(contactAction).toHaveAttribute("data-spectrum-contact-cta", "true");
     expect(screen.getByRole("navigation", { name: "Navegação entre cases" })).toBeVisible();
   });
 });

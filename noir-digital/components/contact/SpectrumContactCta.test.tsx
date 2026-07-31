@@ -19,6 +19,15 @@ describe("SpectrumContactCta", () => {
     );
   });
 
+  it("reuses the spectrum action with contextual labels and destinations", () => {
+    render(<SpectrumContactCta href="/#contact" label="Planejar meu site" />);
+
+    expect(screen.getByRole("link", { name: "Planejar meu site" })).toHaveAttribute(
+      "href",
+      "/#contact",
+    );
+  });
+
   it("loops the spectrum glow seamlessly toward the right", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/SpectrumContactCta.module.css"),

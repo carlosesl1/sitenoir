@@ -1,12 +1,13 @@
 "use client";
 
+import { SpectrumContactCta } from "@/components/contact/SpectrumContactCta";
 import type { CaseStudyV2 } from "@/data/case-studies-v2";
 import type { Project } from "@/data/projects";
 
+import styles from "./CaseStudyArticleV2.module.css";
 import { GoogleCaseLayout } from "./GoogleCaseLayout";
 import { SiteCaseLayout } from "./SiteCaseLayout";
 import { VideoCaseLayout } from "./VideoCaseLayout";
-import styles from "./CaseStudyArticleV2.module.css";
 
 type Navigation = {
   readonly previous: CaseStudyV2 | undefined;
@@ -40,10 +41,9 @@ export function CaseStudyArticleV2({
       <section className={styles["closing"]}>
         <p>Próximo passo</p>
         <h2>{study.cta.body}</h2>
-        <a href="/#contact">
-          {study.cta.label}
-          <span aria-hidden="true">↗</span>
-        </a>
+        <div className={styles["closingAction"]}>
+          <SpectrumContactCta href="/#contact" label={study.cta.label} />
+        </div>
       </section>
 
       <nav className={styles["navigation"]} aria-label="Navegação entre cases">
