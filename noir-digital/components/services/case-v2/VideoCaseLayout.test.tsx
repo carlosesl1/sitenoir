@@ -29,7 +29,7 @@ describe("VideoCaseLayout", () => {
       expect(video).not.toHaveAttribute("autoplay");
     }
     expect(screen.getByRole("heading", { name: "DOLA" })).toBeVisible();
-    expect(screen.getByText("Crédito criativo")).toBeVisible();
+    expect(screen.getByText("Designer responsável")).toBeVisible();
     expect(
       screen.getByText(
         "Designer multidisciplinar com 7 anos de experiência em design gráfico, motion design, edição de vídeo e 3D.",

@@ -128,7 +128,7 @@ export function VideoCaseLayout({
           />
         </div>
         <div>
-          <p>Crédito criativo</p>
+          <p>Designer responsável</p>
           <h2>{study.credit.name}</h2>
           <p className={styles["creditRole"]}>{study.credit.role}</p>
           <p>{study.credit.contribution}</p>
