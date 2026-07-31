@@ -244,8 +244,31 @@ jobs:
         id: publish
         run: |
           local_plugin="out/wp-content/mu-plugins/noir-contact-endpoint.php"
-          remote_plugin="${FTP_TARGET}/wp-content/mu-plugins/noir-contact-endpoint.php"
           downloaded_plugin="${RUNNER_TEMP}/noir-contact-endpoint.remote.php"
+
+          if ! lftp -e "
+            set cmd:fail-exit yes;
+            set net:max-retries 2;
+            set net:timeout 20;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate yes;
+            open -p ${FTP_PORT} ${FTP_HOST};
+            cd ${FTP_TARGET}/wp-content/mu-plugins;
+            bye;
+          "; then
+            lftp -e "
+              set cmd:fail-exit yes;
+              set net:max-retries 2;
+              set net:timeout 20;
+              set ftp:ssl-force true;
+              set ftp:ssl-protect-data true;
+              set ssl:verify-certificate yes;
+              open -p ${FTP_PORT} ${FTP_HOST};
+              mkdir ${FTP_TARGET}/wp-content/mu-plugins;
+              bye;
+            "
+          fi
 
           lftp -e "
             set cmd:fail-exit yes;
@@ -268,9 +291,9 @@ jobs:
               out/ ${FTP_TARGET}/;
             put out/index.html -o ${FTP_TARGET}/index.html;
             put out/.htaccess -o ${FTP_TARGET}/.htaccess;
-            mkdir -p ${FTP_TARGET}/wp-content/mu-plugins;
-            put ${local_plugin} -o ${remote_plugin};
-            get ${remote_plugin} -o ${downloaded_plugin};
+            cd ${FTP_TARGET}/wp-content/mu-plugins;
+            put ${local_plugin} -o noir-contact-endpoint.php;
+            get noir-contact-endpoint.php -o ${downloaded_plugin};
             bye;
           "
 
@@ -394,7 +417,7 @@ jobs:
               open -p ${FTP_PORT} ${FTP_HOST};
               rm ${FTP_TARGET}/index.html;
               bye;
-            "
+            " || true
           fi
 
           if [[ "${HAD_MU_PLUGIN}" == "1" ]]; then
@@ -404,8 +427,8 @@ jobs:
               set ftp:ssl-protect-data true;
               set ssl:verify-certificate yes;
               open -p ${FTP_PORT} ${FTP_HOST};
-              mkdir -p ${FTP_TARGET}/wp-content/mu-plugins;
-              put ${LOCAL_BACKUP}/noir-contact-endpoint.php -o ${FTP_TARGET}/wp-content/mu-plugins/noir-contact-endpoint.php;
+              cd ${FTP_TARGET}/wp-content/mu-plugins;
+              put ${LOCAL_BACKUP}/noir-contact-endpoint.php -o noir-contact-endpoint.php;
               bye;
             "
           else
@@ -417,7 +440,7 @@ jobs:
               open -p ${FTP_PORT} ${FTP_HOST};
               rm ${FTP_TARGET}/wp-content/mu-plugins/noir-contact-endpoint.php;
               bye;
-            "
+            " || true
           fi
 
           lftp -e "
@@ -428,7 +451,7 @@ jobs:
             open -p ${FTP_PORT} ${FTP_HOST};
             rm ${FTP_TARGET}/deploy-manifest.json;
             bye;
-          "
+          " || true
 
           curl --fail --silent --show-error \
             --retry 3 \

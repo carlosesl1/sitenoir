@@ -23,9 +23,17 @@ describe("Hostinger deployment safety", () => {
 
   it("publishes the mu-plugin separately and verifies the downloaded hash", () => {
     expect(workflow).toContain("out/wp-content/mu-plugins/noir-contact-endpoint.php");
-    expect(workflow).toContain("mkdir -p " + "$" + "{FTP_TARGET}/wp-content/mu-plugins");
+    expect(workflow).toContain("cd " + "$" + "{FTP_TARGET}/wp-content/mu-plugins");
+    expect(workflow).not.toContain("mkdir -p " + "$" + "{FTP_TARGET}/wp-content/mu-plugins;");
     expect(workflow).toContain("sha256sum");
     expect(workflow).toContain("REMOTE_PLUGIN_HASH");
+  });
+
+  it("keeps rollback idempotent when the new mu-plugin was never created", () => {
+    expect(workflow).toContain(
+      "rm " + "$" + "{FTP_TARGET}/wp-content/mu-plugins/noir-contact-endpoint.php;",
+    );
+    expect(workflow).toContain("|| true");
   });
 
   it("proves the route without sending a valid lead or real email", () => {
