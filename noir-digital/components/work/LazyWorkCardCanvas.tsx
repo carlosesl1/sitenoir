@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
-const WORK_CANVAS_ROOT_MARGIN = "150% 0px";
+const WORK_CANVAS_ROOT_MARGIN = "10% 0px";
 
 const WorkCardCanvas = dynamic(
   () => import("@/scene/WorkCardCanvas").then((module) => module.WorkCardCanvas),

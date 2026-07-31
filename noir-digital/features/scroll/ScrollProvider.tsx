@@ -1,6 +1,6 @@
 "use client";
 
-import Lenis from "lenis";
+import type Lenis from "lenis";
 import {
   createContext,
   type ReactNode,
@@ -43,6 +43,8 @@ export function ScrollProvider({ children }: { readonly children: ReactNode }) {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(REDUCED_MOTION_QUERY);
+    const root = document.documentElement;
+    let disposed = false;
     const destroyLenis = () => {
       window.cancelAnimationFrame(lenisFrameRef.current);
       lenisFrameRef.current = 0;
@@ -52,14 +54,27 @@ export function ScrollProvider({ children }: { readonly children: ReactNode }) {
       lenisRef.current = null;
     };
 
-    const synchronizeLenis = () => {
-      if (mediaQuery.matches) {
-        destroyLenis();
+    const initializeLenis = async () => {
+      if (
+        disposed ||
+        mediaQuery.matches ||
+        root.dataset["entryReady"] !== "true" ||
+        lenisRef.current
+      ) {
         return;
       }
 
-      if (lenisRef.current) return;
-      const lenis = new Lenis({
+      const { default: LenisConstructor } = await import("lenis");
+      if (
+        disposed ||
+        mediaQuery.matches ||
+        root.dataset["entryReady"] !== "true" ||
+        lenisRef.current
+      ) {
+        return;
+      }
+
+      const lenis = new LenisConstructor({
         anchors: false,
         autoRaf: false,
         lerp: 0.1,
@@ -70,9 +85,25 @@ export function ScrollProvider({ children }: { readonly children: ReactNode }) {
       unsubscribeVirtualScrollRef.current = lenis.on("virtual-scroll", wakeLenis);
     };
 
+    const synchronizeLenis = () => {
+      if (mediaQuery.matches || root.dataset["entryReady"] !== "true") {
+        destroyLenis();
+        return;
+      }
+
+      void initializeLenis();
+    };
+
+    const entryObserver = new MutationObserver(synchronizeLenis);
+    entryObserver.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-entry-ready"],
+    });
     synchronizeLenis();
     mediaQuery.addEventListener("change", synchronizeLenis);
     return () => {
+      disposed = true;
+      entryObserver.disconnect();
       mediaQuery.removeEventListener("change", synchronizeLenis);
       destroyLenis();
     };

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import type { ReactNode } from "react";
+import { preload } from "react-dom";
 
 import { RouteTransition } from "@/components/transitions/RouteTransition";
 import { themeBootstrapScript } from "@/features/theme/theme-bootstrap";
@@ -45,7 +46,7 @@ function resolveSiteUrl(value: string | undefined): URL | undefined {
   return url;
 }
 
-const siteUrl = resolveSiteUrl(process.env["NEXT_PUBLIC_SITE_URL"]);
+const siteUrl = resolveSiteUrl(process.env["NEXT_PUBLIC_SITE_URL"] ?? "https://noirdigital.com.br");
 
 export const metadata: Metadata = {
   title,
@@ -98,6 +99,22 @@ type RootLayoutProps = {
 };
 
 export default function RootLayout({ children }: RootLayoutProps): ReactNode {
+  preload("/assets/v1/fonts/TikTokSans.woff2", {
+    as: "font",
+    type: "font/woff2",
+    crossOrigin: "anonymous",
+  });
+  preload("/assets/v1/fonts/GeistMono.woff2", {
+    as: "font",
+    type: "font/woff2",
+    crossOrigin: "anonymous",
+  });
+  preload("/assets/v1/fonts/DepartureMono.woff2", {
+    as: "font",
+    type: "font/woff2",
+    crossOrigin: "anonymous",
+  });
+
   return (
     <html lang="pt-BR" className="dark" data-theme="dark" suppressHydrationWarning>
       <head>

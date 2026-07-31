@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { TrustStrip } from "@/components/trust/TrustStrip";
@@ -24,12 +24,59 @@ vi.mock("@/features/scroll/use-scroll-spy", () => ({
 
 afterEach(() => {
   cleanup();
+  vi.unstubAllGlobals();
   serviceIndexMocks.activeId = "service-sites";
   serviceIndexMocks.scrollToSelector.mockClear();
   window.history.replaceState(null, "", "/");
 });
 
 describe("TrustStrip", () => {
+  it("pauses the marquee until at least one pixel is visible", () => {
+    let notify: IntersectionObserverCallback = () => undefined;
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        constructor(callback: IntersectionObserverCallback) {
+          notify = callback;
+        }
+
+        observe() {}
+        disconnect() {}
+      },
+    );
+
+    const view = render(<TrustStrip />);
+    const section = view.container.querySelector("section");
+
+    act(() => {
+      notify(
+        [
+          {
+            boundingClientRect: { bottom: 1010, top: 800 },
+            isIntersecting: true,
+            rootBounds: { bottom: 800, top: 0 },
+          } as IntersectionObserverEntry,
+        ],
+        {} as IntersectionObserver,
+      );
+    });
+    expect(section).toHaveAttribute("data-animation-active", "false");
+
+    act(() => {
+      notify(
+        [
+          {
+            boundingClientRect: { bottom: 1009, top: 799 },
+            isIntersecting: true,
+            rootBounds: { bottom: 800, top: 0 },
+          } as IntersectionObserverEntry,
+        ],
+        {} as IntersectionObserver,
+      );
+    });
+    expect(section).toHaveAttribute("data-animation-active", "true");
+  });
+
   it("renders every approved logo once for assistive technology", () => {
     render(<TrustStrip />);
 
@@ -43,20 +90,24 @@ describe("TrustStrip", () => {
     }
   });
 
-  it("keeps four visual sequences moving continuously for a gap-free CSS marquee", () => {
+  it("keeps two visual sequences moving continuously for a gap-free CSS marquee", () => {
     const view = render(<TrustStrip />);
     const track = view.container.querySelector('[data-logo-marquee="track"]');
     const sequences = track?.querySelectorAll('[data-logo-marquee="sequence"]');
     const css = readFileSync(join(process.cwd(), "components/trust/TrustStrip.module.css"), "utf8");
 
     expect(track).toBeInTheDocument();
-    expect(sequences).toHaveLength(4);
+    expect(sequences).toHaveLength(2);
     expect(sequences?.[1]).toHaveAttribute("aria-hidden", "true");
-    expect(sequences?.[2]).toHaveAttribute("aria-hidden", "true");
-    expect(sequences?.[3]).toHaveAttribute("aria-hidden", "true");
     expect(css).toMatch(/@keyframes\s+logo-marquee/);
-    expect(css).toMatch(/translate3d\(-25%,\s*0,\s*0\)/);
-    expect(css).not.toMatch(/animation-play-state:\s*paused/);
+    expect(css).toMatch(/translate3d\(-50%,\s*0,\s*0\)/);
+    expect(view.container.querySelector("section")).toHaveAttribute(
+      "data-animation-active",
+      "true",
+    );
+    expect(css).toMatch(
+      /\.trustStrip\[data-animation-active="false"\] \.marqueeTrack\s*\{[^}]*animation-play-state:\s*paused/,
+    );
     expect(css).toMatch(/prefers-reduced-motion:\s*reduce/);
     expect(css).toMatch(/\.logoSequence\s*\{[^}]*gap:\s*clamp\(24px,\s*3vw,\s*48px\)/);
     expect(css).toMatch(/\.logoItem\s*\{[^}]*width:\s*clamp\(104px,\s*9vw,\s*148px\)/);
@@ -261,6 +312,9 @@ describe("SelectedWork", () => {
 
   it("uses the pre-optimized work assets directly in both image slots", () => {
     render(<SelectedWork />);
+    const featuredProjects = new Set(
+      groupProjectsByService().flatMap((group) => group.projects[0]?.slug ?? []),
+    );
 
     for (const project of projects) {
       const card = screen.getByTestId(`project-${project.slug}`);
@@ -272,8 +326,24 @@ describe("SelectedWork", () => {
 
       expect(primary).toHaveAttribute("data-image-role", "primary");
       expect(primary).toHaveAttribute("src", project.image);
+      expect(primary).toHaveAttribute("loading", "lazy");
+      expect(primary).toHaveAttribute("fetchpriority", "low");
+      expect(primary).toHaveAttribute(
+        "width",
+        featuredProjects.has(project.slug) ? "2400" : "1200",
+      );
+      expect(primary).toHaveAttribute(
+        "height",
+        featuredProjects.has(project.slug) ? "1351" : "1200",
+      );
+      expect(primary.getAttribute("srcset")).toContain("-960.webp 960w");
       expect(hover).toHaveAttribute("aria-hidden", "true");
       expect(hover).toHaveAttribute("src", project.hoverImage);
+      expect(hover).toHaveAttribute("loading", "lazy");
+      expect(hover).toHaveAttribute("fetchpriority", "low");
+      expect(hover).toHaveAttribute("width", featuredProjects.has(project.slug) ? "2400" : "1200");
+      expect(hover).toHaveAttribute("height", featuredProjects.has(project.slug) ? "1351" : "1200");
+      expect(hover?.getAttribute("srcset")).toContain("-960.webp 960w");
       expect(hoverReveal).toBeInTheDocument();
       expect(hoverReveal).toHaveAttribute("aria-hidden", "true");
       expect(frame).toContainElement(hoverReveal);

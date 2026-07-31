@@ -244,7 +244,7 @@
   transition: transform 260ms ease;
 }
 
-.signalGlyph circle {
+.signalGlyph path {
   fill: currentColor;
 }
 

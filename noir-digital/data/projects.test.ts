@@ -100,7 +100,18 @@ describe("projects", () => {
     const uniqueProjectAssets = Array.from(
       new Set(projects.flatMap((project) => [project.image, project.hoverImage])),
     );
-    const modeledAssets = Array.from(new Set([...uniqueProjectAssets, ...reservedWorkAssets]));
+    const featuredProjects = new Set(
+      groupProjectsByService().flatMap((group) => group.projects[0]?.slug ?? []),
+    );
+    const responsiveProjectAssets = projects.flatMap((project) => {
+      const widths = featuredProjects.has(project.slug) ? [640, 960, 1440] : [480, 720, 960];
+      return [project.image, project.hoverImage].flatMap((asset) =>
+        widths.map((width) => asset.replace(/\.webp$/, `-${width}.webp`)),
+      );
+    });
+    const modeledAssets = Array.from(
+      new Set([...uniqueProjectAssets, ...responsiveProjectAssets, ...reservedWorkAssets]),
+    );
 
     // When the approved public work directory is enumerated.
     const publicWorkAssets = (
@@ -112,10 +123,11 @@ describe("projects", () => {
       .map((entry) => `/work/${entry.name}`)
       .toSorted();
 
-    // Then the nine image pairs cover the directory exactly, with no obsolete placeholders.
+    // Then the nine image pairs and their responsive derivatives cover the directory exactly.
     expect(uniqueProjectAssets).toHaveLength(18);
+    expect(responsiveProjectAssets).toHaveLength(54);
     expect(reservedWorkAssets).toEqual([]);
-    expect(modeledAssets).toHaveLength(18);
+    expect(modeledAssets).toHaveLength(72);
     expect(modeledAssets.toSorted()).toEqual(publicWorkAssets);
   });
 });

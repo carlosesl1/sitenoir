@@ -24,6 +24,7 @@ describe("EntryPreloader", () => {
     delete window.__NOIR_READY__;
     delete document.documentElement.dataset["entryLoading"];
     delete document.documentElement.dataset["entryTextReady"];
+    delete document.documentElement.dataset["entryReady"];
     delete document.documentElement.dataset["routeTransition"];
   });
 

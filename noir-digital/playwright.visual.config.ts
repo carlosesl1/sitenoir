@@ -22,12 +22,12 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run build && npm run start -- --port 3100",
+    command: "npm run build && node scripts/serve-static-export.mjs out 3100",
     env: {
       NEXT_PUBLIC_VISUAL_TEST_MODE: "1",
     },
     url: baseURL,
-    reuseExistingServer: false,
+    reuseExistingServer: process.env["CI"] !== "true",
     timeout: 240_000,
   },
 });

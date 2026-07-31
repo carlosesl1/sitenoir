@@ -1,7 +1,6 @@
 "use client";
 
 import { useReducedMotion } from "motion/react";
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   useWorkCardAnimation,
@@ -28,6 +27,24 @@ import styles from "./SelectedWork.module.css";
 interface ProjectCardProps {
   readonly featured: boolean;
   readonly project: Project;
+}
+
+const featuredImageWidths = [640, 960, 1440] as const;
+const standardImageWidths = [480, 720, 960] as const;
+
+function resolveVariantSource(source: Project["image"] | Project["hoverImage"], width: number) {
+  return source.replace(/\.webp$/, `-${width}.webp`);
+}
+
+function resolveWorkImageSrcSet(
+  source: Project["image"] | Project["hoverImage"],
+  featured: boolean,
+) {
+  const widths = featured ? featuredImageWidths : standardImageWidths;
+  return [
+    ...widths.map((width) => `${resolveVariantSource(source, width)} ${width}w`),
+    `${source} ${featured ? 2400 : 1200}w`,
+  ].join(", ");
 }
 
 type CanvasRenderState = {
@@ -312,26 +329,36 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
           data-curl-active="false"
         >
           <span className={styles["imageClip"]}>
-            <Image
+            {/* biome-ignore lint/performance/noImgElement: the static export uses authored responsive files and preserves canvas refs */}
+            <img
               ref={primaryImageRef}
               className={styles["primaryImage"]}
               data-image-role="primary"
               src={project.image}
+              srcSet={resolveWorkImageSrcSet(project.image, featured)}
               alt={project.imageAlt}
-              fill
               sizes={sizes}
-              unoptimized
+              width={featured ? 2400 : 1200}
+              height={featured ? 1351 : 1200}
+              loading="lazy"
+              decoding="async"
+              fetchPriority="low"
             />
-            <Image
+            {/* biome-ignore lint/performance/noImgElement: the static export uses authored responsive files and preserves canvas refs */}
+            <img
               ref={hoverImageRef}
               className={styles["hoverImage"]}
               data-image-role="hover"
               src={project.hoverImage}
+              srcSet={resolveWorkImageSrcSet(project.hoverImage, featured)}
               alt=""
               aria-hidden="true"
-              fill
               sizes={sizes}
-              unoptimized
+              width={featured ? 2400 : 1200}
+              height={featured ? 1351 : 1200}
+              loading="lazy"
+              decoding="async"
+              fetchPriority="low"
             />
           </span>
           <CardHoverRevealCanvas

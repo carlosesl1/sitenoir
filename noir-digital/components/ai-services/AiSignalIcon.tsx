@@ -140,7 +140,20 @@ type AiSignalIconProps = {
   className?: string | undefined;
 };
 
+function createDotPath(points: readonly Point[], radius: number): string {
+  return points
+    .map(
+      ({ x, y }) =>
+        `M ${x + radius} ${y} A ${radius} ${radius} 0 1 0 ${x - radius} ${y} A ${radius} ${radius} 0 1 0 ${x + radius} ${y} Z`,
+    )
+    .join(" ");
+}
+
 export function AiSignalIcon({ glyph, className }: AiSignalIconProps) {
+  const points = signalPoints[glyph];
+  const regularPoints = points.filter((point) => !point.emphasis);
+  const emphasisPoints = points.filter((point) => point.emphasis);
+
   return (
     <svg
       className={className}
@@ -149,17 +162,23 @@ export function AiSignalIcon({ glyph, className }: AiSignalIconProps) {
       focusable="false"
       viewBox="3 3 42 42"
     >
-      {signalPoints[glyph].map((point) => (
-        <circle
-          key={`${glyph}-${point.x.toFixed(2)}-${point.y.toFixed(2)}`}
-          className="ai-signal-dot"
-          data-ai-glyph-dot="true"
-          data-ai-glyph-emphasis={point.emphasis ? "true" : undefined}
-          cx={point.x}
-          cy={point.y}
-          r={point.emphasis ? "0.88" : "0.72"}
+      {regularPoints.length > 0 ? (
+        <path
+          className="ai-signal-dots"
+          data-ai-glyph-dots="true"
+          data-ai-glyph-dot-count={regularPoints.length}
+          d={createDotPath(regularPoints, 0.72)}
         />
-      ))}
+      ) : null}
+      {emphasisPoints.length > 0 ? (
+        <path
+          className="ai-signal-dots"
+          data-ai-glyph-dots="true"
+          data-ai-glyph-dot-count={emphasisPoints.length}
+          data-ai-glyph-emphasis="true"
+          d={createDotPath(emphasisPoints, 0.88)}
+        />
+      ) : null}
     </svg>
   );
 }

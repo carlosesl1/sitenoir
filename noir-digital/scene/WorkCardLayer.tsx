@@ -18,7 +18,7 @@ import {
   type WebGLRenderer,
 } from "three";
 
-import { projects, type ServiceId, serviceGroups } from "@/data/projects";
+import { projects } from "@/data/projects";
 import {
   createImageCanvasGate,
   createWorkCardTexture,
@@ -281,39 +281,8 @@ export function WorkCardLayer() {
           queuePrewarm(element, index);
         }
       },
-      { rootMargin: "150% 0px" },
+      { rootMargin: "50% 0px" },
     );
-    let idleCallback = 0;
-    let idleTimeout = 0;
-    let nextServiceIndex = 1;
-    const queueService = (service: ServiceId) => {
-      for (let index = 0; index < projects.length; index += 1) {
-        if (projects[index]?.primaryService !== service) continue;
-        const element = resolveElement(elements.current, index);
-        if (!element) continue;
-        for (const image of element.querySelectorAll<HTMLImageElement>("img")) {
-          image.fetchPriority = "low";
-          image.loading = "eager";
-        }
-        prewarmObserver.unobserve(element);
-        queuePrewarm(element, index);
-      }
-    };
-    const queueNextService = () => {
-      if (disposed || nextServiceIndex >= serviceGroups.length) return;
-      const service = serviceGroups[nextServiceIndex];
-      nextServiceIndex += 1;
-      if (service) queueService(service.id);
-      scheduleNextService();
-    };
-    const scheduleNextService = () => {
-      if (disposed || nextServiceIndex >= serviceGroups.length) return;
-      if (typeof window.requestIdleCallback === "function") {
-        idleCallback = window.requestIdleCallback(queueNextService, { timeout: 750 });
-      } else {
-        idleTimeout = window.setTimeout(queueNextService, 0);
-      }
-    };
     for (let index = 0; index < projects.length; index += 1) {
       const element = resolveElement(elements.current, index);
       if (!element) continue;
@@ -321,15 +290,8 @@ export function WorkCardLayer() {
       visibilityObserver.observe(element);
       prewarmObserver.observe(element);
     }
-    const initialService = serviceGroups[0];
-    if (initialService) queueService(initialService.id);
-    scheduleNextService();
     return () => {
       disposed = true;
-      if (idleCallback && typeof window.cancelIdleCallback === "function") {
-        window.cancelIdleCallback(idleCallback);
-      }
-      if (idleTimeout) window.clearTimeout(idleTimeout);
       for (const cleanup of imageCleanups) cleanup();
       imageCleanups.clear();
       visibilityObserver.disconnect();

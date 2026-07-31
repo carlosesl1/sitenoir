@@ -178,6 +178,7 @@ beforeEach(() => {
   localStorage.clear();
   document.documentElement.className = "";
   delete document.documentElement.dataset["theme"];
+  document.documentElement.dataset["entryReady"] = "true";
   FakeAudio.instances = [];
   FakeAudio.rejectPlayback = false;
   FakeAudio.deferPlayback = false;
@@ -196,6 +197,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  delete document.documentElement.dataset["entryReady"];
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
@@ -449,14 +451,32 @@ describe("AudioProvider", () => {
 });
 
 describe("ScrollProvider", () => {
-  it("owns, uses, and disposes one Lenis instance", () => {
+  it("defers Lenis until the entry reveal has unlocked the page", async () => {
+    delete document.documentElement.dataset["entryReady"];
+
+    render(
+      <ScrollProvider>
+        <ScrollHarness />
+      </ScrollProvider>,
+    );
+
+    await act(async () => Promise.resolve());
+    expect(lenisMock.construct).not.toHaveBeenCalled();
+
+    act(() => {
+      document.documentElement.dataset["entryReady"] = "true";
+    });
+    await waitFor(() => expect(lenisMock.construct).toHaveBeenCalledTimes(1));
+  });
+
+  it("owns, uses, and disposes one Lenis instance", async () => {
     const view = render(
       <ScrollProvider>
         <ScrollHarness />
       </ScrollProvider>,
     );
 
-    expect(lenisMock.construct).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(lenisMock.construct).toHaveBeenCalledTimes(1));
     fireEvent.click(screen.getByRole("button", { name: "Contact" }));
     expect(lenisMock.scrollTo).toHaveBeenCalledWith("#contact");
 
@@ -464,7 +484,7 @@ describe("ScrollProvider", () => {
     expect(lenisMock.destroy).toHaveBeenCalledTimes(1);
   });
 
-  it("does not initialize Lenis when reduced motion is preferred", () => {
+  it("does not initialize Lenis when reduced motion is preferred", async () => {
     installMatchMedia({ reducedMotion: true });
 
     render(
@@ -473,29 +493,30 @@ describe("ScrollProvider", () => {
       </ScrollProvider>,
     );
 
+    await act(async () => Promise.resolve());
     expect(lenisMock.construct).not.toHaveBeenCalled();
   });
 
-  it("reacts to reduced-motion preference changes", () => {
+  it("reacts to reduced-motion preference changes", async () => {
     const media = installMatchMedia();
     const view = render(
       <ScrollProvider>
         <ScrollHarness />
       </ScrollProvider>,
     );
-    expect(lenisMock.construct).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(lenisMock.construct).toHaveBeenCalledTimes(1));
 
     act(() => media.setMatches("(prefers-reduced-motion: reduce)", true));
     expect(lenisMock.destroy).toHaveBeenCalledTimes(1);
 
     act(() => media.setMatches("(prefers-reduced-motion: reduce)", false));
-    expect(lenisMock.construct).toHaveBeenCalledTimes(2);
+    await waitFor(() => expect(lenisMock.construct).toHaveBeenCalledTimes(2));
 
     view.unmount();
     expect(lenisMock.destroy).toHaveBeenCalledTimes(2);
   });
 
-  it("runs Lenis frames only while smooth scrolling is active", () => {
+  it("runs Lenis frames only while smooth scrolling is active", async () => {
     const callbacks = new Map<number, FrameRequestCallback>();
     let nextFrame = 0;
     vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
@@ -512,6 +533,7 @@ describe("ScrollProvider", () => {
         <ScrollHarness />
       </ScrollProvider>,
     );
+    await waitFor(() => expect(lenisMock.construct).toHaveBeenCalledTimes(1));
     expect(nextFrame).toBe(1);
 
     callbacks.get(1)?.(100);

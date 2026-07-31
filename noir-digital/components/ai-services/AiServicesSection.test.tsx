@@ -52,7 +52,11 @@ describe("AiServicesSection", () => {
       expect(signal).toHaveAttribute("aria-hidden", "true");
       const icon = signal?.querySelector(`svg[data-ai-glyph-icon="${service.glyph}"]`);
       expect(icon).toBeInTheDocument();
-      expect(icon?.querySelectorAll('[data-ai-glyph-dot="true"]').length).toBeGreaterThan(20);
+      const dotCount = [...(icon?.querySelectorAll('[data-ai-glyph-dots="true"]') ?? [])].reduce(
+        (total, path) => total + Number(path.getAttribute("data-ai-glyph-dot-count") ?? 0),
+        0,
+      );
+      expect(dotCount).toBeGreaterThan(20);
       if (service.glyph !== "copilots") {
         expect(icon?.querySelector('[data-ai-glyph-emphasis="true"]')).toBeInTheDocument();
       }
@@ -118,7 +122,7 @@ describe("AiServicesSection", () => {
       /\.signal::before\s*\{[^}]*inset:\s*6%[^}]*background-size:\s*4px 4px[^}]*opacity:\s*0\.42/,
     );
     expect(css).not.toMatch(/\.signal::before\s*\{[^}]*mask-image/);
-    expect(css).toMatch(/\.signalGlyph circle\s*\{[^}]*fill:\s*currentColor/);
+    expect(css).toMatch(/\.signalGlyph path\s*\{[^}]*fill:\s*currentColor/);
     expect(css).not.toContain("stroke-dasharray");
     expect(css).toContain("@media (prefers-reduced-motion: reduce)");
     expect(css).not.toContain("animation: infinite");

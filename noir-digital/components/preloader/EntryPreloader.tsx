@@ -53,15 +53,25 @@ export function EntryPreloader() {
     delete document.documentElement.dataset["entryTextReady"];
     delete document.documentElement.dataset["entryReady"];
 
-    const handleDocumentReady = () => setDocumentReady(true);
-    if (document.readyState === "complete") handleDocumentReady();
-    else window.addEventListener("load", handleDocumentReady, { once: true });
+    setDocumentReady(true);
 
-    if (document.fonts)
-      void document.fonts.ready.then(() => {
-        if (!cancelled) setFontsReady(true);
-      });
-    else setFontsReady(true);
+    if (document.fonts) {
+      const criticalFonts = [
+        document.fonts.load('700 1em "TikTok Sans"', "NOIR DIGITAL"),
+        document.fonts.load('500 1em "Geist Mono"', "NOIR DIGITAL"),
+        document.fonts.load('400 1em "Departure Mono"', "NOIR DIGITAL"),
+      ];
+      void Promise.all(criticalFonts).then(
+        () => {
+          if (!cancelled) setFontsReady(true);
+        },
+        () => {
+          if (!cancelled) setFontsReady(true);
+        },
+      );
+    } else {
+      setFontsReady(true);
+    }
 
     let frame = 0;
     const stopSceneWait = () => {
@@ -91,7 +101,6 @@ export function EntryPreloader() {
 
     return () => {
       cancelled = true;
-      window.removeEventListener("load", handleDocumentReady);
       stopSceneWait();
       window.clearTimeout(timeout);
       delete document.documentElement.dataset["entryLoading"];

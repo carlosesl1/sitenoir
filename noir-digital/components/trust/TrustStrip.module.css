@@ -42,6 +42,10 @@
   will-change: transform;
 }
 
+.trustStrip[data-animation-active="false"] .marqueeTrack {
+  animation-play-state: paused;
+}
+
 .logoSequence {
   display: flex;
   flex: none;
@@ -94,7 +98,7 @@
   }
 
   to {
-    transform: translate3d(-25%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 

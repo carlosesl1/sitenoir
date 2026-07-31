@@ -1,20 +1,57 @@
+"use client";
+
 import type { CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 
 import { type ClientLogo, clientLogos } from "@/data/content";
 
 import styles from "./TrustStrip.module.css";
 
 export function TrustStrip() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    if (!("IntersectionObserver" in window)) {
+      section.dataset["animationActive"] = "true";
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const rootTop = entry?.rootBounds?.top ?? 0;
+        const rootBottom = entry?.rootBounds?.bottom ?? window.innerHeight;
+        const visiblePixels = entry
+          ? Math.max(
+              0,
+              Math.min(entry.boundingClientRect.bottom, rootBottom) -
+                Math.max(entry.boundingClientRect.top, rootTop),
+            )
+          : 0;
+        section.dataset["animationActive"] =
+          entry?.isIntersecting && visiblePixels >= 1 ? "true" : "false";
+      },
+      { threshold: [0, 0.01] },
+    );
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className={styles["trustStrip"]} aria-labelledby="clients-heading">
+    <section
+      ref={sectionRef}
+      className={styles["trustStrip"]}
+      aria-labelledby="clients-heading"
+      data-animation-active="false"
+    >
       <h2 id="clients-heading" className={styles["eyebrow"]}>
         Empresas que confiam
       </h2>
       <div className={styles["marqueeViewport"]}>
         <div className={styles["marqueeTrack"]} data-logo-marquee="track">
           <LogoSequence logos={clientLogos} />
-          <LogoSequence logos={clientLogos} duplicate />
-          <LogoSequence logos={clientLogos} duplicate />
           <LogoSequence logos={clientLogos} duplicate />
         </div>
       </div>

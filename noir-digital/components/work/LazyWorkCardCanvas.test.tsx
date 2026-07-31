@@ -69,7 +69,7 @@ describe("LazyWorkCardCanvas", () => {
     );
 
     expect(screen.queryByTestId("work-card-canvas")).not.toBeInTheDocument();
-    expect(TestIntersectionObserver.current?.rootMargin).toBe("150% 0px");
+    expect(TestIntersectionObserver.current?.rootMargin).toBe("10% 0px");
     expect(TestIntersectionObserver.current?.observe).toHaveBeenCalledWith(
       document.getElementById("selected-work"),
     );

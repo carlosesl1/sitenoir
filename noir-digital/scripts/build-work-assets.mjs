@@ -9,6 +9,8 @@ const output = path.join(root, "public", "work");
 
 const featuredSize = { width: 2400, height: 1351 };
 const standardSize = { width: 1200, height: 1200 };
+const featuredVariantWidths = [640, 960, 1440];
+const standardVariantWidths = [480, 720, 960];
 
 const assets = [
   {
@@ -106,20 +108,31 @@ const assets = [
   },
 ];
 
-for (const asset of assets) {
-  const size = asset.featured ? featuredSize : standardSize;
-  const source = path.join(sources, ...asset.source);
-
+async function writeWorkAsset(source, outputFile, width, height) {
   await sharp(source)
     .rotate()
-    .resize(size.width, size.height, {
+    .resize(width, height, {
       fit: "cover",
       kernel: sharp.kernel.lanczos3,
       position: "centre",
     })
     .sharpen({ sigma: 0.7 })
     .webp({ quality: 94, effort: 6, smartSubsample: true })
-    .toFile(path.join(output, asset.output));
+    .toFile(path.join(output, outputFile));
+}
 
+for (const asset of assets) {
+  const size = asset.featured ? featuredSize : standardSize;
+  const variantWidths = asset.featured ? featuredVariantWidths : standardVariantWidths;
+  const source = path.join(sources, ...asset.source);
+
+  await writeWorkAsset(source, asset.output, size.width, size.height);
   console.log(`${asset.output}: ${size.width}x${size.height}`);
+
+  for (const width of variantWidths) {
+    const height = Math.round((width / size.width) * size.height);
+    const variantOutput = asset.output.replace(/\.webp$/, `-${width}.webp`);
+    await writeWorkAsset(source, variantOutput, width, height);
+    console.log(`${variantOutput}: ${width}x${height}`);
+  }
 }
