@@ -10,6 +10,7 @@ import { resolveSceneCameraZ, sceneTransitionStore } from "@/scene/scene-transit
 import { resolveCameraParallax } from "@/scene/site-camera-parallax";
 
 interface SiteCameraRigProps {
+  readonly centerLocked: boolean;
   readonly reducedMotion: boolean;
 }
 
@@ -18,7 +19,7 @@ const PARALLAX_LAG = 12;
 const PARALLAX_LEAVE_LAG = 3.1;
 const CAMERA_ENTRY_DURATION = 1.2;
 
-export function SiteCameraRig({ reducedMotion }: SiteCameraRigProps) {
+export function SiteCameraRig({ centerLocked, reducedMotion }: SiteCameraRigProps) {
   const camera = useThree((state) => state.camera);
   const basePosition = useMemo(() => camera.position.clone(), [camera]);
   const targetPosition = useMemo(() => new Vector3(), []);
@@ -35,6 +36,7 @@ export function SiteCameraRig({ reducedMotion }: SiteCameraRigProps) {
       pointerY,
       reducedMotion,
       transition.contactVisible,
+      centerLocked,
     );
     const targetX = parallax.x;
     const targetY = parallax.y;

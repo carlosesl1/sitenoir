@@ -11,4 +11,9 @@ describe("resolveCameraParallax", () => {
   it("disables camera parallax for reduced motion", () => {
     expect(resolveCameraParallax(1, 1, true, false)).toEqual({ x: 0, y: 0 });
   });
+
+  it("locks the camera center while the principles effect owns the viewport", () => {
+    expect(resolveCameraParallax(-1, 0.5, false, false, true)).toEqual({ x: 0, y: 0 });
+    expect(resolveCameraParallax(1, -0.5, false, false, true)).toEqual({ x: 0, y: 0 });
+  });
 });

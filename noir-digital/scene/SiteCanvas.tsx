@@ -191,7 +191,7 @@ export function SiteCanvas({ quality }: { readonly quality: SceneQuality }) {
             reducedMotion={deterministicMotion}
             scrollProgress={scrollYProgress}
           />
-          <SiteCameraRig reducedMotion={deterministicMotion} />
+          <SiteCameraRig centerLocked={principleScene.active} reducedMotion={deterministicMotion} />
           <HeroOpticalBackground
             active
             frameStride={qualityConfig.opticalFrameStride}

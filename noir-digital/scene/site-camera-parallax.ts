@@ -10,8 +10,9 @@ export function resolveCameraParallax(
   pointerY: number,
   reducedMotion: boolean,
   contactVisible: boolean,
+  centerLocked = false,
 ): CameraParallaxTarget {
-  if (reducedMotion || contactVisible) return { x: 0, y: 0 };
+  if (reducedMotion || contactVisible || centerLocked) return { x: 0, y: 0 };
 
   return {
     x: -pointerX * PARALLAX_STRENGTH,
