@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { SpectrumContactCta } from "@/components/contact/SpectrumContactCta";
 import { contactEmail, contactHeadlineLines, socialLinks } from "@/data/content";
 
@@ -24,13 +26,28 @@ export function ContactFooter() {
 
       <div className={styles["informationFooter"]}>
         <div className={styles["informationGrid"]}>
-          <section className={`${styles["informationCell"]} ${styles["brandCell"]}`}>
-            <span className={styles["brandSymbol"]} aria-hidden="true">
-              ✦
-            </span>
-            <div className={styles["brandIdentity"]}>
-              <p>NOIR DIGITAL</p>
-              <span>ESTÚDIO DE ESTRUTURA DIGITAL</span>
+          <section
+            className={`${styles["informationCell"]} ${styles["brandCell"]}`}
+            aria-label="NOIR DIGITAL — Estúdio de Estrutura Digital"
+          >
+            <Image
+              className={styles["brandSymbol"]}
+              src="/brand/noir-symbol.svg"
+              width="164"
+              height="186"
+              alt=""
+              aria-hidden="true"
+            />
+            <div className={styles["brandLockup"]}>
+              <Image
+                className={styles["brandWordmark"]}
+                src="/brand/noir-wordmark.svg"
+                width="389"
+                height="116"
+                alt=""
+                aria-hidden="true"
+              />
+              <span className={styles["brandTagline"]}>ESTÚDIO DE ESTRUTURA DIGITAL</span>
             </div>
           </section>
 
@@ -43,15 +60,17 @@ export function ContactFooter() {
             <h3 id="footer-social-label">Social</h3>
             <div className={styles["informationList"]}>
               {socialLinks.map((social) => (
-                <span key={social.label}>{social.label}</span>
+                <a key={social.label} href={social.href} target="_blank" rel="noreferrer">
+                  {social.label}
+                </a>
               ))}
             </div>
           </section>
 
           <nav className={styles["informationCell"]} aria-label="Links do footer">
             <h3>Links</h3>
-            <a href="/#selected-work">Work</a>
-            <a href="/services">Services</a>
+            <a href="/#selected-work">Projetos</a>
+            <a href="/services">Serviços</a>
           </nav>
         </div>
 

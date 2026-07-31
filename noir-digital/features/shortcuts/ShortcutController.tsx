@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 
-import { useAudio } from "@/features/audio/AudioProvider";
 import { useScroll } from "@/features/scroll/ScrollProvider";
 import { resolveShortcut } from "@/features/shortcuts/shortcuts";
 import { useTheme } from "@/features/theme/ThemeProvider";
@@ -16,7 +15,6 @@ function isEditableTarget(target: EventTarget | null): boolean {
 }
 
 export function ShortcutController() {
-  const { toggle } = useAudio();
   const { scrollTo } = useScroll();
   const { setTheme } = useTheme();
 
@@ -32,9 +30,6 @@ export function ShortcutController() {
         case "theme":
           setTheme(action.value);
           break;
-        case "sound-toggle":
-          toggle();
-          break;
         case "scroll":
           scrollTo(action.target);
           break;
@@ -43,7 +38,7 @@ export function ShortcutController() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [scrollTo, setTheme, toggle]);
+  }, [scrollTo, setTheme]);
 
   return null;
 }

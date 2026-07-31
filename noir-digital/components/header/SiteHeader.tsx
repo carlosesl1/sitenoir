@@ -3,7 +3,6 @@
 import { AnimatePresence } from "motion/react";
 import { useRef, useState } from "react";
 
-import { SoundButton } from "@/components/controls/SoundButton";
 import { ThemeButton } from "@/components/controls/ThemeButton";
 import { HeaderStatus } from "@/components/header/HeaderStatus";
 import { MobileMenu } from "@/components/header/MobileMenu";
@@ -57,31 +56,30 @@ export function SiteHeader({ sectionLinksBase }: SiteHeaderProps = {}) {
                 className={styles["control"]}
                 href={`${sectionLinksBase}${sectionSelector("work")}`}
               >
-                Work
+                Serviços
               </a>
               <a
                 className={styles["control"]}
                 href={`${sectionLinksBase}${sectionSelector("contact")}`}
               >
-                Contact
+                Contato
               </a>
             </>
           ) : (
             <>
               <button className={styles["control"]} type="button" onClick={() => scrollTo("work")}>
-                Work
+                Serviços
               </button>
               <button
                 className={styles["control"]}
                 type="button"
                 onClick={() => scrollTo("contact")}
               >
-                Contact
+                Contato
               </button>
             </>
           )}
           <ThemeButton className={styles["control"]} />
-          <SoundButton className={styles["control"]} />
         </nav>
 
         <button

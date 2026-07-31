@@ -166,9 +166,12 @@ describe("homepage content", () => {
     ]);
   });
 
-  it("preserves the contact headline, email, and non-linked social labels", () => {
+  it("preserves the contact headline, email, and approved social profiles", () => {
     expect(contactHeadlineLines).toEqual(["O PRÓXIMO PASSO", "DO SEU NEGÓCIO", "COMEÇA AQUI."]);
     expect(contactEmail).toBe("contato@noirdigital.com.br");
-    expect(socialLinks).toEqual([{ label: "Twitter/X" }, { label: "Figma" }, { label: "GitHub" }]);
+    expect(socialLinks).toEqual([
+      { label: "Instagram", href: "https://www.instagram.com/agencianoirdigital/" },
+      { label: "LinkedIn", href: "https://www.linkedin.com/company/noirdigital1/" },
+    ]);
   });
 });

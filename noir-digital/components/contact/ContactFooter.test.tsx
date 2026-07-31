@@ -31,7 +31,7 @@ describe("ContactFooter", () => {
     expect(css).not.toMatch(/\.headline\s*\{[^}]*color:\s*var\(--color-noir-warm-white\)/);
   });
 
-  it("preserves the email action, non-linked social labels, and the 3D anchor", () => {
+  it("preserves the email action, approved social links, and the 3D anchor", () => {
     const view = render(<ContactFooter />);
 
     const contactCta = screen.getByRole("link", { name: "Entrar em contato" });
@@ -42,8 +42,21 @@ describe("ContactFooter", () => {
       `mailto:${contactEmail}`,
     );
     for (const social of socialLinks) {
-      expect(screen.getByText(social.label)).not.toHaveAttribute("href");
+      expect(screen.getByRole("link", { name: social.label })).toHaveAttribute("href", social.href);
     }
+
+    const brandSymbol = view.container.querySelector('img[src*="noir-symbol.svg"]');
+    const brandWordmark = view.container.querySelector('img[src*="noir-wordmark.svg"]');
+    expect(brandSymbol).toHaveAttribute("aria-hidden", "true");
+    expect(brandWordmark).toHaveAttribute("aria-hidden", "true");
+    expect(view.container.querySelector('img[src*="noir-face.png"]')).not.toBeInTheDocument();
+
+    const css = readFileSync(
+      join(process.cwd(), "components/contact/ContactFooter.module.css"),
+      "utf8",
+    );
+    expect(css).toContain(':global([data-theme="light"]) .brandSymbol');
+    expect(css).toContain(':global([data-theme="light"]) .brandWordmark');
 
     expect(view.container.querySelector("#contact")).toBeInTheDocument();
     expect(view.container.querySelector('[data-scene-anchor="contact"]')).toHaveAttribute(
@@ -59,8 +72,11 @@ describe("ContactFooter", () => {
     expect(
       screen.getByText("© NOIR DIGITAL 2026. TODOS OS DIREITOS RESERVADOS."),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Work" })).toHaveAttribute("href", "/#selected-work");
-    expect(screen.getByRole("link", { name: "Services" })).toHaveAttribute("href", "/services");
+    expect(screen.getByRole("link", { name: "Projetos" })).toHaveAttribute(
+      "href",
+      "/#selected-work",
+    );
+    expect(screen.getByRole("link", { name: "Serviços" })).toHaveAttribute("href", "/services");
 
     const privacyLinks = screen.getAllByRole("link", { name: "Privacidade" });
     const termsLinks = screen.getAllByRole("link", { name: "Termos" });

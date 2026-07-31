@@ -17,23 +17,18 @@ async function openMobileMenu(page: Page): Promise<Locator> {
   return dialog;
 }
 
-async function headerButton(
-  page: Page,
-  name: "Sound" | "Theme",
-  mobile: boolean,
-): Promise<Locator> {
+async function headerButton(page: Page, name: "Tema", mobile: boolean): Promise<Locator> {
   if (mobile) return (await openMobileMenu(page)).getByRole("button", { name });
   return page.getByRole("navigation", { name: "Principal" }).getByRole("button", { name });
 }
 
 async function navigateFromHeader(
   page: Page,
-  target: "Contact" | "Work",
+  target: "Contato" | "Serviços",
   mobile: boolean,
 ): Promise<void> {
   if (mobile) {
-    const accessibleName = target === "Contact" ? "Contato" : target;
-    await (await openMobileMenu(page)).getByRole("button", { name: accessibleName }).click();
+    await (await openMobileMenu(page)).getByRole("button", { name: target }).click();
     return;
   }
   await page
@@ -42,12 +37,14 @@ async function navigateFromHeader(
     .click();
 }
 
-test("scrolls to selected work from the responsive header", async ({ page }, testInfo) => {
+test("scrolls to selected work from Serviços in the responsive header", async ({
+  page,
+}, testInfo) => {
   // Given the homepage at its initial scroll position.
   await page.goto(homepage);
 
-  // When Work is activated through the visible header navigation.
-  await navigateFromHeader(page, "Work", isMobileProject(testInfo));
+  // When Serviços is activated through the visible header navigation.
+  await navigateFromHeader(page, "Serviços", isMobileProject(testInfo));
 
   // Then the selected-work section enters the viewport.
   await expect(page.locator("#selected-work")).toBeInViewport({ timeout: 5_000 });
@@ -57,8 +54,8 @@ test("scrolls to contact from the responsive header", async ({ page }, testInfo)
   // Given the homepage at its initial scroll position.
   await page.goto(homepage);
 
-  // When Contact is activated through the visible header navigation.
-  await navigateFromHeader(page, "Contact", isMobileProject(testInfo));
+  // When Contato is activated through the visible header navigation.
+  await navigateFromHeader(page, "Contato", isMobileProject(testInfo));
 
   // Then the contact footer enters the viewport.
   await expect(page.locator("#contact")).toBeInViewport({ timeout: 5_000 });
@@ -72,13 +69,13 @@ test("cycles system, light, and dark themes and survives reload", async ({ page 
   const mobile = isMobileProject(testInfo);
 
   // When the user cycles through every theme mode.
-  await (await headerButton(page, "Theme", mobile)).click();
+  await (await headerButton(page, "Tema", mobile)).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await expect.poll(() => page.evaluate(() => localStorage.getItem("theme"))).toBe("light");
-  await (await headerButton(page, "Theme", mobile)).click();
+  await (await headerButton(page, "Tema", mobile)).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect.poll(() => page.evaluate(() => localStorage.getItem("theme"))).toBe("dark");
-  await (await headerButton(page, "Theme", mobile)).click();
+  await (await headerButton(page, "Tema", mobile)).click();
   await expect.poll(() => page.evaluate(() => localStorage.getItem("theme"))).toBe("system");
 
   // Then the system mode remains active after reload.
@@ -87,42 +84,22 @@ test("cycles system, light, and dark themes and survives reload", async ({ page 
   await expect.poll(() => page.evaluate(() => localStorage.getItem("theme"))).toBe("system");
 });
 
-test("toggles sound and persists the off state", async ({ page }, testInfo) => {
-  // Given sound starts disabled.
-  await page.goto(homepage);
-  const mobile = isMobileProject(testInfo);
-  const sound = await headerButton(page, "Sound", mobile);
-  await expect(sound).toHaveAttribute("aria-pressed", "false");
-
-  // When sound is enabled and then disabled.
-  await sound.click();
-  await expect.poll(() => page.evaluate(() => localStorage.getItem("sound"))).toBe("on");
-  await expect(sound).toHaveAttribute("aria-pressed", "true");
-  await sound.click();
-  await expect.poll(() => page.evaluate(() => localStorage.getItem("sound"))).toBe("off");
-
-  // Then the disabled state survives reload.
-  await page.reload();
-  await expect(await headerButton(page, "Sound", mobile)).toHaveAttribute("aria-pressed", "false");
-  await expect.poll(() => page.evaluate(() => localStorage.getItem("sound"))).toBe("off");
-});
-
 test("traps mobile-menu focus and restores it after Escape", async ({ page }, testInfo) => {
   test.skip(!isMobileProject(testInfo), "Mobile navigation behavior");
-  // Given the mobile menu is open and initially focuses Home.
+  // Given the mobile menu is open and initially focuses Início.
   await page.goto(homepage);
   const trigger = page.getByRole("button", { name: "Abrir menu" });
   const triggerBox = await trigger.boundingBox();
   expect(triggerBox?.width).toBeGreaterThanOrEqual(44);
   expect(triggerBox?.height).toBeGreaterThanOrEqual(44);
   const dialog = await openMobileMenu(page);
-  const home = dialog.getByRole("button", { name: "Home" });
-  const sound = dialog.getByRole("button", { name: "Sound" });
+  const home = dialog.getByRole("button", { name: "Início" });
+  const theme = dialog.getByRole("button", { name: "Tema" });
   await expect(home).toBeFocused();
 
   // When focus moves backwards from the first item and forwards from the last item.
   await page.keyboard.press("Shift+Tab");
-  await expect(sound).toBeFocused();
+  await expect(theme).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(home).toBeFocused();
 
@@ -159,22 +136,6 @@ for (const shortcut of [
   });
 }
 
-test("dispatches S to sound toggle", async ({ page }) => {
-  // Given sound starts disabled.
-  await page.goto(homepage);
-
-  // When the sound shortcut is pressed.
-  await page.keyboard.press("Alt+s");
-
-  // Then sound is enabled and persisted.
-  await expect
-    .poll(() => page.evaluate(() => localStorage.getItem("sound")), {
-      message: "Shortcut S should enable and persist sound",
-      timeout: 2_000,
-    })
-    .toBe("on");
-});
-
 test("dispatches T to the top of the page", async ({ page }) => {
   // Given the user is at the contact footer.
   await page.goto(homepage);
@@ -208,7 +169,7 @@ test("exposes every section without staged hiding under reduced motion", async (
   const sections = page.locator("main > section, main > footer");
 
   // Then all sections and every principle stage remain exposed.
-  await expect(sections).toHaveCount(5);
+  await expect(sections).toHaveCount(6);
   for (const section of await sections.all()) await expect(section).toBeVisible();
   const stages = page.locator("#principles [data-stage]");
   await expect(stages).toHaveCount(4);
@@ -246,12 +207,12 @@ test("reaches every header control and project link in keyboard tab order", asyn
   }
 
   // Then every project link and every visible header control is reachable.
-  expect(expectedHrefs).toHaveLength(10);
+  expect(expectedHrefs).toHaveLength(9);
   for (const href of expectedHrefs) expect(focusedHrefs).toContain(href);
   if (isMobileProject(testInfo)) {
     expect(focusedControls).toContain("Abrir menu");
   } else {
-    for (const label of ["Work", "Contact", "Theme", "Sound"]) {
+    for (const label of ["Serviços", "Contato", "Tema"]) {
       expect(focusedControls).toContain(label);
     }
   }

@@ -6,7 +6,6 @@ import { EntryPreloader } from "@/components/preloader/EntryPreloader";
 import { PrinciplesStory } from "@/components/principles/PrinciplesStory";
 import { TrustStrip } from "@/components/trust/TrustStrip";
 import { SelectedWork } from "@/components/work/SelectedWork";
-import { AudioProvider } from "@/features/audio/AudioProvider";
 import { PrincipleSceneProvider } from "@/features/principles/PrincipleSceneProvider";
 import { ScrollProvider } from "@/features/scroll/ScrollProvider";
 import { ShortcutController } from "@/features/shortcuts/ShortcutController";
@@ -16,24 +15,22 @@ import { LazySiteCanvas } from "@/scene/LazySiteCanvas";
 export default function Page() {
   return (
     <ThemeProvider>
-      <AudioProvider>
-        <ScrollProvider>
-          <PrincipleSceneProvider>
-            <EntryPreloader />
-            <ShortcutController />
-            <SiteHeader />
-            <main id="main-content">
-              <Hero />
-              <TrustStrip />
-              <SelectedWork />
-              <AiServicesSection />
-              <PrinciplesStory />
-              <ContactFooter />
-            </main>
-            <LazySiteCanvas />
-          </PrincipleSceneProvider>
-        </ScrollProvider>
-      </AudioProvider>
+      <ScrollProvider>
+        <PrincipleSceneProvider>
+          <EntryPreloader />
+          <ShortcutController />
+          <SiteHeader />
+          <main id="main-content">
+            <Hero />
+            <TrustStrip />
+            <SelectedWork />
+            <AiServicesSection />
+            <PrinciplesStory />
+            <ContactFooter />
+          </main>
+          <LazySiteCanvas />
+        </PrincipleSceneProvider>
+      </ScrollProvider>
     </ThemeProvider>
   );
 }

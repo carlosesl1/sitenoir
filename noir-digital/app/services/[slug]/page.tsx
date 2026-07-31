@@ -3,13 +3,8 @@ import { notFound } from "next/navigation";
 
 import { SiteHeader } from "@/components/header/SiteHeader";
 import { CaseStudyArticleV2 } from "@/components/services/case-v2/CaseStudyArticleV2";
-import {
-  caseStudiesV2,
-  getCaseStudyV2,
-  getCaseStudyV2Navigation,
-} from "@/data/case-studies-v2";
+import { caseStudiesV2, getCaseStudyV2, getCaseStudyV2Navigation } from "@/data/case-studies-v2";
 import { projects } from "@/data/projects";
-import { AudioProvider } from "@/features/audio/AudioProvider";
 import { PrincipleSceneProvider } from "@/features/principles/PrincipleSceneProvider";
 import { ScrollProvider } from "@/features/scroll/ScrollProvider";
 import { ThemeProvider } from "@/features/theme/ThemeProvider";
@@ -59,20 +54,18 @@ export default async function CasePage({ params }: CasePageProps) {
 
   return (
     <ThemeProvider>
-      <AudioProvider>
-        <ScrollProvider>
-          <PrincipleSceneProvider>
-            <SiteHeader sectionLinksBase="/" />
-            <main id="main-content">
-              <CaseStudyArticleV2
-                project={project}
-                study={study}
-                navigation={getCaseStudyV2Navigation(study.slug)}
-              />
-            </main>
-          </PrincipleSceneProvider>
-        </ScrollProvider>
-      </AudioProvider>
+      <ScrollProvider>
+        <PrincipleSceneProvider>
+          <SiteHeader sectionLinksBase="/" />
+          <main id="main-content">
+            <CaseStudyArticleV2
+              project={project}
+              study={study}
+              navigation={getCaseStudyV2Navigation(study.slug)}
+            />
+          </main>
+        </PrincipleSceneProvider>
+      </ScrollProvider>
     </ThemeProvider>
   );
 }

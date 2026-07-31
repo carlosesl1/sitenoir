@@ -124,6 +124,7 @@
 }
 
 .informationCell > a,
+.informationList a,
 .legalClosing a {
   display: flex;
   min-height: 28px;
@@ -132,6 +133,7 @@
 }
 
 .informationCell > a:focus-visible,
+.informationList a:focus-visible,
 .legalClosing a:focus-visible {
   border-color: currentColor;
   outline: none;
@@ -141,7 +143,7 @@
   display: grid;
   grid-column: span 2;
   grid-template-columns: auto minmax(0, 1fr);
-  align-content: start;
+  align-content: center;
   column-gap: 16px;
   border-right: 1px solid var(--border-default);
 }
@@ -160,27 +162,37 @@
 }
 
 .brandSymbol {
-  font-family: var(--font-interface);
-  font-size: clamp(1.75rem, 2.2vw, 2.75rem);
-  line-height: 0.8;
+  display: block;
+  width: clamp(2.35rem, 2.8vw, 2.75rem);
+  height: auto;
+  align-self: center;
+  object-fit: contain;
 }
 
-.brandIdentity {
+.brandLockup {
   display: grid;
-  gap: 7px;
+  align-self: center;
+  gap: 8px;
 }
 
-.brandIdentity p {
-  font-family: var(--font-interface);
-  font-size: clamp(0.875rem, 1.05vw, 1.125rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+.brandWordmark {
+  display: block;
+  width: clamp(6.75rem, 8vw, 8.5rem);
+  height: auto;
+  object-fit: contain;
 }
 
-.brandIdentity span {
-  max-width: 24ch;
+.brandTagline {
+  max-width: 22ch;
+  font-size: clamp(0.5625rem, 0.62vw, 0.6875rem);
+  letter-spacing: 0.04em;
   color: var(--text-secondary);
   line-height: 1.45;
+}
+
+:global([data-theme="light"]) .brandSymbol,
+:global([data-theme="light"]) .brandWordmark {
+  filter: brightness(0);
 }
 
 .informationList {

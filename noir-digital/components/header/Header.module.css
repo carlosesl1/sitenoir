@@ -179,7 +179,7 @@
   display: flex;
   flex: none;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 16px;
   padding-top: 12px;
   border-top: 1px solid var(--border-default);
@@ -257,7 +257,7 @@
     top: 0;
     left: 50%;
     display: flex;
-    width: min(520px, 46vw);
+    width: min(420px, 40vw);
     justify-content: space-between;
     transform: translateX(-50%);
   }

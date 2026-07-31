@@ -3,10 +3,8 @@
 import { domAnimation, LazyMotion, m, useIsPresent, useReducedMotion } from "motion/react";
 import type { KeyboardEvent } from "react";
 import { useEffect, useRef } from "react";
-
-import { SoundButton } from "@/components/controls/SoundButton";
-import { EntryRevealCanvas } from "@/components/preloader/EntryRevealCanvas";
 import { ThemeButton } from "@/components/controls/ThemeButton";
+import { EntryRevealCanvas } from "@/components/preloader/EntryRevealCanvas";
 import type { SectionTarget } from "@/features/scroll/scroll-targets";
 import { sectionSelector } from "@/features/scroll/scroll-targets";
 
@@ -87,14 +85,14 @@ export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenu
             {sectionLinksBase ? (
               <>
                 <a className={styles["mobileLink"]} href={sectionLinksBase} onClick={onClose}>
-                  Home
+                  Início
                 </a>
                 <a
                   className={styles["mobileLink"]}
                   href={`${sectionLinksBase}${sectionSelector("work")}`}
                   onClick={onClose}
                 >
-                  Work
+                  Serviços
                 </a>
                 <a
                   className={styles["mobileLink"]}
@@ -111,14 +109,14 @@ export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenu
                   type="button"
                   onClick={() => onNavigate("home")}
                 >
-                  Home
+                  Início
                 </button>
                 <button
                   className={styles["mobileLink"]}
                   type="button"
                   onClick={() => onNavigate("work")}
                 >
-                  Work
+                  Serviços
                 </button>
                 <button
                   className={styles["mobileLink"]}
@@ -131,9 +129,8 @@ export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenu
             )}
           </nav>
 
-          <div className={styles["mobileControls"]} role="group" aria-label="Preferências">
+          <div className={styles["mobileControls"]}>
             <ThemeButton className={styles["mobileUtilityControl"]} />
-            <SoundButton className={styles["mobileUtilityControl"]} />
           </div>
         </div>
       </m.div>

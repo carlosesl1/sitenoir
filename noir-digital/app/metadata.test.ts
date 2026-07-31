@@ -126,6 +126,16 @@ describe("search engine discovery", () => {
         changeFrequency: "monthly",
         priority: 0.8,
       },
+      {
+        url: "https://noir.example/studio/privacidade",
+        changeFrequency: "yearly",
+        priority: 0.3,
+      },
+      {
+        url: "https://noir.example/studio/termos",
+        changeFrequency: "yearly",
+        priority: 0.3,
+      },
       ...caseStudies.map(({ slug }) => ({
         url: `https://noir.example/studio/services/${slug}`,
         changeFrequency: "monthly" as const,

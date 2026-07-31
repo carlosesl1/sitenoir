@@ -16,12 +16,12 @@ export function ThemeButton({ className }: ThemeButtonProps) {
     <button
       type="button"
       className={className}
-      aria-label="Theme"
+      aria-label="Tema"
       aria-pressed={theme !== "system"}
       aria-describedby={descriptionId}
       onClick={cycleTheme}
     >
-      {`THEME[${theme === "system" ? "A" : theme === "dark" ? "D" : "L"}]`}
+      {`TEMA[${theme === "system" ? "A" : theme === "dark" ? "D" : "L"}]`}
       <span id={descriptionId} className="visuallyHidden">
         {`Modo ${theme}; aparência ${resolvedTheme}`}
       </span>

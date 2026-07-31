@@ -7,7 +7,6 @@ describe("resolveShortcut", () => {
     ["l", { type: "theme", value: "light" }],
     ["d", { type: "theme", value: "dark" }],
     ["a", { type: "theme", value: "system" }],
-    ["s", { type: "sound-toggle" }],
     ["t", { type: "scroll", target: "home" }],
     ["b", { type: "scroll", target: "contact" }],
   ] as const)("maps %s to its homepage action", (key, action) => {
@@ -20,5 +19,6 @@ describe("resolveShortcut", () => {
 
   it("returns a typed no-op for unsupported keys", () => {
     expect(resolveShortcut("Escape")).toEqual({ type: "none" });
+    expect(resolveShortcut("s")).toEqual({ type: "none" });
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { type MouseEvent } from "react";
+import type { MouseEvent } from "react";
 
 import { useScroll } from "@/features/scroll/ScrollProvider";
 import { useScrollSpy } from "@/features/scroll/use-scroll-spy";
@@ -205,9 +205,9 @@ export function ServicesArticle() {
             </dl>
           </div>
           <nav className={styles["footerLinks"]} aria-label="Links finais">
-            <a href="/">Home</a>
-            <a href="/#selected-work">Work</a>
-            <a href="/#contact">Contact</a>
+            <a href="/">Início</a>
+            <a href="/#selected-work">Projetos</a>
+            <a href="/#contact">Contato</a>
           </nav>
         </footer>
       </article>

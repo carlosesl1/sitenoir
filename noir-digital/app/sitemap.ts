@@ -41,6 +41,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    {
+      url: new URL("privacidade", siteUrl).href,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: new URL("termos", siteUrl).href,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
     ...caseStudies.map(({ slug }) => ({
       url: new URL(`services/${slug}`, siteUrl).href,
       changeFrequency: "monthly" as const,

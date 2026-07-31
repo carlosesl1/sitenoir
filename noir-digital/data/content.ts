@@ -20,8 +20,11 @@ export type PrincipleStage =
       readonly stage: "end";
     };
 
-export type SocialLabel = {
-  readonly label: "Twitter/X" | "Figma" | "GitHub";
+export type SocialLink = {
+  readonly label: "Instagram" | "LinkedIn";
+  readonly href:
+    | "https://www.instagram.com/agencianoirdigital/"
+    | "https://www.linkedin.com/company/noirdigital1/";
 };
 
 export const heroLabels = ["Design", "Tecnologia", "Posicionamento"] as const;
@@ -152,7 +155,6 @@ export const contactHeadlineLines = ["O PRÓXIMO PASSO", "DO SEU NEGÓCIO", "COM
 export const contactEmail = "contato@noirdigital.com.br";
 
 export const socialLinks = [
-  { label: "Twitter/X" },
-  { label: "Figma" },
-  { label: "GitHub" },
-] as const satisfies readonly SocialLabel[];
+  { label: "Instagram", href: "https://www.instagram.com/agencianoirdigital/" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/noirdigital1/" },
+] as const satisfies readonly SocialLink[];
