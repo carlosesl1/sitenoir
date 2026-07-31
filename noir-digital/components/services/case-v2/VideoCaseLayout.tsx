@@ -1,10 +1,10 @@
 import Image from "next/image";
 
 import type {
+  CaseStudyV2,
   EvidenceSection,
   InsightSection,
   TextSection,
-  CaseStudyV2,
 } from "@/data/case-studies-v2";
 import type { Project } from "@/data/projects";
 
@@ -88,9 +88,7 @@ export function VideoCaseLayout({
     throw new Error(`Video case ${study.slug} requires production credit`);
   }
 
-  const text = study.sections.find(
-    (section): section is TextSection => section.type === "text",
-  );
+  const text = study.sections.find((section): section is TextSection => section.type === "text");
   const evidence = study.sections.find(
     (section): section is EvidenceSection => section.type === "evidence",
   );
@@ -130,7 +128,7 @@ export function VideoCaseLayout({
           />
         </div>
         <div>
-          <p>Crédito de produção</p>
+          <p>Crédito criativo</p>
           <h2>{study.credit.name}</h2>
           <p className={styles["creditRole"]}>{study.credit.role}</p>
           <p>{study.credit.contribution}</p>

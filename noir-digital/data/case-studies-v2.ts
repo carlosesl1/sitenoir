@@ -79,7 +79,7 @@ export type CaseStudyV2 = {
   readonly sections: readonly CaseSection[];
   readonly credit?: {
     readonly name: "DOLA";
-    readonly role: "Design, motion design e edição de vídeo";
+    readonly role: "Designer multidisciplinar com 7 anos de experiência em design gráfico, motion design, edição de vídeo e 3D.";
     readonly contribution: string;
     readonly portrait: {
       readonly src: "/cases-v2/shared/dolomon.webp";
@@ -97,7 +97,7 @@ export type CaseStudyV2 = {
 
 const videoCredit = (contribution: string) => ({
   name: "DOLA" as const,
-  role: "Design, motion design e edição de vídeo" as const,
+  role: "Designer multidisciplinar com 7 anos de experiência em design gráfico, motion design, edição de vídeo e 3D." as const,
   contribution,
   portrait: {
     src: "/cases-v2/shared/dolomon.webp" as const,
@@ -445,7 +445,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
       },
     ],
     credit: videoCredit(
-      "Direção visual, motion design e edição das três peças da campanha Strong.",
+      "Na campanha Strong, uniu direção visual, motion e edição para dar identidade própria a cada produto e manter unidade entre as três peças.",
     ),
     cta: {
       label: "Criar uma campanha",
@@ -518,7 +518,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
       },
     ],
     credit: videoCredit(
-      "Design, motion design e edição da narrativa visual de migração para a Privacy Tools.",
+      "No projeto da Together, combinou design, motion e edição para transformar um processo técnico em uma narrativa visual clara e fácil de acompanhar.",
     ),
     cta: {
       label: "Explicar em vídeo",
@@ -599,7 +599,9 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
         ],
       },
     ],
-    credit: videoCredit("Design, motion design e edição dos vídeos de apresentação das cabanas."),
+    credit: videoCredit(
+      "Nos vídeos da ECOX, combinou design, motion e edição para apresentar espaços, detalhes e atmosfera com uma linguagem envolvente e coerente com a hospedagem.",
+    ),
     cta: {
       label: "Produzir vídeos",
       body: "Vamos transformar sua hospedagem em uma experiência que começa antes da reserva.",

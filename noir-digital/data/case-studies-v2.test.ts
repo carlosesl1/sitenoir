@@ -5,9 +5,7 @@ import { projects } from "@/data/projects";
 
 describe("caseStudiesV2", () => {
   it("defines exactly one V2 case for every project", () => {
-    expect(caseStudiesV2.map(({ slug }) => slug)).toEqual(
-      projects.map(({ slug }) => slug),
-    );
+    expect(caseStudiesV2.map(({ slug }) => slug)).toEqual(projects.map(({ slug }) => slug));
   });
 
   it("uses one of the three approved category layouts", () => {
@@ -28,9 +26,24 @@ describe("caseStudiesV2", () => {
   });
 
   it("credits DOLA only on video cases", () => {
+    const contributions = {
+      strong:
+        "Na campanha Strong, uniu direção visual, motion e edição para dar identidade própria a cada produto e manter unidade entre as três peças.",
+      "together-motion":
+        "No projeto da Together, combinou design, motion e edição para transformar um processo técnico em uma narrativa visual clara e fácil de acompanhar.",
+      "ecox-hostel-cabanas":
+        "Nos vídeos da ECOX, combinou design, motion e edição para apresentar espaços, detalhes e atmosfera com uma linguagem envolvente e coerente com a hospedagem.",
+    } as const;
+
     for (const study of caseStudiesV2) {
       expect(Boolean(study.credit)).toBe(study.categoryLayout === "video");
       if (study.credit) {
+        expect(study.credit.role).toBe(
+          "Designer multidisciplinar com 7 anos de experiência em design gráfico, motion design, edição de vídeo e 3D.",
+        );
+        expect(study.credit.contribution).toBe(
+          contributions[study.slug as keyof typeof contributions],
+        );
         expect(study.credit.portrait).toEqual({
           src: "/cases-v2/shared/dolomon.webp",
           alt: "Retrato de DOLA",
