@@ -11,12 +11,6 @@ const requiredFonts = [
     weights: [400, 700],
   },
   {
-    family: "Geist Mono",
-    path: "/assets/v1/fonts/GeistMono.woff2",
-    range: "400 650",
-    weights: [400, 650],
-  },
-  {
     family: "Departure Mono",
     path: "/assets/v1/fonts/DepartureMono.woff2",
     range: "400",

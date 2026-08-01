@@ -21,6 +21,9 @@
     "doctor": "react-doctor ."
   },
   "dependencies": {
+    "@iconify-icons/simple-icons": "^1.2.74",
+    "@iconify-icons/solar": "^1.2.3",
+    "@iconify/react": "^6.0.2",
     "@react-three/fiber": "9.6.1",
     "lenis": "1.3.25",
     "motion": "12.42.2",

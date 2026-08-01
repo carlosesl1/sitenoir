@@ -104,11 +104,6 @@ export default function RootLayout({ children }: RootLayoutProps): ReactNode {
     type: "font/woff2",
     crossOrigin: "anonymous",
   });
-  preload("/assets/v1/fonts/GeistMono.woff2", {
-    as: "font",
-    type: "font/woff2",
-    crossOrigin: "anonymous",
-  });
   preload("/assets/v1/fonts/DepartureMono.woff2", {
     as: "font",
     type: "font/woff2",

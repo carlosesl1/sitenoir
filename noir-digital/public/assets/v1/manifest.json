@@ -12,11 +12,6 @@
       "sha256": "1fe93d86d2a662bd0849f3f484b865ddd5633a7947a4806a64d154ffa5f57926"
     },
     {
-      "path": "fonts/GeistMono.woff2",
-      "bytes": 32700,
-      "sha256": "a74fc4b9d0d0c87465a7765fe0a6cbfd55c5d1b79fc3e16dfeae6633dd84ad0d"
-    },
-    {
       "path": "fonts/TikTokSans.woff2",
       "bytes": 173856,
       "sha256": "ef8c69095138cdfb16734b8fe101fbc1e0ea4c31175083d3b006379c9ecda77b"

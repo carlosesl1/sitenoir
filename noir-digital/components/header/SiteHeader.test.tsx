@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -42,6 +45,15 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("SiteHeader", () => {
+  it("normalizes links and buttons onto one desktop baseline", () => {
+    const css = readFileSync(join(process.cwd(), "components/header/Header.module.css"), "utf8");
+
+    expect(css).toMatch(/\.desktopNavigation\s*\{[^}]*align-items:\s*center/s);
+    expect(css).toMatch(
+      /\.control\s*\{[^}]*display:\s*inline-flex[^}]*align-items:\s*center[^}]*justify-content:\s*center/s,
+    );
+  });
+
   it("exposes the brand, desktop navigation, control states, and coordinates", () => {
     render(<SiteHeader />);
 

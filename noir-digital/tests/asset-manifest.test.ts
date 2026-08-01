@@ -20,7 +20,6 @@ const requiredBinaryAssets = [
 
 const optimizedAssets = [
   { path: "assets/v1/fonts/TikTokSans.woff2", signature: signatures.woff2 },
-  { path: "assets/v1/fonts/GeistMono.woff2", signature: signatures.woff2 },
   { path: "assets/v1/fonts/DepartureMono.woff2", signature: signatures.woff2 },
   { path: "assets/v1/model/contact.glb", signature: signatures.glb },
   { path: "assets/v1/stickers/atlas.webp", signature: signatures.webp },
@@ -88,4 +87,24 @@ test("records verified sizes and hashes for every generated versioned asset", as
     expect(asset.bytes).toBe(contents.byteLength);
     expect(asset.sha256).toBe(createHash("sha256").update(contents).digest("hex"));
   }
+});
+
+test("uses only TikTok Sans and Departure Mono across the runtime typography system", async () => {
+  const sourcePaths = [
+    "styles/fonts.css",
+    "styles/tokens.css",
+    "app/layout.tsx",
+    "components/preloader/EntryPreloader.tsx",
+    "components/showcase/PrimitiveShowcase.tsx",
+  ];
+  const sources = await Promise.all(
+    sourcePaths.map((sourcePath) => readFile(path.join(process.cwd(), sourcePath), "utf8")),
+  );
+  const fontsCss = sources[0] ?? "";
+
+  expect(fontsCss.match(/@font-face/g)).toHaveLength(2);
+  expect(sources.join("\n")).not.toContain("Geist Mono");
+  await expect(
+    access(path.join(process.cwd(), "public/assets/v1/fonts/GeistMono.woff2")),
+  ).rejects.toThrow();
 });

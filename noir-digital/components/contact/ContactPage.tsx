@@ -1,5 +1,12 @@
 "use client";
 
+import { Icon } from "@iconify/react";
+import whatsappIcon from "@iconify-icons/simple-icons/whatsapp";
+import altArrowDownLinear from "@iconify-icons/solar/alt-arrow-down-linear";
+import arrowRightUpLinear from "@iconify-icons/solar/arrow-right-up-linear";
+import globalLinear from "@iconify-icons/solar/global-linear";
+import lockKeyholeLinear from "@iconify-icons/solar/lock-keyhole-linear";
+import stopBold from "@iconify-icons/solar/stop-bold";
 import Image from "next/image";
 import { type ChangeEvent, type FormEvent, useRef, useState } from "react";
 
@@ -12,6 +19,7 @@ import {
 import { ContactSubmissionError, submitContact } from "@/features/contact/submit-contact";
 
 import styles from "./ContactPage.module.css";
+import spectrumStyles from "./SpectrumContactCta.module.css";
 
 const serviceOptions = [
   "Sites e experiências digitais",
@@ -197,16 +205,24 @@ export function ContactPage() {
 
               <label className={`${styles["field"]} ${styles["wideField"]}`}>
                 <span>Serviço de interesse</span>
-                <select name="service" value={values.service} onChange={updateField} required>
-                  <option value="" disabled>
-                    Selecione o serviço desejado
-                  </option>
-                  {serviceOptions.map((service) => (
-                    <option key={service} value={service}>
-                      {service}
+                <span className={styles["selectControl"]}>
+                  <select name="service" value={values.service} onChange={updateField} required>
+                    <option value="" disabled>
+                      Selecione o serviço desejado
                     </option>
-                  ))}
-                </select>
+                    {serviceOptions.map((service) => (
+                      <option key={service} value={service}>
+                        {service}
+                      </option>
+                    ))}
+                  </select>
+                  <Icon
+                    className={styles["selectIcon"]}
+                    icon={altArrowDownLinear}
+                    aria-hidden="true"
+                    data-contact-select-icon
+                  />
+                </span>
               </label>
             </div>
 
@@ -242,9 +258,24 @@ export function ContactPage() {
                 </label>
               </div>
 
-              <button className={styles["submit"]} type="submit" disabled={pending}>
-                <span>{pending ? "Enviando mensagem" : "Enviar mensagem"}</span>
-                <span aria-hidden="true">↗</span>
+              <button
+                className={`${spectrumStyles["root"]} ${styles["submit"]}`}
+                type="submit"
+                disabled={pending}
+                data-spectrum-contact-cta="true"
+              >
+                <span
+                  className={`${spectrumStyles["surface"]} ${styles["actionSurface"]}`}
+                  data-spectrum-contact-surface
+                >
+                  <span>{pending ? "Enviando mensagem" : "Enviar mensagem"}</span>
+                  <Icon
+                    className={styles["ctaIcon"]}
+                    icon={arrowRightUpLinear}
+                    aria-hidden="true"
+                    data-contact-cta-icon
+                  />
+                </span>
               </button>
 
               {submission.status === "success" ? (
@@ -258,10 +289,18 @@ export function ContactPage() {
                 </p>
               ) : null}
 
-              <p className={styles["privacyNote"]}>
-                Seus dados serão usados apenas para responder ao contato. Consulte nossa{" "}
-                <a href="/privacidade">Política de Privacidade</a>.
-              </p>
+              <div className={styles["privacyNote"]}>
+                <Icon
+                  className={styles["privacyIcon"]}
+                  icon={lockKeyholeLinear}
+                  aria-hidden="true"
+                  data-contact-privacy-icon
+                />
+                <p>
+                  <span>Seus dados estão protegidos.</span>
+                  <span>Não compartilhamos suas informações.</span>
+                </p>
+              </div>
             </div>
           </form>
         </section>
@@ -274,14 +313,33 @@ export function ContactPage() {
 
           <section className={styles["whatsAppPanel"]}>
             <span className={styles["recommended"]}>RECOMENDADO</span>
-            <div>
+            <div className={styles["whatsAppHeading"]}>
               <h3>WHATSAPP</h3>
               <p className={styles["whatsAppSubtitle"]}>RESPOSTA RÁPIDA</p>
             </div>
+            <div className={styles["whatsAppMark"]} aria-hidden="true" data-contact-whatsapp-icon>
+              <Icon icon={whatsappIcon} />
+            </div>
             <p>Prefere falar diretamente? Abra uma conversa com a mensagem inicial já pronta.</p>
-            <a href={contactWhatsAppHref} target="_blank" rel="noreferrer">
-              <span>Iniciar conversa no WhatsApp</span>
-              <span aria-hidden="true">↗</span>
+            <a
+              className={`${spectrumStyles["root"]} ${styles["whatsAppAction"]}`}
+              href={contactWhatsAppHref}
+              target="_blank"
+              rel="noreferrer"
+              data-spectrum-contact-cta="true"
+            >
+              <span
+                className={`${spectrumStyles["surface"]} ${styles["actionSurface"]} ${styles["whatsAppActionSurface"]}`}
+                data-spectrum-contact-surface
+              >
+                <span>Iniciar conversa no WhatsApp</span>
+                <Icon
+                  className={styles["ctaIcon"]}
+                  icon={arrowRightUpLinear}
+                  aria-hidden="true"
+                  data-contact-cta-icon
+                />
+              </span>
             </a>
           </section>
 
@@ -298,16 +356,34 @@ export function ContactPage() {
                 </dd>
               </div>
               <div>
-                <dt>WhatsApp</dt>
+                <dt>Telefone</dt>
                 <dd>
                   <a href={contactPhoneHref}>{contactPhoneDisplay}</a>
                 </dd>
               </div>
               <div>
-                <dt>Atendimento</dt>
-                <dd>Brasil e projetos internacionais</dd>
+                <dt>Horário de atendimento</dt>
+                <dd>Seg - Sex, 09h às 18h</dd>
               </div>
             </dl>
+
+            <div className={styles["internationalTag"]}>
+              <Icon
+                className={styles["internationalIndicator"]}
+                icon={stopBold}
+                aria-hidden="true"
+              />
+              <p>
+                <span>Atendemos projetos em todo o Brasil</span>
+                <span>e também internacionalmente.</span>
+              </p>
+              <Icon
+                className={styles["globalIcon"]}
+                icon={globalLinear}
+                aria-hidden="true"
+                data-contact-global-icon
+              />
+            </div>
           </section>
         </aside>
       </div>

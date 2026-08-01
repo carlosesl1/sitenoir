@@ -109,7 +109,7 @@ export function PrimitiveShowcase(): JSX.Element {
           <TypographySample label="TikTok Sans / Body" sampleType="body">
             Every future surface inherits a documented token, a semantic role, and a verified state.
           </TypographySample>
-          <TypographySample label="Geist Mono / Interface" sampleType="interface">
+          <TypographySample label="Departure Mono / Interface" sampleType="interface">
             12 columns / 24 gutter / <span className={styles["layoutLimit"]}>1440 MAX</span>
           </TypographySample>
         </div>

@@ -67,11 +67,7 @@ def build_fonts() -> None:
         OUTPUT / "fonts" / "TikTokSans.woff2",
         ("wght=400:700", "wdth=100:120", "opsz=12:36"),
     )
-    subset_font(
-        SOURCES / "fonts" / "GeistMono[wght].ttf",
-        OUTPUT / "fonts" / "GeistMono.woff2",
-        ("wght=400:650",),
-    )
+    (OUTPUT / "fonts" / "GeistMono.woff2").unlink(missing_ok=True)
     subset_font(
         SOURCES / "fonts" / "DepartureMono-Regular.otf",
         OUTPUT / "fonts" / "DepartureMono.woff2",

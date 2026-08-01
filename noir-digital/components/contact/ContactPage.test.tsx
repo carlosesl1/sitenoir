@@ -53,6 +53,32 @@ describe("ContactPage", () => {
     expect(css).toMatch(/\.intro h1\s*\{[^}]*font-size:\s*clamp\(2\.75rem, 3\.5vw, 5\.2rem\)/);
   });
 
+  it("uses the same 24px mobile content axis as the home hero", () => {
+    const css = readFileSync(
+      join(process.cwd(), "components/contact/ContactPage.module.css"),
+      "utf8",
+    );
+
+    expect(css).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*\.intro,[\s\S]*\.formPanel,[\s\S]*\.channels\s*\{[^}]*padding:\s*28px 8px 36px/,
+    );
+    expect(css).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*\.projectSection\s*\{[^}]*margin-right:\s*-8px[^}]*margin-left:\s*-8px[^}]*padding-right:\s*8px[^}]*padding-left:\s*8px/,
+    );
+  });
+
+  it("uses TikTok Sans for the highlighted contact copy", () => {
+    const css = readFileSync(
+      join(process.cwd(), "components/contact/ContactPage.module.css"),
+      "utf8",
+    );
+
+    expect(css).toMatch(/\.intro > p\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(/\.privacyNote\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(/\.information dd\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(/\.internationalTag\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+  });
+
   it("renders the real contact contract and alternate channels", () => {
     const view = render(<ContactPage />);
     const form = screen.getByRole("form", { name: "Dados do projeto" });
@@ -83,6 +109,27 @@ describe("ContactPage", () => {
       "href",
       contactPhoneHref,
     );
+
+    expect(view.container.querySelector("[data-contact-select-icon]")).toBeInTheDocument();
+    expect(view.container.querySelector("[data-contact-whatsapp-icon]")).toBeInTheDocument();
+    expect(view.container.querySelectorAll("[data-contact-cta-icon]")).toHaveLength(2);
+    expect(view.container.querySelectorAll('[data-spectrum-contact-cta="true"]')).toHaveLength(2);
+    expect(view.container.querySelectorAll("[data-spectrum-contact-surface]")).toHaveLength(2);
+    expect(view.container.querySelector("[data-contact-privacy-icon]")).toBeInTheDocument();
+    expect(view.container.querySelector("[data-contact-global-icon]")).toBeInTheDocument();
+    expect(screen.queryByText("↗")).not.toBeInTheDocument();
+
+    const information = screen.getByRole("region", { name: "INFORMAÇÕES" });
+    expect(within(information).getByText("Telefone")).toBeInTheDocument();
+    expect(within(information).getByText("Horário de atendimento")).toBeInTheDocument();
+    expect(within(information).getByText("Seg - Sex, 09h às 18h")).toBeInTheDocument();
+    expect(within(information).queryByText("Localização")).not.toBeInTheDocument();
+    expect(within(information).queryByText("Fortaleza - CE / Brasil")).not.toBeInTheDocument();
+    expect(screen.getByText("Seus dados estão protegidos.")).toBeInTheDocument();
+    expect(screen.getByText("Não compartilhamos suas informações.")).toBeInTheDocument();
+    expect(screen.getByText("Atendemos projetos em todo o Brasil")).toBeInTheDocument();
+    expect(screen.getByText("e também internacionalmente.")).toBeInTheDocument();
+    expect(screen.queryByText(/usados apenas para responder ao contato/i)).not.toBeInTheDocument();
   });
 
   it("submits JSON once while loading and includes page provenance", async () => {

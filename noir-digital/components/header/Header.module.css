@@ -58,6 +58,7 @@
 .desktopNavigation {
   display: none;
   grid-column: 5 / span 4;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
@@ -75,12 +76,18 @@
 }
 
 .control {
+  display: inline-flex;
+  box-sizing: border-box;
   min-height: 44px;
+  align-items: center;
+  justify-content: center;
   padding: 8px;
   font-size: 1rem;
+  font-weight: inherit;
   line-height: 1;
   letter-spacing: 0;
   text-transform: uppercase;
+  vertical-align: top;
 }
 
 .brand:focus-visible,
@@ -249,7 +256,7 @@
 
   .brand {
     grid-column: 1 / span 3;
-    padding: 8px;
+    padding: 8px 0;
   }
 
   .desktopNavigation {

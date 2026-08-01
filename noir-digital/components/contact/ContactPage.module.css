@@ -30,7 +30,7 @@
 .layout {
   display: grid;
   min-height: 100dvh;
-  grid-template-columns: 31.5% 37% 31.5%;
+  grid-template-columns: 30.6% 38.8% 30.6%;
   padding: 108px var(--site-grid-inset) 72px;
   background-image:
     linear-gradient(var(--border-default), var(--border-default)),
@@ -46,7 +46,8 @@
 .formPanel,
 .channels {
   min-width: 0;
-  padding: 28px clamp(22px, 2.6vw, 48px) 36px;
+  padding-top: 28px;
+  padding-bottom: 36px;
 }
 
 .intro,
@@ -57,6 +58,20 @@
 .intro {
   display: flex;
   flex-direction: column;
+  padding-right: clamp(28px, 2.4vw, 44px);
+  padding-left: 0;
+}
+
+.formPanel {
+  --contact-panel-inset: clamp(16px, 1vw, 18px);
+
+  padding-right: var(--contact-panel-inset);
+  padding-left: var(--contact-panel-inset);
+}
+
+.channels {
+  padding-right: clamp(22px, 1.35vw, 26px);
+  padding-left: clamp(22px, 1.35vw, 26px);
 }
 
 .sectionLabel,
@@ -64,8 +79,7 @@
 .field > span,
 .recommended,
 .whatsAppSubtitle,
-.information,
-.privacyNote {
+.information {
   font-family: var(--font-pixel);
   text-transform: uppercase;
 }
@@ -78,8 +92,8 @@
 }
 
 .intro h1 {
-  max-width: 8.5ch;
-  margin: clamp(46px, 8vh, 94px) 0 24px;
+  max-width: 9.2ch;
+  margin: clamp(28px, 3.4vh, 42px) 0 24px;
   font-family: var(--font-display);
   font-size: clamp(2.75rem, 3.5vw, 5.2rem);
   font-stretch: 120%;
@@ -98,7 +112,7 @@
 .intro > p {
   max-width: 34ch;
   margin: 0;
-  font-family: var(--font-interface);
+  font-family: var(--font-display);
   font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
   line-height: 1.65;
   color: var(--text-secondary);
@@ -168,7 +182,7 @@
 }
 
 .form {
-  margin-top: 32px;
+  margin-top: 20px;
 }
 
 .fieldGrid {
@@ -237,7 +251,25 @@
 }
 
 .field select {
+  appearance: none;
+  padding-right: 48px;
   cursor: pointer;
+}
+
+.selectControl {
+  position: relative;
+  display: block;
+}
+
+.selectIcon {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  width: 18px;
+  height: 18px;
+  color: var(--text-primary);
+  pointer-events: none;
+  transform: translateY(-50%);
 }
 
 .field textarea::placeholder {
@@ -251,8 +283,8 @@
 .projectSection {
   display: grid;
   gap: 22px;
-  margin: 32px calc(clamp(22px, 2.6vw, 48px) * -1) -36px;
-  padding: 28px clamp(22px, 2.6vw, 48px) 32px;
+  margin: 32px calc(var(--contact-panel-inset) * -1) -36px;
+  padding: 28px var(--contact-panel-inset) 32px;
   border-top: 1px solid var(--border-default);
 }
 
@@ -267,25 +299,26 @@
 }
 
 .submit,
-.whatsAppPanel > a {
+.whatsAppAction {
+  font-family: var(--font-pixel);
+  cursor: pointer;
+}
+
+.submit {
+  appearance: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: inherit;
+}
+
+.submit > .actionSurface,
+.whatsAppAction > .actionSurface {
   display: flex;
-  min-height: 54px;
   align-items: center;
   justify-content: space-between;
   padding: 0 18px;
-  border: 1px solid var(--color-noir-warm-white);
-  border-radius: 0;
-  background: var(--color-noir-warm-white);
-  color: var(--color-noir-black);
-  font-family: var(--font-pixel);
-  font-size: 0.6875rem;
-  letter-spacing: 0.035em;
-  text-decoration: none;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    transform var(--duration-micro) var(--ease-standard),
-    filter var(--duration-micro) var(--ease-standard);
 }
 
 .submit:disabled {
@@ -293,14 +326,14 @@
   opacity: 0.58;
 }
 
-.submit:focus-visible,
-.whatsAppPanel > a:focus-visible {
-  outline: 2px dotted var(--focus-color);
-  outline-offset: 4px;
+.ctaIcon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  transition: transform var(--duration-micro) var(--ease-standard);
 }
 
-.feedback,
-.privacyNote {
+.feedback {
   margin: 0;
   font-size: 0.625rem;
   line-height: 1.55;
@@ -322,12 +355,28 @@
 }
 
 .privacyNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.625rem;
+  line-height: 1.45;
+  letter-spacing: 0.025em;
   color: var(--text-secondary);
 }
 
-.privacyNote a {
-  color: inherit;
-  text-underline-offset: 3px;
+.privacyIcon {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+}
+
+.privacyNote p {
+  display: grid;
+  gap: 1px;
+  margin: 0;
 }
 
 .channels {
@@ -342,7 +391,7 @@
   min-height: 390px;
   align-content: space-between;
   gap: 28px;
-  margin-top: 32px;
+  margin-top: 22px;
   padding: clamp(26px, 2.5vw, 42px);
   border: 1px solid var(--border-strong);
   background:
@@ -374,9 +423,38 @@
 .whatsAppPanel h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.1rem, 3vw, 3.5rem);
+  font-size: clamp(2.1rem, 2.45vw, 2.85rem);
   line-height: 0.9;
   letter-spacing: -0.04em;
+}
+
+.whatsAppHeading {
+  position: relative;
+  z-index: 1;
+}
+
+.whatsAppMark {
+  position: absolute;
+  z-index: 1;
+  top: 146px;
+  right: clamp(26px, 2.3vw, 42px);
+  display: grid;
+  width: clamp(90px, 7vw, 124px);
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid rgb(244 244 240 / 42%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(192 254 4 / 22%), transparent 54%), rgb(4 5 5 / 78%);
+  box-shadow:
+    0 0 0 7px rgb(244 244 240 / 7%),
+    0 0 0 8px rgb(244 244 240 / 22%),
+    0 18px 42px rgb(0 0 0 / 38%);
+  color: #c0fe04;
+}
+
+.whatsAppMark svg {
+  width: 48%;
+  height: 48%;
 }
 
 .whatsAppSubtitle {
@@ -385,6 +463,8 @@
 }
 
 .whatsAppPanel > p {
+  position: relative;
+  z-index: 1;
   max-width: 30ch;
   margin: 0;
   font-family: var(--font-interface);
@@ -393,11 +473,29 @@
   color: var(--text-secondary);
 }
 
-.whatsAppPanel > a {
+.whatsAppAction {
   position: relative;
   z-index: 1;
-  border-color: #c0fe04;
-  background: #c0fe04;
+  color: var(--color-noir-black);
+}
+
+.whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
+  border-color: rgb(222 255 80 / 72%);
+  background: linear-gradient(180deg, #dcff42 0%, #c0fe04 52%, #a8e000 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 58%),
+    inset 0 -4px 7px rgb(72 98 0 / 18%),
+    0 8px 18px rgb(0 0 0 / 24%);
+  font-size: 0.625rem;
+}
+
+:global([data-theme="light"]) .whatsAppAction {
+  color: var(--color-noir-black);
+}
+
+:global([data-theme="light"]) .whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
+  border-color: rgb(135 181 0 / 42%);
+  background: linear-gradient(180deg, #d6ff38 0%, #b7ef04 52%, #98ca00 100%);
 }
 
 .information {
@@ -413,7 +511,7 @@
   grid-template-columns: minmax(92px, 0.8fr) minmax(0, 1.2fr);
   align-items: center;
   gap: 18px;
-  min-height: 43px;
+  min-height: 38px;
   border-top: 1px solid var(--border-default);
   font-size: 0.625rem;
   letter-spacing: 0.025em;
@@ -426,7 +524,9 @@
 .information dd {
   min-width: 0;
   margin: 0;
+  font-family: var(--font-display);
   text-align: right;
+  text-transform: none;
 }
 
 .information a {
@@ -442,11 +542,51 @@
   outline-offset: 3px;
 }
 
+.internationalTag {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  min-height: 64px;
+  grid-template-columns: 9px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 12px 86px 12px 14px;
+  border: 1px solid var(--border-strong);
+  font-family: var(--font-display);
+  color: var(--text-secondary);
+  font-size: 0.625rem;
+  line-height: 1.45;
+  letter-spacing: 0.025em;
+  text-transform: none;
+}
+
+.internationalIndicator {
+  width: 9px;
+  height: 9px;
+  color: #c0fe04;
+}
+
+.internationalTag p {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+}
+
+.globalIcon {
+  position: absolute;
+  right: 8px;
+  bottom: -32px;
+  width: 98px;
+  height: 98px;
+  color: var(--text-secondary);
+  opacity: 0.32;
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .submit:not(:disabled):hover,
-  .whatsAppPanel > a:hover {
-    filter: brightness(0.92);
-    transform: translateY(-2px);
+  .submit:not(:disabled):hover .ctaIcon,
+  .whatsAppAction:hover .ctaIcon {
+    transform: translate(2px, -2px);
   }
 }
 
@@ -494,7 +634,9 @@
   .intro,
   .formPanel,
   .channels {
-    padding: 28px 16px 36px;
+    --contact-panel-inset: 8px;
+
+    padding: 28px 8px 36px;
     border-right: 0;
   }
 
@@ -521,10 +663,10 @@
   }
 
   .projectSection {
-    margin-right: -16px;
-    margin-left: -16px;
-    padding-right: 16px;
-    padding-left: 16px;
+    margin-right: -8px;
+    margin-left: -8px;
+    padding-right: 8px;
+    padding-left: 8px;
   }
 
   .channels {
@@ -537,12 +679,21 @@
     margin-top: 28px;
   }
 
+  .whatsAppMark {
+    top: 132px;
+    right: 28px;
+  }
+
   .information {
     margin-top: 36px;
   }
 
   .information dl div {
-    grid-template-columns: 92px minmax(0, 1fr);
+    grid-template-columns: 124px minmax(0, 1fr);
+  }
+
+  .internationalTag {
+    padding-right: 76px;
   }
 }
 

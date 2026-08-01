@@ -58,7 +58,6 @@ export function EntryPreloader() {
     if (document.fonts) {
       const criticalFonts = [
         document.fonts.load('700 1em "TikTok Sans"', "NOIR DIGITAL"),
-        document.fonts.load('500 1em "Geist Mono"', "NOIR DIGITAL"),
         document.fonts.load('400 1em "Departure Mono"', "NOIR DIGITAL"),
       ];
       void Promise.all(criticalFonts).then(
