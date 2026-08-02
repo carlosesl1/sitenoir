@@ -77,6 +77,13 @@ describe("ContactPage", () => {
     expect(css).toMatch(/\.privacyNote\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.information dd\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.internationalTag\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(/\.recommended\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(/\.whatsAppSubtitle\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(/\.whatsAppPanel > p\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(
+      /\.whatsAppActionSurface\s*\{[^}]*font-size:\s*clamp\(0\.625rem, 0\.42rem \+ 1\.1cqi, 0\.875rem\)/,
+    );
+    expect(css).toMatch(/\.whatsAppActionSurface\s*\{[^}]*white-space:\s*nowrap/);
   });
 
   it("renders the real contact contract and alternate channels", () => {

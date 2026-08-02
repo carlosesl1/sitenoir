@@ -388,6 +388,7 @@
   display: grid;
   position: relative;
   overflow: hidden;
+  container-type: inline-size;
   min-height: 390px;
   align-content: space-between;
   gap: 28px;
@@ -416,7 +417,10 @@
 .recommended {
   position: relative;
   z-index: 1;
-  font-size: 0.625rem;
+  font-family: var(--font-display);
+  font-size: clamp(0.625rem, 0.57rem + 0.1vw, 0.75rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
   color: #c0fe04;
 }
 
@@ -459,7 +463,10 @@
 
 .whatsAppSubtitle {
   margin: 7px 0 0;
-  font-size: 0.625rem;
+  font-family: var(--font-display);
+  font-size: clamp(0.625rem, 0.57rem + 0.1vw, 0.75rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .whatsAppPanel > p {
@@ -467,8 +474,8 @@
   z-index: 1;
   max-width: 30ch;
   margin: 0;
-  font-family: var(--font-interface);
-  font-size: 0.75rem;
+  font-family: var(--font-display);
+  font-size: clamp(0.75rem, 0.68rem + 0.16vw, 0.875rem);
   line-height: 1.55;
   color: var(--text-secondary);
 }
@@ -486,7 +493,11 @@
     inset 0 1px 0 rgb(255 255 255 / 58%),
     inset 0 -4px 7px rgb(72 98 0 / 18%),
     0 8px 18px rgb(0 0 0 / 24%);
-  font-size: 0.625rem;
+  font-size: clamp(0.625rem, 0.42rem + 1.1cqi, 0.875rem);
+  font-stretch: 100%;
+  font-variation-settings: "wdth" 100;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 :global([data-theme="light"]) .whatsAppAction {
