@@ -179,6 +179,10 @@ describe("SelectedWork", () => {
     expect(css).toMatch(
       /\.statement\s*\{[^}]*margin-left:\s*calc\(var\(--header-brand-text-inset\) - 56px\)/,
     );
+    expect(css).toMatch(/\.statement\s*\{[^}]*container-type:\s*inline-size/);
+    expect(css).toMatch(
+      /@media \(min-width: 1024px\)[\s\S]*\.statement h2\s*\{[^}]*font-size:\s*clamp\(2\.5rem, 17cqi, 5rem\)/,
+    );
     expect(css).toMatch(
       /@media \(max-width: 767px\)[\s\S]*\.statement\s*\{[^}]*margin-left:\s*calc\(var\(--header-brand-text-inset\) - 16px\)/,
     );

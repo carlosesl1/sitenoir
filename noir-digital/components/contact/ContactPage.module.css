@@ -57,6 +57,7 @@
 
 .intro {
   display: flex;
+  container-type: inline-size;
   flex-direction: column;
   padding-right: clamp(28px, 2.4vw, 44px);
   padding-left: 0;
@@ -95,7 +96,7 @@
   max-width: 9.2ch;
   margin: clamp(28px, 3.4vh, 42px) 0 24px;
   font-family: var(--font-display);
-  font-size: clamp(2.75rem, 3.5vw, 5.2rem);
+  font-size: clamp(1.5rem, 13.4cqi, 5.2rem);
   font-stretch: 120%;
   font-weight: var(--weight-display);
   font-variation-settings: "wdth" 120;
@@ -385,6 +386,8 @@
 }
 
 .whatsAppPanel {
+  --whatsapp-mark-size: clamp(90px, 34cqi, 124px);
+
   display: grid;
   position: relative;
   overflow: hidden;
@@ -420,21 +423,26 @@
   font-family: var(--font-display);
   font-size: clamp(0.625rem, 0.57rem + 0.1vw, 0.75rem);
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.065em;
   color: #c0fe04;
 }
 
 .whatsAppPanel h3 {
+  max-width: 100%;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.1rem, 2.45vw, 2.85rem);
+  font-size: clamp(2rem, 9.5cqi, 2.65rem);
+  font-weight: 720;
   line-height: 0.9;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
 }
 
 .whatsAppHeading {
   position: relative;
   z-index: 1;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .whatsAppMark {
@@ -443,7 +451,7 @@
   top: 146px;
   right: clamp(26px, 2.3vw, 42px);
   display: grid;
-  width: clamp(90px, 7vw, 124px);
+  width: var(--whatsapp-mark-size);
   aspect-ratio: 1;
   place-items: center;
   border: 1px solid rgb(244 244 240 / 42%);
@@ -466,23 +474,28 @@
   font-family: var(--font-display);
   font-size: clamp(0.625rem, 0.57rem + 0.1vw, 0.75rem);
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.055em;
+  color: rgb(244 244 240 / 84%);
 }
 
 .whatsAppPanel > p {
   position: relative;
   z-index: 1;
-  max-width: 30ch;
+  min-width: 0;
+  max-width: min(24ch, calc(100% - var(--whatsapp-mark-size) - 12px));
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(0.75rem, 0.68rem + 0.16vw, 0.875rem);
+  font-size: clamp(0.75rem, 0.7rem + 0.4cqi, 0.875rem);
   line-height: 1.55;
-  color: var(--text-secondary);
+  color: rgb(168 173 178 / 78%);
+  overflow-wrap: break-word;
 }
 
 .whatsAppAction {
   position: relative;
   z-index: 1;
+  min-width: 0;
+  max-width: 100%;
   color: var(--color-noir-black);
 }
 
@@ -497,7 +510,14 @@
   font-stretch: 100%;
   font-variation-settings: "wdth" 100;
   letter-spacing: 0.02em;
+  padding-inline: clamp(10px, 4cqi, 18px);
   white-space: nowrap;
+}
+
+.whatsAppActionSurface .ctaIcon {
+  width: clamp(14px, 4cqi, 18px);
+  height: clamp(14px, 4cqi, 18px);
+  flex: 0 0 auto;
 }
 
 :global([data-theme="light"]) .whatsAppAction {
@@ -658,7 +678,7 @@
 
   .intro h1 {
     margin-top: 54px;
-    font-size: clamp(2.65rem, 11vw, 4.4rem);
+    font-size: clamp(2.55rem, 11vw, 4.4rem);
   }
 
   .brandLockup {

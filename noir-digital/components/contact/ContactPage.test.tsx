@@ -44,13 +44,17 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("ContactPage", () => {
-  it("keeps the long headline inside the desktop invitation column", () => {
+  it("sizes the long headline from the invitation column instead of the viewport", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/ContactPage.module.css"),
       "utf8",
     );
 
-    expect(css).toMatch(/\.intro h1\s*\{[^}]*font-size:\s*clamp\(2\.75rem, 3\.5vw, 5\.2rem\)/);
+    expect(css).toMatch(/\.intro\s*\{[^}]*container-type:\s*inline-size/);
+    expect(css).toMatch(/\.intro h1\s*\{[^}]*font-size:\s*clamp\(1\.5rem, 13\.4cqi, 5\.2rem\)/);
+    expect(css).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*\.intro h1\s*\{[^}]*font-size:\s*clamp\(2\.55rem, 11vw, 4\.4rem\)/,
+    );
   });
 
   it("uses the same 24px mobile content axis as the home hero", () => {
@@ -80,6 +84,12 @@ describe("ContactPage", () => {
     expect(css).toMatch(/\.recommended\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.whatsAppSubtitle\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.whatsAppPanel > p\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(
+      /\.whatsAppPanel > p\s*\{[^}]*max-width:\s*min\(24ch, calc\(100% - var\(--whatsapp-mark-size\) - 12px\)\)/,
+    );
+    expect(css).toMatch(
+      /\.whatsAppPanel h3\s*\{[^}]*font-size:\s*clamp\(2rem, 9\.5cqi, 2\.65rem\)/,
+    );
     expect(css).toMatch(
       /\.whatsAppActionSurface\s*\{[^}]*font-size:\s*clamp\(0\.625rem, 0\.42rem \+ 1\.1cqi, 0\.875rem\)/,
     );
