@@ -2,6 +2,7 @@
 
 import { useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useWorkCardMotionSupport } from "@/components/work/use-work-card-motion-support";
 import {
   useWorkCardAnimation,
   type WorkCardAnimationFrame,
@@ -59,6 +60,7 @@ type CanvasRenderState = {
 
 export function ProjectCard({ featured, project }: ProjectCardProps) {
   const reducedMotion = useReducedMotion() ?? false;
+  const motionAllowed = useWorkCardMotionSupport();
   const [webglOwned, setWebglOwned] = useState(false);
   const { registerCard, requestFrame } = useWorkCardAnimation();
   const frameRef = useRef<HTMLSpanElement>(null);
@@ -78,7 +80,7 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
     ({ scrollSpeed }: WorkCardAnimationFrame) => {
       const frame = frameRef.current;
       const canvas = canvasRef.current;
-      if (!frame || !canvas || reducedMotion) return;
+      if (!frame || !canvas || reducedMotion || !motionAllowed) return;
 
       const rect = frame.getBoundingClientRect();
       const viewportHeight = Math.max(1, window.innerHeight);
@@ -97,7 +99,7 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
         lastCanvasRenderRef.current = null;
         return;
       }
-      if (!shouldRenderWorkCardCanvas({ imageReady, visible, webglReady })) {
+      if (!shouldRenderWorkCardCanvas({ imageReady, motionAllowed, visible, webglReady })) {
         resetWorkCardCanvas(frame, canvas);
         lastCanvasRenderRef.current = null;
         return;
@@ -228,18 +230,18 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
         width: canvasWidth,
       };
     },
-    [reducedMotion],
+    [motionAllowed, reducedMotion],
   );
 
   useEffect(() => {
-    if (webglOwned) return;
+    if (webglOwned || !motionAllowed) return;
     const frame = frameRef.current;
     if (!frame) return;
     return registerCard(frame, renderFrame);
-  }, [registerCard, renderFrame, webglOwned]);
+  }, [motionAllowed, registerCard, renderFrame, webglOwned]);
 
   useEffect(() => {
-    if (!reducedMotion) return;
+    if (!reducedMotion && motionAllowed) return;
     const frame = frameRef.current;
     const canvas = canvasRef.current;
     if (!frame || !canvas) return;
@@ -248,7 +250,7 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
     primaryImageCacheRef.current = null;
     hoverImageCacheRef.current = null;
     resetWorkCardCanvas(frame, canvas);
-  }, [reducedMotion]);
+  }, [motionAllowed, reducedMotion]);
 
   useEffect(() => {
     const handleWebGlWorkReady = () => {

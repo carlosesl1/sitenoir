@@ -7,14 +7,16 @@ export function resolveWorkCardCurl(scrollVelocity: number): number {
 
 export function shouldRenderWorkCardCanvas({
   imageReady,
+  motionAllowed,
   visible,
   webglReady,
 }: {
   imageReady: boolean;
+  motionAllowed: boolean;
   visible: boolean;
   webglReady: boolean;
 }): boolean {
-  return imageReady && visible && !webglReady;
+  return imageReady && motionAllowed && visible && !webglReady;
 }
 
 export function resetWorkCardCanvas(frame: HTMLElement, canvas: HTMLCanvasElement): void {

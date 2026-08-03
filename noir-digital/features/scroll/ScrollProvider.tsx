@@ -79,7 +79,7 @@ export function ScrollProvider({ children }: { readonly children: ReactNode }) {
         autoRaf: false,
         lerp: 0.1,
         smoothWheel: true,
-        syncTouch: true,
+        syncTouch: false,
       });
       lenisRef.current = lenis;
       unsubscribeVirtualScrollRef.current = lenis.on("virtual-scroll", wakeLenis);

@@ -24,21 +24,52 @@ describe("work card curl", () => {
   });
 
   it("keeps one render surface at rest instead of swapping back to the image", () => {
-    expect(shouldRenderWorkCardCanvas({ imageReady: true, visible: true, webglReady: false })).toBe(
-      true,
-    );
     expect(
-      shouldRenderWorkCardCanvas({ imageReady: false, visible: true, webglReady: false }),
+      shouldRenderWorkCardCanvas({
+        imageReady: true,
+        motionAllowed: true,
+        visible: true,
+        webglReady: false,
+      }),
+    ).toBe(true);
+    expect(
+      shouldRenderWorkCardCanvas({
+        imageReady: false,
+        motionAllowed: true,
+        visible: true,
+        webglReady: false,
+      }),
     ).toBe(false);
     expect(
-      shouldRenderWorkCardCanvas({ imageReady: true, visible: false, webglReady: false }),
+      shouldRenderWorkCardCanvas({
+        imageReady: true,
+        motionAllowed: true,
+        visible: false,
+        webglReady: false,
+      }),
     ).toBe(false);
   });
 
   it("stops the 2D strip renderer when the global WebGL layer owns the cards", () => {
-    expect(shouldRenderWorkCardCanvas({ imageReady: true, visible: true, webglReady: true })).toBe(
-      false,
-    );
+    expect(
+      shouldRenderWorkCardCanvas({
+        imageReady: true,
+        motionAllowed: true,
+        visible: true,
+        webglReady: true,
+      }),
+    ).toBe(false);
+  });
+
+  it("keeps the authored responsive image on touch-only devices", () => {
+    expect(
+      shouldRenderWorkCardCanvas({
+        imageReady: true,
+        motionAllowed: false,
+        visible: true,
+        webglReady: false,
+      }),
+    ).toBe(false);
   });
 
   it("keeps CSS and backing-store dimensions on the same coordinate system", () => {

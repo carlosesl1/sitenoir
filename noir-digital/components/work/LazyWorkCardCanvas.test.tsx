@@ -51,6 +51,17 @@ class TestIntersectionObserver implements IntersectionObserver {
 
 beforeEach(() => {
   vi.stubGlobal("IntersectionObserver", TestIntersectionObserver);
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({
+      addEventListener: vi.fn(),
+      dispatchEvent: vi.fn(() => true),
+      matches: true,
+      media: "(hover: hover) and (pointer: fine)",
+      onchange: null,
+      removeEventListener: vi.fn(),
+    })),
+  );
   TestIntersectionObserver.current = null;
 });
 
@@ -90,5 +101,25 @@ describe("LazyWorkCardCanvas", () => {
     );
 
     expect(screen.getByTestId("work-card-canvas")).toBeInTheDocument();
+  });
+
+  it("keeps the native image path and skips WebGL on touch-only devices", () => {
+    vi.mocked(window.matchMedia).mockReturnValue({
+      addEventListener: vi.fn(),
+      dispatchEvent: vi.fn(() => true),
+      matches: false,
+      media: "(hover: hover) and (pointer: fine)",
+      onchange: null,
+      removeEventListener: vi.fn(),
+    } as unknown as MediaQueryList);
+
+    render(
+      <section id="selected-work">
+        <LazyWorkCardCanvas className="canvas" />
+      </section>,
+    );
+
+    expect(TestIntersectionObserver.current).toBeNull();
+    expect(screen.queryByTestId("work-card-canvas")).not.toBeInTheDocument();
   });
 });

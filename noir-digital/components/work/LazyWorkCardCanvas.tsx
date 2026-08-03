@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
+import { useWorkCardMotionSupport } from "@/components/work/use-work-card-motion-support";
+
 const WORK_CANVAS_ROOT_MARGIN = "10% 0px";
 
 const WorkCardCanvas = dynamic(
@@ -15,9 +17,10 @@ const WorkCardCanvas = dynamic(
 
 export function LazyWorkCardCanvas({ className }: { readonly className: string | undefined }) {
   const [enabled, setEnabled] = useState(false);
+  const motionSupported = useWorkCardMotionSupport();
 
   useEffect(() => {
-    if (enabled) return;
+    if (enabled || !motionSupported) return;
 
     const section = document.getElementById("selected-work");
     if (!section || typeof IntersectionObserver === "undefined") {
@@ -36,7 +39,7 @@ export function LazyWorkCardCanvas({ className }: { readonly className: string |
     observer.observe(section);
 
     return () => observer.disconnect();
-  }, [enabled]);
+  }, [enabled, motionSupported]);
 
-  return enabled ? <WorkCardCanvas className={className} /> : null;
+  return enabled && motionSupported ? <WorkCardCanvas className={className} /> : null;
 }
