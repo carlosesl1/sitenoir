@@ -124,7 +124,7 @@ export function HeroScrambleText({
       data-scramble-state={settled ? "settled" : scrambleState}
       data-scramble-text={text}
     >
-      {settled ? (
+      {settled || scrambleState === "waiting" ? (
         text
       ) : (
         <>

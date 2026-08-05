@@ -1,14 +1,13 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
 import { resolveSceneQuality, type SceneQuality } from "@/scene/scene-quality";
+import { scheduleSiteCanvasBoot } from "@/scene/site-canvas-boot";
 
-const SiteCanvas = dynamic(() => import("@/scene/SiteCanvas").then((module) => module.SiteCanvas), {
-  loading: () => null,
-  ssr: false,
-});
+const DeferredSiteCanvas = lazy(() =>
+  import("@/scene/SiteCanvas").then((module) => ({ default: module.SiteCanvas })),
+);
 
 function supportsWebGl(): boolean {
   try {
@@ -22,8 +21,15 @@ function supportsWebGl(): boolean {
   }
 }
 
-export function LazySiteCanvas({ ambientOnly = false }: { readonly ambientOnly?: boolean }) {
+export function LazySiteCanvas({
+  ambientOnly = false,
+  waitForEntryReveal = false,
+}: {
+  readonly ambientOnly?: boolean;
+  readonly waitForEntryReveal?: boolean;
+}) {
   const [quality, setQuality] = useState<SceneQuality | null>(null);
+  const [canvasEnabled, setCanvasEnabled] = useState(false);
 
   useEffect(() => {
     const effectsParameter = new URLSearchParams(window.location.search).get("effects");
@@ -68,13 +74,22 @@ export function LazySiteCanvas({ ambientOnly = false }: { readonly ambientOnly?:
       };
     }
 
-    const timerId = window.setTimeout(() => setQuality(resolvedQuality), 250);
+    setQuality(resolvedQuality);
+    const cancelBoot = scheduleSiteCanvasBoot({
+      activate: () => setCanvasEnabled(true),
+      root: document.documentElement,
+      waitForEntryReveal,
+    });
     return () => {
-      window.clearTimeout(timerId);
+      cancelBoot();
       delete document.documentElement.dataset["effects"];
       delete document.documentElement.dataset["effectsQuality"];
     };
-  }, []);
+  }, [waitForEntryReveal]);
 
-  return quality ? <SiteCanvas ambientOnly={ambientOnly} quality={quality} /> : null;
+  return quality && canvasEnabled ? (
+    <Suspense fallback={null}>
+      <DeferredSiteCanvas ambientOnly={ambientOnly} quality={quality} />
+    </Suspense>
+  ) : null;
 }

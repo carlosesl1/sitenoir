@@ -2,12 +2,10 @@
 
 import { Canvas, useThree } from "@react-three/fiber";
 import { useScroll as useMotionScroll, useReducedMotion } from "motion/react";
-import { Suspense, useEffect } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
 
-import type { PrincipleProgressStage } from "@/components/principles/principles-progress";
 import { usePrincipleScene } from "@/features/principles/PrincipleSceneProvider";
-import { ContactModel } from "@/scene/ContactModel";
 import { startDemandFrameScheduler } from "@/scene/demand-frame-scheduler";
 import { FullscreenDither } from "@/scene/FullscreenDither";
 import { HeroFluidProvider } from "@/scene/HeroFluidProvider";
@@ -19,24 +17,23 @@ import { HeroRefractionBuffer } from "@/scene/HeroRefractionBuffer";
 import { PersistentSiteGrid } from "@/scene/PersistentSiteGrid";
 import { PointerModel } from "@/scene/PointerModel";
 import { PrinciplePointerModel } from "@/scene/PrinciplePointerModel";
+import { scheduleProgressiveSceneBoot } from "@/scene/progressive-scene-boot";
 import { SceneErrorBoundary } from "@/scene/SceneErrorBoundary";
 import { SiteCameraRig } from "@/scene/SiteCameraRig";
-import { StickerField } from "@/scene/StickerField";
-import {
-  principleSceneLayouts,
-  resolveHeroSceneLayout,
-  resolveViewportFamily,
-  sceneLayouts,
-} from "@/scene/scene-layout";
+import { resolveHeroSceneLayout, resolveViewportFamily, sceneLayouts } from "@/scene/scene-layout";
 import { resolveSceneQualityConfig, type SceneQuality } from "@/scene/scene-quality";
 
 import styles from "./SiteCanvas.module.css";
 
 const VISUAL_TEST_MODE = process.env["NEXT_PUBLIC_VISUAL_TEST_MODE"] === "1";
+const ProgressiveSceneContent = lazy(() =>
+  import("@/scene/ProgressiveSceneContent").then((module) => ({
+    default: module.ProgressiveSceneContent,
+  })),
+);
 
-interface SceneContentProps {
-  readonly principleActive: boolean;
-  readonly principleStage: PrincipleProgressStage;
+interface HeroSceneContentProps {
+  readonly onReady: () => void;
   readonly reducedMotion: boolean;
   readonly scrollProgress: ScrollProgressValue;
 }
@@ -46,10 +43,7 @@ interface ScrollProgressValue {
   readonly on: (event: "change", listener: (latest: number) => void) => () => void;
 }
 
-function HeroSceneContent({
-  reducedMotion,
-  scrollProgress,
-}: Pick<SceneContentProps, "reducedMotion" | "scrollProgress">) {
+function HeroSceneContent({ onReady, reducedMotion, scrollProgress }: HeroSceneContentProps) {
   const width = useThree((state) => state.size.width);
   const height = useThree((state) => state.size.height);
   const layout = sceneLayouts[resolveViewportFamily(width)];
@@ -67,70 +61,21 @@ function HeroSceneContent({
         reducedMotion={reducedMotion}
         scrollProgress={scrollProgress}
       />
-      <SceneReadyMarker />
+      <SceneReadyMarker onReady={onReady} />
     </>
   );
 }
 
-function ProgressiveSceneContent({
-  principleActive,
-  principleStage,
-  reducedMotion,
-  scrollProgress,
-}: SceneContentProps) {
-  const width = useThree((state) => state.size.width);
-  const family = resolveViewportFamily(width);
-  const layout = sceneLayouts[family];
-  const stickerVisibility = principleActive
-    ? principleSceneLayouts[principleStage].stickerVisibility
-    : 0;
-
-  return (
-    <>
-      <Suspense fallback={null}>
-        <StickerField
-          layout={layout.stickers}
-          reducedMotion={reducedMotion}
-          scrollProgress={scrollProgress}
-          visibility={stickerVisibility}
-        />
-        <SceneMilestoneMarker milestone="decor" />
-      </Suspense>
-      <Suspense fallback={null}>
-        <ContactModel
-          layout={layout.contact}
-          reducedMotion={reducedMotion}
-          scrollProgress={scrollProgress}
-        />
-        <SceneMilestoneMarker milestone="contact" />
-      </Suspense>
-    </>
-  );
-}
-
-function SceneReadyMarker() {
+function SceneReadyMarker({ onReady }: { readonly onReady: () => void }) {
   useEffect(() => {
     window.__NOIR_READY__ = true;
     window.__NOIR_SCENE_STATUS__ = "ready";
+    onReady();
     return () => {
       window.__NOIR_READY__ = false;
       window.__NOIR_SCENE_STATUS__ = "loading";
     };
-  }, []);
-
-  return null;
-}
-
-function SceneMilestoneMarker({ milestone }: { readonly milestone: "contact" | "decor" }) {
-  useEffect(() => {
-    if (milestone === "contact") window.__NOIR_CONTACT_READY__ = true;
-    else window.__NOIR_DECOR_READY__ = true;
-
-    return () => {
-      if (milestone === "contact") window.__NOIR_CONTACT_READY__ = false;
-      else window.__NOIR_DECOR_READY__ = false;
-    };
-  }, [milestone]);
+  }, [onReady]);
 
   return null;
 }
@@ -183,6 +128,14 @@ export function SiteCanvas({
   const qualityConfig = resolveSceneQualityConfig(quality);
   const { scrollYProgress } = useMotionScroll();
   const principleScene = usePrincipleScene();
+  const [heroSceneReady, setHeroSceneReady] = useState(false);
+  const [progressiveSceneEnabled, setProgressiveSceneEnabled] = useState(false);
+  const markHeroSceneReady = useCallback(() => setHeroSceneReady(true), []);
+
+  useEffect(() => {
+    if (ambientOnly || !heroSceneReady || progressiveSceneEnabled) return;
+    return scheduleProgressiveSceneBoot(() => setProgressiveSceneEnabled(true));
+  }, [ambientOnly, heroSceneReady, progressiveSceneEnabled]);
 
   return (
     <div
@@ -196,6 +149,9 @@ export function SiteCanvas({
       data-quality={quality}
       data-principle-active={principleScene.active}
       data-principle-stage={principleScene.stage}
+      data-progressive-scene={
+        progressiveSceneEnabled ? "enabled" : heroSceneReady ? "scheduled" : "waiting"
+      }
       aria-hidden="true"
     >
       <SceneErrorBoundary>
@@ -236,16 +192,19 @@ export function SiteCanvas({
               >
                 <Suspense fallback={null}>
                   <HeroSceneContent
+                    onReady={markHeroSceneReady}
                     reducedMotion={deterministicMotion}
                     scrollProgress={scrollYProgress}
                   />
                 </Suspense>
-                <ProgressiveSceneContent
-                  principleActive={principleScene.active}
-                  principleStage={principleScene.stage}
-                  reducedMotion={deterministicMotion}
-                  scrollProgress={scrollYProgress}
-                />
+                {progressiveSceneEnabled ? (
+                  <Suspense fallback={null}>
+                    <ProgressiveSceneContent
+                      reducedMotion={deterministicMotion}
+                      scrollProgress={scrollYProgress}
+                    />
+                  </Suspense>
+                ) : null}
               </HeroRefractionBuffer>
               <Suspense fallback={null}>
                 <PrinciplePointerModel

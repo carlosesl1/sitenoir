@@ -23,6 +23,7 @@ const optimizedAssets = [
   { path: "assets/v1/fonts/DepartureMono.woff2", signature: signatures.woff2 },
   { path: "assets/v1/model/contact.glb", signature: signatures.glb },
   { path: "assets/v1/stickers/atlas.webp", signature: signatures.webp },
+  { path: "assets/v1/stickers/atlas-mobile.webp", signature: signatures.webp },
   { path: "assets/v1/audio/bgm.mp3", signature: signatures.mp3 },
 ] as const;
 
@@ -87,6 +88,18 @@ test("records verified sizes and hashes for every generated versioned asset", as
     expect(asset.bytes).toBe(contents.byteLength);
     expect(asset.sha256).toBe(createHash("sha256").update(contents).digest("hex"));
   }
+});
+
+test("keeps both sticker atlases within the initial-load performance budget", async () => {
+  const desktopAtlas = await readFile(
+    path.join(process.cwd(), "public/assets/v1/stickers/atlas.webp"),
+  );
+  const mobileAtlas = await readFile(
+    path.join(process.cwd(), "public/assets/v1/stickers/atlas-mobile.webp"),
+  );
+
+  expect(desktopAtlas.byteLength).toBeLessThan(700 * 1024);
+  expect(mobileAtlas.byteLength).toBeLessThan(250 * 1024);
 });
 
 test("uses only TikTok Sans and Departure Mono across the runtime typography system", async () => {

@@ -11,25 +11,22 @@ import styles from "./EntryPreloader.module.css";
 const REVEAL_DELAY_MS = 250;
 const REVEAL_DURATION_MS = 800;
 const TEXT_REVEAL_LEAD_MS = 500;
-const ENTRY_TIMEOUT_MS = 4_000;
 
 export function EntryPreloader() {
   const reducedMotion = useReducedMotion() ?? false;
   const [documentReady, setDocumentReady] = useState(false);
   const [fontsReady, setFontsReady] = useState(false);
-  const [sceneReady, setSceneReady] = useState(false);
   const [phase, setPhase] = useState<"loading" | "revealing" | "done">("loading");
 
   const progress = useMemo(
-    () => resolveEntryLoadProgress({ documentReady, fontsReady, sceneReady }),
-    [documentReady, fontsReady, sceneReady],
+    () => resolveEntryLoadProgress({ documentReady, fontsReady }),
+    [documentReady, fontsReady],
   );
 
   useEffect(() => {
     if (document.documentElement.dataset["routeTransition"] === "true") {
       setDocumentReady(true);
       setFontsReady(true);
-      setSceneReady(true);
       setPhase("done");
       delete document.documentElement.dataset["entryLoading"];
       document.documentElement.dataset["entryTextReady"] = "true";
@@ -40,7 +37,6 @@ export function EntryPreloader() {
     if (reducedMotion) {
       setDocumentReady(true);
       setFontsReady(true);
-      setSceneReady(true);
       setPhase("done");
       delete document.documentElement.dataset["entryLoading"];
       document.documentElement.dataset["entryTextReady"] = "true";
@@ -72,36 +68,8 @@ export function EntryPreloader() {
       setFontsReady(true);
     }
 
-    let frame = 0;
-    const stopSceneWait = () => {
-      if (frame === 0) return;
-      window.cancelAnimationFrame(frame);
-      frame = 0;
-    };
-    const waitForScene = () => {
-      if (
-        window.__NOIR_READY__ ||
-        window.__NOIR_SCENE_STATUS__ === "failed" ||
-        window.__NOIR_SCENE_STATUS__ === "disabled"
-      ) {
-        setSceneReady(true);
-        frame = 0;
-        return;
-      }
-      frame = window.requestAnimationFrame(waitForScene);
-    };
-    frame = window.requestAnimationFrame(waitForScene);
-    const timeout = window.setTimeout(() => {
-      stopSceneWait();
-      setDocumentReady(true);
-      setFontsReady(true);
-      setSceneReady(true);
-    }, ENTRY_TIMEOUT_MS);
-
     return () => {
       cancelled = true;
-      stopSceneWait();
-      window.clearTimeout(timeout);
       delete document.documentElement.dataset["entryLoading"];
     };
   }, [reducedMotion]);

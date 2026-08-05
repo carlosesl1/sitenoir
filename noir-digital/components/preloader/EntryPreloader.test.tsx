@@ -61,14 +61,14 @@ describe("EntryPreloader", () => {
     expect(document.documentElement.dataset["entryLoading"]).toBeUndefined();
   });
 
-  it("reveals the site when scene readiness exceeds the hard timeout", async () => {
+  it("reveals the site without waiting for scene readiness", async () => {
     window.__NOIR_READY__ = false;
-    const cancelAnimationFrame = vi.spyOn(window, "cancelAnimationFrame");
+    const requestAnimationFrame = vi.spyOn(window, "requestAnimationFrame");
     const view = render(<EntryPreloader />);
     window.dispatchEvent(new Event("load"));
 
-    await act(async () => vi.advanceTimersByTimeAsync(4_000));
-    expect(cancelAnimationFrame).toHaveBeenCalled();
+    await act(async () => vi.advanceTimersByTimeAsync(20));
+    expect(requestAnimationFrame).not.toHaveBeenCalled();
     await act(async () => vi.advanceTimersByTimeAsync(250));
     await act(async () => vi.advanceTimersByTimeAsync(800));
 

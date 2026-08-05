@@ -27,7 +27,7 @@ import {
   createStickerGeometry,
   createStickerMaterial,
   MAX_STICKER_PARTICLES,
-  STICKER_ATLAS_SOURCE,
+  resolveStickerAtlasSource,
 } from "@/scene/sticker-rendering";
 
 interface StickerFieldProps {
@@ -56,7 +56,7 @@ const MAX_QUEUED_BURSTS = 8;
 export function StickerField({ layout, reducedMotion, visibility }: StickerFieldProps) {
   const camera = useThree((state) => state.camera);
   const size = useThree((state) => state.size);
-  const atlas = useLoader(TextureLoader, STICKER_ATLAS_SOURCE);
+  const atlas = useLoader(TextureLoader, resolveStickerAtlasSource(size.width));
   const geometry = useMemo(createStickerGeometry, []);
   const material = useMemo(() => createStickerMaterial(atlas), [atlas]);
   const meshRef = useRef<InstancedMesh>(null);

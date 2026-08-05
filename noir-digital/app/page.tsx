@@ -28,7 +28,7 @@ export default function Page() {
             <PrinciplesStory />
             <ContactFooter />
           </main>
-          <LazySiteCanvas />
+          <LazySiteCanvas waitForEntryReveal />
         </PrincipleSceneProvider>
       </ScrollProvider>
     </ThemeProvider>

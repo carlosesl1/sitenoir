@@ -9,6 +9,11 @@ import {
 export const MAX_STICKER_PARTICLES = 96;
 export const STICKER_PLANE_SIZE = 2;
 export const STICKER_ATLAS_SOURCE = "/assets/v1/stickers/atlas.webp";
+export const STICKER_ATLAS_MOBILE_SOURCE = "/assets/v1/stickers/atlas-mobile.webp";
+
+export function resolveStickerAtlasSource(viewportWidth: number): string {
+  return viewportWidth < 768 ? STICKER_ATLAS_MOBILE_SOURCE : STICKER_ATLAS_SOURCE;
+}
 
 const STICKER_VERTEX_SHADER = `
   attribute float instanceOpacity;

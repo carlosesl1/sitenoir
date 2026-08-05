@@ -25,7 +25,8 @@ describe("HeroScrambleText", () => {
     const root = view.container.querySelector<HTMLElement>("[data-hero-scramble]");
     expect(root).toHaveAttribute("data-scramble-state", "waiting");
     expect(root).toHaveTextContent("Teste");
-    expect(view.container.querySelector("[data-scramble-measure='true']")).toBeInTheDocument();
+    expect(root?.childElementCount).toBe(0);
+    expect(view.container.querySelector("[data-scramble-measure='true']")).not.toBeInTheDocument();
     expect(view.container.querySelector("[data-scramble-visual='true']")).not.toBeInTheDocument();
     expect(view.container.querySelectorAll("[data-scramble-glyph]")).toHaveLength(0);
 

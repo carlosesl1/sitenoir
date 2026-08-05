@@ -1,18 +1,13 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
 import { useWorkCardMotionSupport } from "@/components/work/use-work-card-motion-support";
 
 const WORK_CANVAS_ROOT_MARGIN = "10% 0px";
 
-const WorkCardCanvas = dynamic(
-  () => import("@/scene/WorkCardCanvas").then((module) => module.WorkCardCanvas),
-  {
-    loading: () => null,
-    ssr: false,
-  },
+const DeferredWorkCardCanvas = lazy(() =>
+  import("@/scene/WorkCardCanvas").then((module) => ({ default: module.WorkCardCanvas })),
 );
 
 export function LazyWorkCardCanvas({ className }: { readonly className: string | undefined }) {
@@ -41,5 +36,9 @@ export function LazyWorkCardCanvas({ className }: { readonly className: string |
     return () => observer.disconnect();
   }, [enabled, motionSupported]);
 
-  return enabled && motionSupported ? <WorkCardCanvas className={className} /> : null;
+  return enabled && motionSupported ? (
+    <Suspense fallback={null}>
+      <DeferredWorkCardCanvas className={className} />
+    </Suspense>
+  ) : null;
 }

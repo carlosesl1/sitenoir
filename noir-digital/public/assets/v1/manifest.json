@@ -22,9 +22,14 @@
       "sha256": "551d0148de55b6c39f9ac420de57c83fb12181ba77a9b882fc39ad14b4e24d6b"
     },
     {
+      "path": "stickers/atlas-mobile.webp",
+      "bytes": 189536,
+      "sha256": "5eb3ed1428777f347d136d9dcff75876f868f379efeb8b249b378f80e6871d41"
+    },
+    {
       "path": "stickers/atlas.webp",
-      "bytes": 1491976,
-      "sha256": "018bba1002d3bb29be4d6a3942366aad95d8a1aa85df55d335324446b7fe09a0"
+      "bytes": 607018,
+      "sha256": "713404bf113043d0552018a4f170d07d4f7c01ef1c0f8b1ead55821bfc18967d"
     }
   ]
 }

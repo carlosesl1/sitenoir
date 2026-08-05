@@ -3,11 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LazyWorkCardCanvas } from "@/components/work/LazyWorkCardCanvas";
 
-vi.mock("next/dynamic", () => ({
-  default: () =>
-    function WorkCardCanvasMock({ className }: { readonly className: string | undefined }) {
-      return <div className={className} data-testid="work-card-canvas" />;
-    },
+vi.mock("@/scene/WorkCardCanvas", () => ({
+  WorkCardCanvas: ({ className }: { readonly className: string | undefined }) => (
+    <div className={className} data-testid="work-card-canvas" />
+  ),
 }));
 
 class TestIntersectionObserver implements IntersectionObserver {
@@ -72,7 +71,7 @@ afterEach(() => {
 });
 
 describe("LazyWorkCardCanvas", () => {
-  it("loads the WebGL runtime only when selected work approaches the viewport", () => {
+  it("loads the WebGL runtime only when selected work approaches the viewport", async () => {
     render(
       <section id="selected-work">
         <LazyWorkCardCanvas className="canvas" />
@@ -87,11 +86,11 @@ describe("LazyWorkCardCanvas", () => {
 
     act(() => TestIntersectionObserver.current?.emit(true));
 
-    expect(screen.getByTestId("work-card-canvas")).toHaveClass("canvas");
+    expect(await screen.findByTestId("work-card-canvas")).toHaveClass("canvas");
     expect(TestIntersectionObserver.current?.disconnect).toHaveBeenCalled();
   });
 
-  it("loads immediately when IntersectionObserver is unavailable", () => {
+  it("loads immediately when IntersectionObserver is unavailable", async () => {
     vi.stubGlobal("IntersectionObserver", undefined);
 
     render(
@@ -100,7 +99,7 @@ describe("LazyWorkCardCanvas", () => {
       </section>,
     );
 
-    expect(screen.getByTestId("work-card-canvas")).toBeInTheDocument();
+    expect(await screen.findByTestId("work-card-canvas")).toBeInTheDocument();
   });
 
   it("keeps the native image path and skips WebGL on touch-only devices", () => {
