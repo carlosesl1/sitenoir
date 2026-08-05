@@ -138,6 +138,13 @@ jobs:
             printf 'login %s\n' "${FTP_USER}"
             printf 'password %s\n' "${FTP_PASSWORD}"
           } >"${HOME}/.netrc"
+          {
+            echo 'set net:max-retries 6'
+            echo 'set net:timeout 30'
+            echo 'set net:reconnect-interval-base 5'
+            echo 'set net:reconnect-interval-max 30'
+            echo 'set ftp:passive-mode true'
+          } >"${HOME}/.lftprc"
 
       - name: Back up current entry files
         id: backup
@@ -148,8 +155,8 @@ jobs:
 
           lftp -e "
             set cmd:fail-exit yes;
-            set net:max-retries 2;
-            set net:timeout 20;
+            set net:max-retries 6;
+            set net:timeout 30;
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
@@ -160,8 +167,8 @@ jobs:
 
           if lftp -e "
             set cmd:fail-exit yes;
-            set net:max-retries 2;
-            set net:timeout 20;
+            set net:max-retries 6;
+            set net:timeout 30;
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
@@ -176,8 +183,8 @@ jobs:
 
           if lftp -e "
             set cmd:fail-exit yes;
-            set net:max-retries 2;
-            set net:timeout 20;
+            set net:max-retries 6;
+            set net:timeout 30;
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
@@ -195,8 +202,8 @@ jobs:
 
           lftp -e "
             set cmd:fail-exit yes;
-            set net:max-retries 2;
-            set net:timeout 20;
+            set net:max-retries 6;
+            set net:timeout 30;
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
@@ -248,8 +255,8 @@ jobs:
 
           if ! lftp -e "
             set cmd:fail-exit yes;
-            set net:max-retries 2;
-            set net:timeout 20;
+            set net:max-retries 6;
+            set net:timeout 30;
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
@@ -259,8 +266,8 @@ jobs:
           "; then
             lftp -e "
               set cmd:fail-exit yes;
-              set net:max-retries 2;
-              set net:timeout 20;
+              set net:max-retries 6;
+              set net:timeout 30;
               set ftp:ssl-force true;
               set ftp:ssl-protect-data true;
               set ssl:verify-certificate yes;
@@ -272,8 +279,8 @@ jobs:
 
           lftp -e "
             set cmd:fail-exit yes;
-            set net:max-retries 2;
-            set net:timeout 20;
+            set net:max-retries 6;
+            set net:timeout 30;
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
@@ -388,8 +395,8 @@ jobs:
         run: |
           lftp -e "
             set cmd:fail-exit yes;
-            set net:max-retries 2;
-            set net:timeout 20;
+            set net:max-retries 6;
+            set net:timeout 30;
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set ssl:verify-certificate yes;
@@ -463,4 +470,4 @@ jobs:
 
       - name: Remove local FTP credentials
         if: always()
-        run: rm -f "${HOME}/.netrc"
+        run: rm -f "${HOME}/.netrc" "${HOME}/.lftprc"
