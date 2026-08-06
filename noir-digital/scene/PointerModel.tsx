@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { type Group, MathUtils } from "three";
 
 import { pointerStore } from "@/features/pointer/pointer-store";
+import { POINTER_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { useGraphiteAsset } from "@/scene/GraphiteAsset";
 import {
   POINTER_ROTATION_AXIS_TILT_DEGREES,
@@ -28,7 +29,7 @@ export function PointerModel({ layout, reducedMotion, scrollProgress }: PointerM
   const containerRef = useRef<Group>(null);
   const spinRef = useRef<Group>(null);
   const activeTimeRef = useRef(0);
-  const scene = useGraphiteAsset("/model/cursor.glb", true);
+  const scene = useGraphiteAsset(POINTER_MODEL_SOURCE, true);
 
   useFrame((_state, delta) => {
     const frameDelta = resolveSceneFrameDelta(delta);

@@ -19,7 +19,7 @@ import {
   shouldRenderWorkCardCanvas,
 } from "@/components/work/work-card-motion";
 import type { Project } from "@/data/projects";
-import { setDataFlag } from "@/scene/work-card-runtime";
+import { setDataFlag } from "@/scene/work-card-dom";
 
 import { CardHoverRevealCanvas, type CardHoverRevealHandle } from "./CardHoverRevealCanvas";
 

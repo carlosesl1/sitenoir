@@ -21,6 +21,7 @@ describe("EntryPreloader", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
     vi.useRealTimers();
     delete window.__NOIR_READY__;
     delete document.documentElement.dataset["entryLoading"];
@@ -83,6 +84,31 @@ describe("EntryPreloader", () => {
 
     expect(view.container.firstChild).toBeNull();
     expect(document.documentElement.dataset["entryLoading"]).toBeUndefined();
+  });
+
+  it("does not begin the transition until the reveal shader warmup is ready", async () => {
+    let idleCallback: IdleRequestCallback | undefined;
+    vi.stubGlobal(
+      "requestIdleCallback",
+      vi.fn((callback: IdleRequestCallback) => {
+        idleCallback = callback;
+        return 23;
+      }),
+    );
+    vi.stubGlobal("cancelIdleCallback", vi.fn());
+
+    const view = render(<EntryPreloader />);
+    await act(async () => vi.advanceTimersByTimeAsync(2_000));
+
+    expect(view.container.firstChild).not.toBeNull();
+    expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
+
+    act(() => idleCallback?.({ didTimeout: false, timeRemaining: () => 10 }));
+    await act(async () => vi.advanceTimersByTimeAsync(250));
+    await act(async () => vi.advanceTimersByTimeAsync(800));
+
+    expect(view.container.firstChild).toBeNull();
+    expect(document.documentElement.dataset["entryReady"]).toBe("true");
   });
 
   it("waits for the scene but skips the reveal animation with reduced motion", async () => {

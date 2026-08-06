@@ -21,6 +21,8 @@ const requiredBinaryAssets = [
 const optimizedAssets = [
   { path: "assets/v1/fonts/TikTokSans.woff2", signature: signatures.woff2 },
   { path: "assets/v1/fonts/DepartureMono.woff2", signature: signatures.woff2 },
+  { path: "assets/v1/model/hello-6991848c1d51.glb", signature: signatures.glb },
+  { path: "assets/v1/model/cursor-a69d5b3f772e.glb", signature: signatures.glb },
   { path: "assets/v1/model/contact.glb", signature: signatures.glb },
   { path: "assets/v1/stickers/atlas.webp", signature: signatures.webp },
   { path: "assets/v1/stickers/atlas-mobile.webp", signature: signatures.webp },
@@ -100,6 +102,35 @@ test("keeps both sticker atlases within the initial-load performance budget", as
 
   expect(desktopAtlas.byteLength).toBeLessThan(700 * 1024);
   expect(mobileAtlas.byteLength).toBeLessThan(250 * 1024);
+});
+
+test("subsets TikTok Sans without removing its visual variable axes", async () => {
+  const font = await readFile(path.join(process.cwd(), "public/assets/v1/fonts/TikTokSans.woff2"));
+  const pipeline = await readFile(path.join(process.cwd(), "scripts/optimize-assets.py"), "utf8");
+
+  expect(font.byteLength).toBeGreaterThan(100 * 1024);
+  expect(font.byteLength).toBeLessThan(120 * 1024);
+  expect(pipeline).toContain('("wght=400:700", "wdth=100:120", "opsz=12:36", "slnt=0")');
+});
+
+test("content-hashes the two critical hero models and serves GLB with immutable caching", async () => {
+  for (const assetPath of [
+    "assets/v1/model/hello-6991848c1d51.glb",
+    "assets/v1/model/cursor-a69d5b3f772e.glb",
+  ]) {
+    const contents = await readFile(path.join(process.cwd(), "public", assetPath));
+    const contentHash = createHash("sha256").update(contents).digest("hex").slice(0, 12);
+    expect(assetPath).toContain(`-${contentHash}.glb`);
+  }
+
+  const htaccess = await readFile(path.join(process.cwd(), "public/.htaccess"), "utf8");
+  expect(htaccess).toMatch(/AddType\s+model\/gltf-binary\s+\.glb/);
+  expect(htaccess).toContain(
+    'SetEnvIf Request_URI "^/(?:_next/static|assets/v1)/" immutable_asset',
+  );
+  expect(htaccess).toContain(
+    'Header set Cache-Control "public, max-age=31536000, immutable" env=immutable_asset',
+  );
 });
 
 test("uses only TikTok Sans and Departure Mono across the runtime typography system", async () => {

@@ -41,6 +41,10 @@ export function LazySiteCanvas({
   const [quality, setQuality] = useState<SceneQuality | null>(null);
   const [canvasEnabled, setCanvasEnabled] = useState(false);
 
+  if (preloadDuringEntry && typeof window !== "undefined") {
+    void preloadSiteCanvasModule();
+  }
+
   useEffect(() => {
     resetSceneReadiness();
     const effectsParameter = new URLSearchParams(window.location.search).get("effects");
@@ -83,7 +87,6 @@ export function LazySiteCanvas({
     setQuality(resolvedQuality);
     let cancelBoot: () => void = () => undefined;
     if (preloadDuringEntry) {
-      void preloadSiteCanvasModule();
       setCanvasEnabled(true);
     } else {
       cancelBoot = scheduleSiteCanvasBoot({

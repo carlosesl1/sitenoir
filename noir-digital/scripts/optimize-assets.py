@@ -14,7 +14,9 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ROOT / "asset-sources"
 OUTPUT = ROOT / "public" / "assets" / "v1"
-UNICODES = "U+0000-024F,U+1E00-1EFF,U+2000-214F"
+DEFAULT_UNICODES = "U+0000-024F,U+1E00-1EFF,U+2000-214F"
+TIKTOK_UNICODES = "U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2122,U+2190-2199"
+TIKTOK_LAYOUT_FEATURES = "rvrn,ccmp,kern,liga,clig,calt,locl,mark,mkmk"
 GENERATED_ASSET_PATHS = (
     Path("audio/bgm.mp3"),
     Path("fonts/DepartureMono.woff2"),
@@ -23,13 +25,24 @@ GENERATED_ASSET_PATHS = (
     Path("stickers/atlas-mobile.webp"),
     Path("stickers/atlas.webp"),
 )
+CRITICAL_MODEL_SOURCES = (
+    Path("model/hello.glb"),
+    Path("model/cursor.glb"),
+)
 
 
 def run(command: list[str]) -> None:
     subprocess.run(command, cwd=ROOT, check=True)
 
 
-def subset_font(source: Path, output: Path, axes: tuple[str, ...] = ()) -> None:
+def subset_font(
+    source: Path,
+    output: Path,
+    axes: tuple[str, ...] = (),
+    unicodes: str = DEFAULT_UNICODES,
+    layout_features: str = "*",
+    preserve_legacy_metadata: bool = True,
+) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as temporary_directory:
         instanced = Path(temporary_directory) / source.name
@@ -49,31 +62,37 @@ def subset_font(source: Path, output: Path, axes: tuple[str, ...] = ()) -> None:
         else:
             shutil.copy2(source, instanced)
 
-        run(
-            [
-                sys.executable,
-                "-m",
-                "fontTools.subset",
-                str(instanced),
-                f"--output-file={output}",
-                "--flavor=woff2",
-                f"--unicodes={UNICODES}",
-                "--layout-features=*",
-                "--glyph-names",
-                "--symbol-cmap",
-                "--legacy-cmap",
-                "--notdef-glyph",
-                "--notdef-outline",
-                "--recommended-glyphs",
-            ]
-        )
+        command = [
+            sys.executable,
+            "-m",
+            "fontTools.subset",
+            str(instanced),
+            f"--output-file={output}",
+            "--flavor=woff2",
+            f"--unicodes={unicodes}",
+            f"--layout-features={layout_features}",
+        ]
+        if preserve_legacy_metadata:
+            command.extend(
+                [
+                    "--glyph-names",
+                    "--symbol-cmap",
+                    "--legacy-cmap",
+                    "--recommended-glyphs",
+                ]
+            )
+        command.extend(["--notdef-glyph", "--notdef-outline"])
+        run(command)
 
 
 def build_fonts() -> None:
     subset_font(
         SOURCES / "fonts" / "TikTokSans.ttf",
         OUTPUT / "fonts" / "TikTokSans.woff2",
-        ("wght=400:700", "wdth=100:120", "opsz=12:36"),
+        ("wght=400:700", "wdth=100:120", "opsz=12:36", "slnt=0"),
+        TIKTOK_UNICODES,
+        TIKTOK_LAYOUT_FEATURES,
+        False,
     )
     (OUTPUT / "fonts" / "GeistMono.woff2").unlink(missing_ok=True)
     subset_font(
@@ -145,8 +164,24 @@ def build_contact_model() -> None:
     )
 
 
-def write_manifest() -> None:
-    paths = [OUTPUT / relative_path for relative_path in GENERATED_ASSET_PATHS]
+def build_critical_models() -> tuple[Path, ...]:
+    generated_paths: list[Path] = []
+    for relative_source in CRITICAL_MODEL_SOURCES:
+        source = ROOT / "public" / relative_source
+        content_hash = hashlib.sha256(source.read_bytes()).hexdigest()[:12]
+        relative_output = Path("model") / f"{source.stem}-{content_hash}{source.suffix}"
+        output = OUTPUT / relative_output
+        output.parent.mkdir(parents=True, exist_ok=True)
+        for stale_output in output.parent.glob(f"{source.stem}-*{source.suffix}"):
+            if stale_output != output:
+                stale_output.unlink()
+        shutil.copy2(source, output)
+        generated_paths.append(relative_output)
+    return tuple(generated_paths)
+
+
+def write_manifest(relative_paths: tuple[Path, ...]) -> None:
+    paths = [OUTPUT / relative_path for relative_path in relative_paths]
     manifest = {
         "pipeline": 1,
         "assets": [
@@ -166,7 +201,8 @@ def main() -> None:
     build_sticker_atlas()
     build_audio()
     build_contact_model()
-    write_manifest()
+    critical_models = build_critical_models()
+    write_manifest((*GENERATED_ASSET_PATHS, *critical_models))
 
 
 if __name__ == "__main__":

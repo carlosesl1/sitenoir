@@ -13,8 +13,8 @@
     },
     {
       "path": "fonts/TikTokSans.woff2",
-      "bytes": 173856,
-      "sha256": "ef8c69095138cdfb16734b8fe101fbc1e0ea4c31175083d3b006379c9ecda77b"
+      "bytes": 110736,
+      "sha256": "9a1541f2312f93e8e7910326f8a97a3f6e9033585ca494de4b876168c74f9152"
     },
     {
       "path": "model/contact.glb",
@@ -30,6 +30,16 @@
       "path": "stickers/atlas.webp",
       "bytes": 607018,
       "sha256": "713404bf113043d0552018a4f170d07d4f7c01ef1c0f8b1ead55821bfc18967d"
+    },
+    {
+      "path": "model/hello-6991848c1d51.glb",
+      "bytes": 67020,
+      "sha256": "6991848c1d5161d1c034967e9e4f4287d43d09ef9be8a4ddaca5f3d8460beb33"
+    },
+    {
+      "path": "model/cursor-a69d5b3f772e.glb",
+      "bytes": 39604,
+      "sha256": "a69d5b3f772e6823db22c139f64978eff5ca9d9a6ec8af6ee11eadc1d3212d4d"
     }
   ]
 }

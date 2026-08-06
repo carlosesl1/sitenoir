@@ -20,6 +20,7 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 import { pointerStore } from "@/features/pointer/pointer-store";
 import type { PrincipleSectionRect } from "@/features/principles/PrincipleSceneProvider";
 import { useTheme } from "@/features/theme/ThemeProvider";
+import { POINTER_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import {
   principleCursorFragmentShader,
   principleCursorVertexShader,
@@ -83,7 +84,7 @@ export function PrinciplePointerModel({
   const fullscreenRef = useRef(false);
   const lightAngleRef = useRef(DEFAULT_LIGHT_ANGLE);
   const { resolvedTheme } = useTheme();
-  const source = useLoader(GLTFLoader, "/model/cursor.glb");
+  const source = useLoader(GLTFLoader, POINTER_MODEL_SOURCE);
   const geometry = useMemo(() => mergeCursorGeometry(source.scene), [source.scene]);
   const modelRadius = geometry.boundingSphere?.radius ?? 1;
   const lightController = useMemo(

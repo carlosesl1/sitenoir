@@ -1,7 +1,15 @@
 import { cleanup, render } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { LazySiteCanvas } from "@/scene/LazySiteCanvas";
+
+const siteCanvasModuleProbe = vi.hoisted(() => ({ loaded: vi.fn() }));
+
+vi.mock("@/scene/SiteCanvas", () => {
+  siteCanvasModuleProbe.loaded();
+  return { SiteCanvas: () => null };
+});
 
 describe("LazySiteCanvas", () => {
   afterEach(() => {
@@ -11,6 +19,12 @@ describe("LazySiteCanvas", () => {
     delete document.documentElement.dataset["sceneReady"];
     delete window.__NOIR_READY__;
     delete window.__NOIR_SCENE_STATUS__;
+  });
+
+  it("starts loading the critical scene module during render", async () => {
+    renderToString(<LazySiteCanvas preloadDuringEntry />);
+
+    await vi.waitFor(() => expect(siteCanvasModuleProbe.loaded).toHaveBeenCalledTimes(1));
   });
 
   it("settles the preloader safely when WebGL is unavailable", () => {

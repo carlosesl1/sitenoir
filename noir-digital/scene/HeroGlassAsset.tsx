@@ -18,6 +18,7 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 
 import { pointerStore } from "@/features/pointer/pointer-store";
 import { useTheme } from "@/features/theme/ThemeProvider";
+import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
 import { pointerSnapshotToUv } from "@/scene/hero-effects";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
@@ -31,7 +32,7 @@ function colorVector(hex: string): Vector4 {
 }
 
 export function HeroGlassAsset({ reducedMotion }: { readonly reducedMotion: boolean }) {
-  const source = useLoader(GLTFLoader, "/model/hello.glb");
+  const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
   const { resolvedTheme } = useTheme();
   const { screenResolution, texture } = useHeroRefraction();
   const camera = useThree((state) => state.camera);

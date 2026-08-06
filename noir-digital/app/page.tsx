@@ -1,3 +1,5 @@
+import { preload } from "react-dom";
+
 import { AiServicesSection } from "@/components/ai-services/AiServicesSection";
 import { ContactFooter } from "@/components/contact/ContactFooter";
 import { SiteHeader } from "@/components/header/SiteHeader";
@@ -10,9 +12,12 @@ import { PrincipleSceneProvider } from "@/features/principles/PrincipleSceneProv
 import { ScrollProvider } from "@/features/scroll/ScrollProvider";
 import { ShortcutController } from "@/features/shortcuts/ShortcutController";
 import { ThemeProvider } from "@/features/theme/ThemeProvider";
+import { preloadCriticalHeroModels } from "@/scene/critical-hero-preload";
 import { LazySiteCanvas } from "@/scene/LazySiteCanvas";
 
 export default function Page() {
+  preloadCriticalHeroModels(preload);
+
   return (
     <ThemeProvider>
       <ScrollProvider>

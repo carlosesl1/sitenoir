@@ -1,12 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { setDataFlag, setWebGlCardVisibility } from "@/scene/work-card-dom";
 import {
   createImageCanvasGate,
   createWorkCardTexture,
   initializeWorkCardTexture,
   resolveWorkCardTextureSize,
-  setDataFlag,
-  setWebGlCardVisibility,
 } from "@/scene/work-card-runtime";
 
 describe("work card runtime", () => {

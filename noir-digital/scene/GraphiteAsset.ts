@@ -13,6 +13,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import { useTheme } from "@/features/theme/ThemeProvider";
 import { createContactChromeMatcap } from "@/scene/contact-chrome-matcap";
+import { HERO_MODEL_SOURCE, POINTER_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 
 function applyContactSidePaint(material: MeshPhysicalMaterial, cursor: boolean): void {
   const sideStart = cursor ? 0.08 : 0.24;
@@ -61,8 +62,8 @@ export function useGraphiteAsset(path: string, heroStyle = false): Object3D {
     loader.setMeshoptDecoder(MeshoptDecoder);
   });
   const { resolvedTheme } = useTheme();
-  const isHeroAsset = heroStyle || path.endsWith("/hello.glb");
-  const isCursorAsset = path.endsWith("/cursor.glb");
+  const isHeroAsset = heroStyle || path === HERO_MODEL_SOURCE;
+  const isCursorAsset = path === POINTER_MODEL_SOURCE;
   const isContactAsset =
     !heroStyle && (path.includes("/contact-") || path.endsWith("/contact.glb"));
   const dark = resolvedTheme === "dark";

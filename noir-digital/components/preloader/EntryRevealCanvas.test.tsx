@@ -1,4 +1,4 @@
-import { cleanup, render } from "@testing-library/react";
+import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -10,6 +10,7 @@ describe("EntryRevealCanvas", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it("renders the dotted reveal on the GPU", () => {
@@ -25,6 +26,37 @@ describe("EntryRevealCanvas", () => {
       }),
     );
     expect(getContext).not.toHaveBeenCalledWith("2d", expect.anything());
+  });
+
+  it("warms the entry shader during idle time and reports readiness before activation", () => {
+    let idleCallback: IdleRequestCallback | undefined;
+    const requestIdleCallback = vi.fn((callback: IdleRequestCallback) => {
+      idleCallback = callback;
+      return 19;
+    });
+    vi.stubGlobal("requestIdleCallback", requestIdleCallback);
+    vi.stubGlobal("cancelIdleCallback", vi.fn());
+    const getContext = vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
+    const onReady = vi.fn();
+
+    render(
+      <EntryRevealCanvas
+        active={false}
+        className="reveal"
+        deferInitialization
+        durationMs={800}
+        onReady={onReady}
+      />,
+    );
+
+    expect(requestIdleCallback).toHaveBeenCalledWith(expect.any(Function), { timeout: 1_000 });
+    expect(getContext).not.toHaveBeenCalled();
+    expect(onReady).not.toHaveBeenCalled();
+
+    act(() => idleCallback?.({ didTimeout: false, timeRemaining: () => 12 }));
+
+    expect(getContext).toHaveBeenCalledOnce();
+    expect(onReady).toHaveBeenCalledOnce();
   });
 
   it("reuses its WebGL program and buffer across animation state changes", () => {

@@ -19,12 +19,11 @@ import {
 } from "three";
 
 import { projects } from "@/data/projects";
+import { setDataFlag, setWebGlCardVisibility } from "@/scene/work-card-dom";
 import {
   createImageCanvasGate,
   createWorkCardTexture,
   initializeWorkCardTexture,
-  setDataFlag,
-  setWebGlCardVisibility,
 } from "@/scene/work-card-runtime";
 import { WORK_CARD_FRAGMENT_SHADER, WORK_CARD_VERTEX_SHADER } from "@/scene/work-card-shaders";
 

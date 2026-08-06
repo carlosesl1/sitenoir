@@ -20,6 +20,7 @@ import { PrinciplePointerModel } from "@/scene/PrinciplePointerModel";
 import { scheduleProgressiveSceneBoot } from "@/scene/progressive-scene-boot";
 import { SceneErrorBoundary } from "@/scene/SceneErrorBoundary";
 import { SiteCameraRig } from "@/scene/SiteCameraRig";
+import { waitForRenderedFrame } from "@/scene/scene-first-frame";
 import { resolveHeroSceneLayout, resolveViewportFamily, sceneLayouts } from "@/scene/scene-layout";
 import { compileScenePrograms } from "@/scene/scene-program-compile";
 import { resolveSceneQualityConfig, type SceneQuality } from "@/scene/scene-quality";
@@ -76,20 +77,22 @@ function SceneReadyMarker({ onReady }: { readonly onReady: () => void }) {
 
   useEffect(() => {
     let active = true;
-    let firstFrame = 0;
-    let secondFrame = 0;
+    let cancelRenderedFrameWait: () => void = () => undefined;
 
     void compileScenePrograms(gl, scene, camera).then(
       (compileMode) => {
         if (!active) return;
         window.__NOIR_COMPILE_MODE__ = compileMode;
-        invalidate();
-        firstFrame = window.requestAnimationFrame(() => {
-          secondFrame = window.requestAnimationFrame(() => {
+        cancelRenderedFrameWait = waitForRenderedFrame({
+          cancelFrame: (frameId) => window.cancelAnimationFrame(frameId),
+          invalidate,
+          onRendered: () => {
             if (!active) return;
             onReady();
             signalSceneSettled("ready");
-          });
+          },
+          readRenderedFrame: () => gl.info.render.frame,
+          requestFrame: (callback) => window.requestAnimationFrame(callback),
         });
       },
       () => {
@@ -104,8 +107,7 @@ function SceneReadyMarker({ onReady }: { readonly onReady: () => void }) {
 
     return () => {
       active = false;
-      window.cancelAnimationFrame(firstFrame);
-      window.cancelAnimationFrame(secondFrame);
+      cancelRenderedFrameWait();
       delete window.__NOIR_COMPILE_MODE__;
       resetSceneReadiness();
     };
@@ -168,7 +170,11 @@ export function SiteCanvas({
 
   useEffect(() => {
     if (ambientOnly || !heroSceneReady || progressiveSceneEnabled) return;
-    return scheduleProgressiveSceneBoot(() => setProgressiveSceneEnabled(true));
+    return scheduleProgressiveSceneBoot({
+      activate: () => setProgressiveSceneEnabled(true),
+      heading: document.getElementById("hero-heading"),
+      root: document.documentElement,
+    });
   }, [ambientOnly, heroSceneReady, progressiveSceneEnabled]);
 
   return (

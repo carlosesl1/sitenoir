@@ -1,10 +1,11 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import { easeEntryReveal } from "@/components/preloader/entry-reveal-mask";
 
 const DOT_CELL_SIZE = 16;
+const ENTRY_REVEAL_WARMUP_TIMEOUT_MS = 1_000;
 
 const VERTEX_SHADER = `
   attribute vec2 aPosition;
@@ -69,8 +70,11 @@ const FRAGMENT_SHADER = `
 type EntryRevealCanvasProps = {
   active: boolean;
   className: string | undefined;
+  deferInitialization?: boolean;
   direction?: TransitionDirection;
   durationMs: number;
+  onReady?: () => void;
+  skipInitialization?: boolean;
 };
 
 export type TransitionDirection = "cover" | "reveal";
@@ -136,10 +140,14 @@ function resolveOverlayColor() {
 export function EntryRevealCanvas({
   active,
   className,
+  deferInitialization = false,
   direction = "reveal",
   durationMs,
+  onReady,
+  skipInitialization = false,
 }: EntryRevealCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [runtimeReady, setRuntimeReady] = useState(false);
   const runtimeRef = useRef<{
     animationFrame: number;
     drawFrame: (maskProgress: number) => void;
@@ -147,122 +155,166 @@ export function EntryRevealCanvas({
   } | null>(null);
 
   useLayoutEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    let cancelled = false;
+    let idleCallback: number | null = null;
+    let timeout: number | null = null;
+    let disposeRuntime = () => undefined;
 
-    const gl = canvas.getContext("webgl", {
-      alpha: true,
-      antialias: false,
-      depth: false,
-      powerPreference: "high-performance",
-      premultipliedAlpha: true,
-      preserveDrawingBuffer: false,
-      stencil: false,
-    });
-    if (!gl?.getExtension("OES_standard_derivatives")) return;
-
-    const program = createProgram(gl);
-    const positionBuffer = gl.createBuffer();
-    if (!program || !positionBuffer) {
-      if (program) gl.deleteProgram(program);
-      if (positionBuffer) gl.deleteBuffer(positionBuffer);
-      return;
-    }
-
-    const positionLocation = gl.getAttribLocation(program, "aPosition");
-    const resolutionLocation = gl.getUniformLocation(program, "uResolution");
-    const pixelSizeLocation = gl.getUniformLocation(program, "uPixelSize");
-    const featherLocation = gl.getUniformLocation(program, "uFeather");
-    const aspectLocation = gl.getUniformLocation(program, "uAspect");
-    const holeRadiusLocation = gl.getUniformLocation(program, "uHoleRadius");
-    const progressLocation = gl.getUniformLocation(program, "uProgress");
-    const overlayColorLocation = gl.getUniformLocation(program, "uOverlayColor");
-
-    if (
-      positionLocation < 0 ||
-      !resolutionLocation ||
-      !pixelSizeLocation ||
-      !featherLocation ||
-      !aspectLocation ||
-      !holeRadiusLocation ||
-      !progressLocation ||
-      !overlayColorLocation
-    ) {
-      gl.deleteBuffer(positionBuffer);
-      gl.deleteProgram(program);
-      return;
-    }
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-    gl["useProgram"](program);
-    gl.enableVertexAttribArray(positionLocation);
-    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.clearColor(0, 0, 0, 0);
-
-    const updateOverlayColor = () => {
-      const overlayColor = resolveOverlayColor();
-      gl.uniform3f(overlayColorLocation, overlayColor[0], overlayColor[1], overlayColor[2]);
-    };
-    gl.uniform1f(featherLocation, 0.8);
-    updateOverlayColor();
-
-    let width = 1;
-    let height = 1;
-    let pixelRatio = 1;
-    let maximumRadius = Math.SQRT2;
-    let currentMaskProgress = 1;
-
-    const resizeCanvas = () => {
-      width = Math.max(1, window.innerWidth);
-      height = Math.max(1, window.innerHeight);
-      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(width * pixelRatio);
-      canvas.height = Math.round(height * pixelRatio);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-
-      const aspect = width / height;
-      const widestAxis = Math.max(aspect, 1 / aspect);
-      maximumRadius = Math.sqrt(widestAxis * widestAxis + 1);
-
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-      gl.uniform1f(pixelSizeLocation, DOT_CELL_SIZE * pixelRatio);
-      gl.uniform1f(aspectLocation, aspect);
+    const markReady = () => {
+      if (cancelled) return;
+      setRuntimeReady(true);
+      onReady?.();
     };
 
-    const drawFrame = (maskProgress: number) => {
-      currentMaskProgress = maskProgress;
-      const holeRadius = maximumRadius * (1 - maskProgress);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.uniform1f(holeRadiusLocation, holeRadius);
-      gl.uniform1f(progressLocation, maskProgress);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    };
+    const initialize = () => {
+      if (cancelled) return;
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        markReady();
+        return;
+      }
 
-    const handleResize = () => {
+      const gl = canvas.getContext("webgl", {
+        alpha: true,
+        antialias: false,
+        depth: false,
+        powerPreference: "high-performance",
+        premultipliedAlpha: true,
+        preserveDrawingBuffer: false,
+        stencil: false,
+      });
+      if (!gl?.getExtension("OES_standard_derivatives")) {
+        markReady();
+        return;
+      }
+
+      const program = createProgram(gl);
+      const positionBuffer = gl.createBuffer();
+      if (!program || !positionBuffer) {
+        if (program) gl.deleteProgram(program);
+        if (positionBuffer) gl.deleteBuffer(positionBuffer);
+        markReady();
+        return;
+      }
+
+      const positionLocation = gl.getAttribLocation(program, "aPosition");
+      const resolutionLocation = gl.getUniformLocation(program, "uResolution");
+      const pixelSizeLocation = gl.getUniformLocation(program, "uPixelSize");
+      const featherLocation = gl.getUniformLocation(program, "uFeather");
+      const aspectLocation = gl.getUniformLocation(program, "uAspect");
+      const holeRadiusLocation = gl.getUniformLocation(program, "uHoleRadius");
+      const progressLocation = gl.getUniformLocation(program, "uProgress");
+      const overlayColorLocation = gl.getUniformLocation(program, "uOverlayColor");
+
+      if (
+        positionLocation < 0 ||
+        !resolutionLocation ||
+        !pixelSizeLocation ||
+        !featherLocation ||
+        !aspectLocation ||
+        !holeRadiusLocation ||
+        !progressLocation ||
+        !overlayColorLocation
+      ) {
+        gl.deleteBuffer(positionBuffer);
+        gl.deleteProgram(program);
+        markReady();
+        return;
+      }
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      gl["useProgram"](program);
+      gl.enableVertexAttribArray(positionLocation);
+      gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl.clearColor(0, 0, 0, 0);
+
+      const updateOverlayColor = () => {
+        const overlayColor = resolveOverlayColor();
+        gl.uniform3f(overlayColorLocation, overlayColor[0], overlayColor[1], overlayColor[2]);
+      };
+      gl.uniform1f(featherLocation, 0.8);
+      updateOverlayColor();
+
+      let width = 1;
+      let height = 1;
+      let pixelRatio = 1;
+      let maximumRadius = Math.SQRT2;
+      let currentMaskProgress = 1;
+
+      const resizeCanvas = () => {
+        width = Math.max(1, window.innerWidth);
+        height = Math.max(1, window.innerHeight);
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(width * pixelRatio);
+        canvas.height = Math.round(height * pixelRatio);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+
+        const aspect = width / height;
+        const widestAxis = Math.max(aspect, 1 / aspect);
+        maximumRadius = Math.sqrt(widestAxis * widestAxis + 1);
+
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+        gl.uniform1f(pixelSizeLocation, DOT_CELL_SIZE * pixelRatio);
+        gl.uniform1f(aspectLocation, aspect);
+      };
+
+      const drawFrame = (maskProgress: number) => {
+        currentMaskProgress = maskProgress;
+        const holeRadius = maximumRadius * (1 - maskProgress);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.uniform1f(holeRadiusLocation, holeRadius);
+        gl.uniform1f(progressLocation, maskProgress);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      };
+
+      const handleResize = () => {
+        resizeCanvas();
+        drawFrame(currentMaskProgress);
+      };
+
       resizeCanvas();
-      drawFrame(currentMaskProgress);
+      runtimeRef.current = { animationFrame: 0, drawFrame, updateOverlayColor };
+      window.addEventListener("resize", handleResize);
+      if (deferInitialization) drawFrame(1);
+      markReady();
+
+      disposeRuntime = () => {
+        window.removeEventListener("resize", handleResize);
+        const runtime = runtimeRef.current;
+        if (runtime) window.cancelAnimationFrame(runtime.animationFrame);
+        runtimeRef.current = null;
+        gl.deleteBuffer(positionBuffer);
+        gl.deleteProgram(program);
+      };
     };
 
-    resizeCanvas();
-    runtimeRef.current = { animationFrame: 0, drawFrame, updateOverlayColor };
-    window.addEventListener("resize", handleResize);
+    if (skipInitialization) {
+      markReady();
+    } else if (deferInitialization && typeof window.requestIdleCallback === "function") {
+      idleCallback = window.requestIdleCallback(initialize, {
+        timeout: ENTRY_REVEAL_WARMUP_TIMEOUT_MS,
+      });
+    } else if (deferInitialization) {
+      timeout = window.setTimeout(initialize, 0);
+    } else {
+      initialize();
+    }
 
     return () => {
-      window.removeEventListener("resize", handleResize);
-      const runtime = runtimeRef.current;
-      if (runtime) window.cancelAnimationFrame(runtime.animationFrame);
-      runtimeRef.current = null;
-      gl.deleteBuffer(positionBuffer);
-      gl.deleteProgram(program);
+      cancelled = true;
+      if (idleCallback !== null) window.cancelIdleCallback(idleCallback);
+      if (timeout !== null) window.clearTimeout(timeout);
+      disposeRuntime();
     };
-  }, []);
+  }, [deferInitialization, onReady, skipInitialization]);
 
   useLayoutEffect(() => {
+    if (!runtimeReady) return;
     const runtime = runtimeRef.current;
     if (!runtime) return;
 
@@ -283,7 +335,7 @@ export function EntryRevealCanvas({
 
     runtime.animationFrame = window.requestAnimationFrame(animate);
     return () => window.cancelAnimationFrame(runtime.animationFrame);
-  }, [active, direction, durationMs]);
+  }, [active, direction, durationMs, runtimeReady]);
 
   return <canvas ref={canvasRef} className={className} />;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useReducedMotion } from "motion/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { EntryRevealCanvas } from "@/components/preloader/EntryRevealCanvas";
 import { resolveEntryLoadProgress } from "@/components/preloader/entry-preloader-state";
@@ -17,8 +17,14 @@ export function EntryPreloader() {
   const reducedMotion = useReducedMotion() ?? false;
   const [documentReady, setDocumentReady] = useState(false);
   const [fontsReady, setFontsReady] = useState(false);
+  const [revealReady, setRevealReady] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
   const [phase, setPhase] = useState<"loading" | "revealing" | "done">("loading");
+  const markRevealReady = useCallback(() => setRevealReady(true), []);
+  const skipRevealInitialization =
+    reducedMotion ||
+    (typeof document !== "undefined" &&
+      document.documentElement.dataset["routeTransition"] === "true");
 
   const progress = useMemo(
     () => resolveEntryLoadProgress({ documentReady, fontsReady, sceneReady }),
@@ -76,7 +82,7 @@ export function EntryPreloader() {
   }, []);
 
   useEffect(() => {
-    if (progress < 100 || phase !== "loading") return;
+    if (progress < 100 || (!reducedMotion && !revealReady) || phase !== "loading") return;
 
     if (reducedMotion) {
       setPhase("done");
@@ -85,7 +91,7 @@ export function EntryPreloader() {
 
     const revealTimer = window.setTimeout(() => setPhase("revealing"), REVEAL_DELAY_MS);
     return () => window.clearTimeout(revealTimer);
-  }, [phase, progress, reducedMotion]);
+  }, [phase, progress, reducedMotion, revealReady]);
 
   useEffect(() => {
     if (phase !== "revealing") return;
@@ -119,7 +125,10 @@ export function EntryPreloader() {
       <EntryRevealCanvas
         active={phase === "revealing"}
         className={styles["revealCanvas"]}
+        deferInitialization
         durationMs={REVEAL_DURATION_MS}
+        onReady={markRevealReady}
+        skipInitialization={skipRevealInitialization}
       />
       <div className={styles["progressWrap"]}>
         <div className={styles["progressTrack"]}>

@@ -1,4 +1,4 @@
-import { setDataFlag } from "@/scene/work-card-runtime";
+import { setDataFlag } from "@/scene/work-card-dom";
 
 export function resolveWorkCardCurl(scrollVelocity: number): number {
   const normalizedVelocity = Math.min(1, Math.abs(scrollVelocity) / 800);
