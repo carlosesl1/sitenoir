@@ -131,6 +131,15 @@ test("content-hashes the two critical hero models and serves GLB with immutable 
   expect(htaccess).toContain(
     'Header set Cache-Control "public, max-age=31536000, immutable" env=immutable_asset',
   );
+
+  const versionedAssetsHtaccess = await readFile(
+    path.join(process.cwd(), "public/assets/v1/.htaccess"),
+    "utf8",
+  );
+  expect(versionedAssetsHtaccess).toMatch(/AddType\s+model\/gltf-binary\s+\.glb/);
+  expect(versionedAssetsHtaccess).toContain(
+    'Header set Cache-Control "public, max-age=31536000, immutable"',
+  );
 });
 
 test("uses only TikTok Sans and Departure Mono across the runtime typography system", async () => {
