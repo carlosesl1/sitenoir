@@ -254,6 +254,22 @@ describe("ThemeProvider", () => {
     expect(document.documentElement).toHaveClass("light");
   });
 
+  it("does not overwrite the bootstrapped theme with the server default during hydration", () => {
+    localStorage.setItem("theme", "light");
+    document.documentElement.dataset["theme"] = "light";
+    document.documentElement.className = "light";
+    const setItem = vi.spyOn(Storage.prototype, "setItem");
+
+    render(
+      <ThemeProvider>
+        <ThemeHarness />
+      </ThemeProvider>,
+    );
+
+    expect(screen.getByText("light:light")).toBeInTheDocument();
+    expect(setItem).not.toHaveBeenCalledWith("theme", "system");
+  });
+
   it("resolves system mode through the color-scheme preference", () => {
     installMatchMedia({ dark: true });
     localStorage.setItem("theme", "system");

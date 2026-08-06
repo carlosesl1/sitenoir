@@ -37,6 +37,7 @@ function readStoredTheme(): ThemeMode {
 export function ThemeProvider({ children }: { readonly children: ReactNode }) {
   const [theme, setTheme] = useState<ThemeMode>("system");
   const [systemTheme, setSystemTheme] = useState<ResolvedTheme>("dark");
+  const [initialized, setInitialized] = useState(false);
   const resolvedTheme = theme === "system" ? systemTheme : theme;
 
   useLayoutEffect(() => {
@@ -45,17 +46,19 @@ export function ThemeProvider({ children }: { readonly children: ReactNode }) {
 
     setTheme(readStoredTheme());
     synchronizeSystemTheme();
+    setInitialized(true);
     mediaQuery.addEventListener("change", synchronizeSystemTheme);
     return () => mediaQuery.removeEventListener("change", synchronizeSystemTheme);
   }, []);
 
   useLayoutEffect(() => {
+    if (!initialized) return;
     const root = document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(resolvedTheme);
     root.dataset["theme"] = resolvedTheme;
     safeStorageSet("theme", theme);
-  }, [resolvedTheme, theme]);
+  }, [initialized, resolvedTheme, theme]);
 
   const cycleTheme = useCallback(() => setTheme((currentTheme) => nextTheme(currentTheme)), []);
   const value = useMemo(

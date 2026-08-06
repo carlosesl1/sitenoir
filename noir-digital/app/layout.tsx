@@ -113,9 +113,8 @@ export default function RootLayout({ children }: RootLayoutProps): ReactNode {
   return (
     <html lang="pt-BR" className="dark" data-theme="dark" suppressHydrationWarning>
       <head>
-        <Script id="theme-bootstrap" strategy="beforeInteractive">
-          {themeBootstrapScript}
-        </Script>
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: Static local bootstrap must run before the poster element is parsed. */}
+        <script id="theme-bootstrap" dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
         {enableDevInspectors
           ? devScriptSources.map(({ id, integrity, src }) =>
               integrity === undefined || src === undefined ? null : (

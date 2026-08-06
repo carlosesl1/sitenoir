@@ -2,8 +2,11 @@
 
 import { lazy, Suspense, useEffect, useState } from "react";
 
+import { PersistentSiteGrid } from "@/scene/PersistentSiteGrid";
 import { resolveSceneQuality, type SceneQuality } from "@/scene/scene-quality";
 import { scheduleSiteCanvasBoot } from "@/scene/site-canvas-boot";
+
+import styles from "./LazySiteCanvas.module.css";
 
 const DeferredSiteCanvas = lazy(() =>
   import("@/scene/SiteCanvas").then((module) => ({ default: module.SiteCanvas })),
@@ -30,6 +33,8 @@ export function LazySiteCanvas({
 }) {
   const [quality, setQuality] = useState<SceneQuality | null>(null);
   const [canvasEnabled, setCanvasEnabled] = useState(false);
+  const [canvasReady, setCanvasReady] = useState(false);
+  const [visualFallbackEnabled, setVisualFallbackEnabled] = useState(true);
 
   useEffect(() => {
     const effectsParameter = new URLSearchParams(window.location.search).get("effects");
@@ -53,6 +58,8 @@ export function LazySiteCanvas({
     });
     const effectsEnabled = resolvedQuality !== "off";
     const explicitlyDisabled = effectsParameter === "off";
+    setCanvasReady(false);
+    setVisualFallbackEnabled(!explicitlyDisabled);
     document.documentElement.dataset["effects"] = effectsEnabled
       ? "on"
       : explicitlyDisabled
@@ -87,9 +94,30 @@ export function LazySiteCanvas({
     };
   }, [waitForEntryReveal]);
 
-  return quality && canvasEnabled ? (
-    <Suspense fallback={null}>
-      <DeferredSiteCanvas ambientOnly={ambientOnly} quality={quality} />
-    </Suspense>
-  ) : null;
+  return (
+    <>
+      {visualFallbackEnabled && !ambientOnly ? (
+        <div
+          aria-hidden="true"
+          className={styles["poster"]}
+          data-canvas-ready={canvasReady ? "true" : "false"}
+          data-hero-poster="true"
+        />
+      ) : null}
+      {quality && canvasEnabled ? (
+        <Suspense fallback={null}>
+          <DeferredSiteCanvas
+            ambientOnly={ambientOnly}
+            onReady={() => setCanvasReady(true)}
+            quality={quality}
+          />
+        </Suspense>
+      ) : null}
+      {visualFallbackEnabled ? (
+        <div aria-hidden="true" className={styles["gridShell"]}>
+          <PersistentSiteGrid />
+        </div>
+      ) : null}
+    </>
+  );
 }

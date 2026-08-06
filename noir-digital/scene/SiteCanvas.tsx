@@ -14,13 +14,13 @@ import { HeroModel } from "@/scene/HeroModel";
 import { HeroOpticalBackground } from "@/scene/HeroOpticalBackground";
 import { HeroPointerLight } from "@/scene/HeroPointerLight";
 import { HeroRefractionBuffer } from "@/scene/HeroRefractionBuffer";
-import { PersistentSiteGrid } from "@/scene/PersistentSiteGrid";
 import { PointerModel } from "@/scene/PointerModel";
 import { PrinciplePointerModel } from "@/scene/PrinciplePointerModel";
 import { scheduleProgressiveSceneBoot } from "@/scene/progressive-scene-boot";
 import { SceneErrorBoundary } from "@/scene/SceneErrorBoundary";
 import { SiteCameraRig } from "@/scene/SiteCameraRig";
 import { resolveHeroSceneLayout, resolveViewportFamily, sceneLayouts } from "@/scene/scene-layout";
+import { compileScenePrograms } from "@/scene/scene-program-compile";
 import { resolveSceneQualityConfig, type SceneQuality } from "@/scene/scene-quality";
 
 import styles from "./SiteCanvas.module.css";
@@ -67,15 +67,50 @@ function HeroSceneContent({ onReady, reducedMotion, scrollProgress }: HeroSceneC
 }
 
 function SceneReadyMarker({ onReady }: { readonly onReady: () => void }) {
+  const camera = useThree((state) => state.camera);
+  const gl = useThree((state) => state.gl);
+  const invalidate = useThree((state) => state.invalidate);
+  const scene = useThree((state) => state.scene);
+
   useEffect(() => {
-    window.__NOIR_READY__ = true;
-    window.__NOIR_SCENE_STATUS__ = "ready";
-    onReady();
+    let active = true;
+    let firstFrame = 0;
+    let secondFrame = 0;
+
+    void compileScenePrograms(gl, scene, camera).then(
+      (compileMode) => {
+        if (!active) return;
+        window.__NOIR_COMPILE_MODE__ = compileMode;
+        invalidate();
+        firstFrame = window.requestAnimationFrame(() => {
+          secondFrame = window.requestAnimationFrame(() => {
+            if (!active) return;
+            window.__NOIR_READY__ = true;
+            window.__NOIR_SCENE_STATUS__ = "ready";
+            onReady();
+          });
+        });
+      },
+      () => {
+        if (!active) return;
+        document.documentElement.dataset["effects"] = "failed";
+        window.__NOIR_COMPILE_MODE__ = "failed";
+        window.__NOIR_CONTACT_READY__ = true;
+        window.__NOIR_DECOR_READY__ = true;
+        window.__NOIR_READY__ = true;
+        window.__NOIR_SCENE_STATUS__ = "failed";
+      },
+    );
+
     return () => {
+      active = false;
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+      delete window.__NOIR_COMPILE_MODE__;
       window.__NOIR_READY__ = false;
       window.__NOIR_SCENE_STATUS__ = "loading";
     };
-  }, [onReady]);
+  }, [camera, gl, invalidate, onReady, scene]);
 
   return null;
 }
@@ -118,9 +153,11 @@ function DemandFrameInvalidator({
 
 export function SiteCanvas({
   ambientOnly = false,
+  onReady,
   quality,
 }: {
   readonly ambientOnly?: boolean;
+  readonly onReady?: (() => void) | undefined;
   readonly quality: SceneQuality;
 }) {
   const reducedMotion = useReducedMotion() ?? false;
@@ -130,7 +167,10 @@ export function SiteCanvas({
   const principleScene = usePrincipleScene();
   const [heroSceneReady, setHeroSceneReady] = useState(false);
   const [progressiveSceneEnabled, setProgressiveSceneEnabled] = useState(false);
-  const markHeroSceneReady = useCallback(() => setHeroSceneReady(true), []);
+  const markHeroSceneReady = useCallback(() => {
+    setHeroSceneReady(true);
+    onReady?.();
+  }, [onReady]);
 
   useEffect(() => {
     if (ambientOnly || !heroSceneReady || progressiveSceneEnabled) return;
@@ -141,6 +181,7 @@ export function SiteCanvas({
     <div
       className={styles["canvasShell"]}
       data-site-canvas="true"
+      data-canvas-ready={ambientOnly || heroSceneReady ? "true" : "false"}
       data-background-runtime="persistent"
       data-canvas-mode={ambientOnly ? "ambient" : "full"}
       data-background-tone={principleScene.fullscreen ? "dark" : "theme"}
@@ -222,7 +263,6 @@ export function SiteCanvas({
           </HeroFluidProvider>
         </Canvas>
       </SceneErrorBoundary>
-      <PersistentSiteGrid />
     </div>
   );
 }

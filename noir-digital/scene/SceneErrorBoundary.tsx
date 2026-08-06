@@ -5,6 +5,7 @@ import { Component, type ReactNode } from "react";
 declare global {
   interface Window {
     __NOIR_CONTACT_READY__?: boolean;
+    __NOIR_COMPILE_MODE__?: "async" | "failed" | "sync";
     __NOIR_DECOR_READY__?: boolean;
     __NOIR_READY__?: boolean;
     __NOIR_SCENE_STATUS__?: "disabled" | "failed" | "loading" | "ready";

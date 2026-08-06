@@ -1,0 +1,52 @@
+.poster,
+.gridShell {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.poster {
+  background-color: #030303;
+  background-image: url("/assets/v1/hero-posters/desktop-dark.webp");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 1;
+  transition:
+    opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 420ms;
+  visibility: visible;
+}
+
+.poster[data-canvas-ready="false"] {
+  transition-delay: 0s;
+  will-change: opacity;
+}
+
+.poster[data-canvas-ready="true"] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+:global([data-theme="light"]) .poster {
+  background-color: #f3fbf9;
+  background-image: url("/assets/v1/hero-posters/desktop-light.webp");
+}
+
+@media (max-width: 767px) {
+  .poster {
+    background-image: url("/assets/v1/hero-posters/mobile-dark.webp");
+  }
+
+  :global([data-theme="light"]) .poster {
+    background-image: url("/assets/v1/hero-posters/mobile-light.webp");
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster {
+    transition-duration: 0.01ms;
+  }
+}
