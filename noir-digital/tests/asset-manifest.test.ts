@@ -125,6 +125,7 @@ test("content-hashes the two critical hero models and serves GLB with immutable 
 
   const htaccess = await readFile(path.join(process.cwd(), "public/.htaccess"), "utf8");
   expect(htaccess).toMatch(/AddType\s+model\/gltf-binary\s+\.glb/);
+  expect(htaccess).toContain('<FilesMatch "^(?:hello|cursor)-[a-f0-9]{12}\\.glb$">');
   expect(htaccess).toContain(
     'SetEnvIf Request_URI "^/(?:_next/static|assets/v1)/" immutable_asset',
   );

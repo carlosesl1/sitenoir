@@ -67,6 +67,7 @@ jobs:
         run: |
           test -f out/index.html
           test -f out/.htaccess
+          test -f out/assets/v1/.htaccess
           test -d out/_next/static
           test -f out/wp-content/mu-plugins/noir-contact-endpoint.php
           grep -q "NOIR DIGITAL" out/index.html
@@ -347,6 +348,20 @@ jobs:
             -H "Cache-Control: no-cache" \
             "${PRODUCTION_URL}/contato/?deploy=${GITHUB_SHA}" \
             --output /dev/null
+
+          hero_model_path="$(grep -oE '/assets/v1/model/hello-[a-f0-9]{12}\.glb' out/index.html | head -n 1)"
+          [[ -n "${hero_model_path}" ]]
+          hero_headers="${RUNNER_TEMP}/noir-hero-model.headers"
+          curl --fail --silent --show-error \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 30 \
+            -H "Cache-Control: no-cache" \
+            -D "${hero_headers}" \
+            "${PRODUCTION_URL}${hero_model_path}?deploy=${GITHUB_SHA}" \
+            --output /dev/null
+          tr -d '\r' <"${hero_headers}" | grep -qi '^content-type: model/gltf-binary$'
+          tr -d '\r' <"${hero_headers}" | grep -qi '^cache-control: public, max-age=31536000, immutable$'
 
           cors_headers="${RUNNER_TEMP}/noir-contact-cors.headers"
           curl --silent --show-error \
