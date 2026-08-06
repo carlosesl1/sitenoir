@@ -49,7 +49,7 @@ test("keeps one optical background and its grid persistent across sections", asy
   const shell = page.locator('[data-site-canvas="true"]');
   await expect(shell).toHaveAttribute("data-background-runtime", "persistent");
   await expect(shell).toHaveAttribute("data-optical-active", "true");
-  await expect(page.locator('[data-site-grid="true"]')).toHaveCount(1);
+  await expect(shell.locator('[data-site-grid="true"]')).toHaveCount(1);
   await expect(shell.locator("canvas")).toHaveCount(1);
 
   await page.locator("#principles").evaluate((story) => {
@@ -64,7 +64,7 @@ test("keeps one optical background and its grid persistent across sections", asy
   );
   await expect(shell).toHaveAttribute("data-background-tone", "theme");
   await expect(shell).toHaveAttribute("data-optical-active", "true");
-  await expect(page.locator('[data-site-grid="true"]')).toHaveCount(1);
+  await expect(shell.locator('[data-site-grid="true"]')).toHaveCount(1);
   await expect(shell.locator("canvas")).toHaveCount(1);
 });
 

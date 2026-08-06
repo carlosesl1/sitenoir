@@ -14,6 +14,7 @@ import { HeroModel } from "@/scene/HeroModel";
 import { HeroOpticalBackground } from "@/scene/HeroOpticalBackground";
 import { HeroPointerLight } from "@/scene/HeroPointerLight";
 import { HeroRefractionBuffer } from "@/scene/HeroRefractionBuffer";
+import { PersistentSiteGrid } from "@/scene/PersistentSiteGrid";
 import { PointerModel } from "@/scene/PointerModel";
 import { PrinciplePointerModel } from "@/scene/PrinciplePointerModel";
 import { scheduleProgressiveSceneBoot } from "@/scene/progressive-scene-boot";
@@ -22,6 +23,7 @@ import { SiteCameraRig } from "@/scene/SiteCameraRig";
 import { resolveHeroSceneLayout, resolveViewportFamily, sceneLayouts } from "@/scene/scene-layout";
 import { compileScenePrograms } from "@/scene/scene-program-compile";
 import { resolveSceneQualityConfig, type SceneQuality } from "@/scene/scene-quality";
+import { resetSceneReadiness, signalSceneSettled } from "@/scene/scene-readiness";
 
 import styles from "./SiteCanvas.module.css";
 
@@ -85,9 +87,8 @@ function SceneReadyMarker({ onReady }: { readonly onReady: () => void }) {
         firstFrame = window.requestAnimationFrame(() => {
           secondFrame = window.requestAnimationFrame(() => {
             if (!active) return;
-            window.__NOIR_READY__ = true;
-            window.__NOIR_SCENE_STATUS__ = "ready";
             onReady();
+            signalSceneSettled("ready");
           });
         });
       },
@@ -97,8 +98,7 @@ function SceneReadyMarker({ onReady }: { readonly onReady: () => void }) {
         window.__NOIR_COMPILE_MODE__ = "failed";
         window.__NOIR_CONTACT_READY__ = true;
         window.__NOIR_DECOR_READY__ = true;
-        window.__NOIR_READY__ = true;
-        window.__NOIR_SCENE_STATUS__ = "failed";
+        signalSceneSettled("failed");
       },
     );
 
@@ -107,8 +107,7 @@ function SceneReadyMarker({ onReady }: { readonly onReady: () => void }) {
       window.cancelAnimationFrame(firstFrame);
       window.cancelAnimationFrame(secondFrame);
       delete window.__NOIR_COMPILE_MODE__;
-      window.__NOIR_READY__ = false;
-      window.__NOIR_SCENE_STATUS__ = "loading";
+      resetSceneReadiness();
     };
   }, [camera, gl, invalidate, onReady, scene]);
 
@@ -117,15 +116,13 @@ function SceneReadyMarker({ onReady }: { readonly onReady: () => void }) {
 
 function AmbientSceneReadyMarker() {
   useEffect(() => {
-    window.__NOIR_READY__ = true;
     window.__NOIR_DECOR_READY__ = true;
     window.__NOIR_CONTACT_READY__ = true;
-    window.__NOIR_SCENE_STATUS__ = "ready";
+    signalSceneSettled("ready");
     return () => {
-      window.__NOIR_READY__ = false;
       window.__NOIR_DECOR_READY__ = false;
       window.__NOIR_CONTACT_READY__ = false;
-      window.__NOIR_SCENE_STATUS__ = "loading";
+      resetSceneReadiness();
     };
   }, []);
 
@@ -153,11 +150,9 @@ function DemandFrameInvalidator({
 
 export function SiteCanvas({
   ambientOnly = false,
-  onReady,
   quality,
 }: {
   readonly ambientOnly?: boolean;
-  readonly onReady?: (() => void) | undefined;
   readonly quality: SceneQuality;
 }) {
   const reducedMotion = useReducedMotion() ?? false;
@@ -169,8 +164,7 @@ export function SiteCanvas({
   const [progressiveSceneEnabled, setProgressiveSceneEnabled] = useState(false);
   const markHeroSceneReady = useCallback(() => {
     setHeroSceneReady(true);
-    onReady?.();
-  }, [onReady]);
+  }, []);
 
   useEffect(() => {
     if (ambientOnly || !heroSceneReady || progressiveSceneEnabled) return;
@@ -263,6 +257,7 @@ export function SiteCanvas({
           </HeroFluidProvider>
         </Canvas>
       </SceneErrorBoundary>
+      <PersistentSiteGrid />
     </div>
   );
 }

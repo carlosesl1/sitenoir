@@ -2,6 +2,7 @@ import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { EntryPreloader } from "@/components/preloader/EntryPreloader";
+import { signalSceneSettled } from "@/scene/scene-readiness";
 
 const motionPreference = vi.hoisted(() => ({ reduced: false }));
 
@@ -26,6 +27,7 @@ describe("EntryPreloader", () => {
     delete document.documentElement.dataset["entryTextReady"];
     delete document.documentElement.dataset["entryReady"];
     delete document.documentElement.dataset["routeTransition"];
+    delete document.documentElement.dataset["sceneReady"];
   });
 
   it("starts the hero text 500ms before the opening reveal finishes", async () => {
@@ -61,26 +63,40 @@ describe("EntryPreloader", () => {
     expect(document.documentElement.dataset["entryLoading"]).toBeUndefined();
   });
 
-  it("reveals the site without waiting for scene readiness", async () => {
+  it("keeps the site covered until the scene has compiled and rendered", async () => {
     window.__NOIR_READY__ = false;
-    const requestAnimationFrame = vi.spyOn(window, "requestAnimationFrame");
     const view = render(<EntryPreloader />);
     window.dispatchEvent(new Event("load"));
 
     await act(async () => vi.advanceTimersByTimeAsync(20));
-    expect(requestAnimationFrame).not.toHaveBeenCalled();
-    await act(async () => vi.advanceTimersByTimeAsync(250));
+    await act(async () => vi.advanceTimersByTimeAsync(2_000));
+
+    expect(view.container.firstChild).not.toBeNull();
+    expect(document.documentElement.dataset["entryLoading"]).toBe("true");
+    expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
+
+    act(() => signalSceneSettled("ready"));
+    await act(async () => vi.advanceTimersByTimeAsync(249));
+    expect(view.container.firstChild).not.toBeNull();
+    await act(async () => vi.advanceTimersByTimeAsync(1));
     await act(async () => vi.advanceTimersByTimeAsync(800));
 
     expect(view.container.firstChild).toBeNull();
     expect(document.documentElement.dataset["entryLoading"]).toBeUndefined();
   });
 
-  it("skips the wait and WebGL reveal when reduced motion is preferred", () => {
+  it("waits for the scene but skips the reveal animation with reduced motion", async () => {
     motionPreference.reduced = true;
+    window.__NOIR_READY__ = false;
     const setTimeout = vi.spyOn(window, "setTimeout");
 
     const view = render(<EntryPreloader />);
+
+    expect(view.container.firstChild).not.toBeNull();
+    expect(document.documentElement.dataset["entryLoading"]).toBe("true");
+
+    act(() => signalSceneSettled("ready"));
+    await act(async () => Promise.resolve());
 
     expect(view.container.firstChild).toBeNull();
     expect(document.documentElement.dataset["entryLoading"]).toBeUndefined();

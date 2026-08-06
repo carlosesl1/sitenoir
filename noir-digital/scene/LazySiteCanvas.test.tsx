@@ -1,6 +1,4 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { LazySiteCanvas } from "@/scene/LazySiteCanvas";
@@ -10,36 +8,29 @@ describe("LazySiteCanvas", () => {
     cleanup();
     vi.restoreAllMocks();
     window.history.replaceState({}, "", "/");
+    delete document.documentElement.dataset["sceneReady"];
+    delete window.__NOIR_READY__;
+    delete window.__NOIR_SCENE_STATUS__;
   });
 
-  it("renders the exact responsive hero poster and grid while WebGL is unavailable", () => {
+  it("settles the preloader safely when WebGL is unavailable", () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
 
-    const view = render(<LazySiteCanvas waitForEntryReveal />);
+    const view = render(<LazySiteCanvas preloadDuringEntry />);
 
-    expect(view.container.querySelector('[data-hero-poster="true"]')).toHaveAttribute(
-      "data-canvas-ready",
-      "false",
-    );
-    expect(view.container.querySelector('[data-site-grid="true"]')).toBeInTheDocument();
     expect(view.container.querySelector('[data-site-canvas="true"]')).not.toBeInTheDocument();
-
-    const css = readFileSync(join(process.cwd(), "scene/LazySiteCanvas.module.css"), "utf8");
-    for (const poster of [
-      "desktop-dark.webp",
-      "desktop-light.webp",
-      "mobile-dark.webp",
-      "mobile-light.webp",
-    ]) {
-      expect(css).toContain(`/assets/v1/hero-posters/${poster}`);
-    }
+    expect(window.__NOIR_READY__).toBe(true);
+    expect(window.__NOIR_SCENE_STATUS__).toBe("failed");
+    expect(document.documentElement.dataset["sceneReady"]).toBe("true");
   });
 
-  it("keeps the poster decorative and outside the accessibility tree", () => {
+  it("marks an explicitly disabled scene as settled", () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(null);
+    window.history.replaceState({}, "", "/?effects=off");
 
     render(<LazySiteCanvas />);
 
-    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(window.__NOIR_READY__).toBe(true);
+    expect(window.__NOIR_SCENE_STATUS__).toBe("disabled");
   });
 });

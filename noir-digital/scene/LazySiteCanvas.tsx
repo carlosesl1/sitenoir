@@ -2,15 +2,22 @@
 
 import { lazy, Suspense, useEffect, useState } from "react";
 
-import { PersistentSiteGrid } from "@/scene/PersistentSiteGrid";
 import { resolveSceneQuality, type SceneQuality } from "@/scene/scene-quality";
+import { resetSceneReadiness, signalSceneSettled } from "@/scene/scene-readiness";
 import { scheduleSiteCanvasBoot } from "@/scene/site-canvas-boot";
 
-import styles from "./LazySiteCanvas.module.css";
+let siteCanvasModulePromise: ReturnType<typeof loadSiteCanvasModule> | undefined;
 
-const DeferredSiteCanvas = lazy(() =>
-  import("@/scene/SiteCanvas").then((module) => ({ default: module.SiteCanvas })),
-);
+function loadSiteCanvasModule() {
+  return import("@/scene/SiteCanvas").then((module) => ({ default: module.SiteCanvas }));
+}
+
+function preloadSiteCanvasModule() {
+  siteCanvasModulePromise ??= loadSiteCanvasModule();
+  return siteCanvasModulePromise;
+}
+
+const DeferredSiteCanvas = lazy(preloadSiteCanvasModule);
 
 function supportsWebGl(): boolean {
   try {
@@ -26,17 +33,16 @@ function supportsWebGl(): boolean {
 
 export function LazySiteCanvas({
   ambientOnly = false,
-  waitForEntryReveal = false,
+  preloadDuringEntry = false,
 }: {
   readonly ambientOnly?: boolean;
-  readonly waitForEntryReveal?: boolean;
+  readonly preloadDuringEntry?: boolean;
 }) {
   const [quality, setQuality] = useState<SceneQuality | null>(null);
   const [canvasEnabled, setCanvasEnabled] = useState(false);
-  const [canvasReady, setCanvasReady] = useState(false);
-  const [visualFallbackEnabled, setVisualFallbackEnabled] = useState(true);
 
   useEffect(() => {
+    resetSceneReadiness();
     const effectsParameter = new URLSearchParams(window.location.search).get("effects");
     const connection: unknown = Reflect.get(navigator, "connection");
     const deviceMemory: unknown = Reflect.get(navigator, "deviceMemory");
@@ -58,23 +64,16 @@ export function LazySiteCanvas({
     });
     const effectsEnabled = resolvedQuality !== "off";
     const explicitlyDisabled = effectsParameter === "off";
-    setCanvasReady(false);
-    setVisualFallbackEnabled(!explicitlyDisabled);
     document.documentElement.dataset["effects"] = effectsEnabled
       ? "on"
       : explicitlyDisabled
         ? "off"
         : "failed";
     document.documentElement.dataset["effectsQuality"] = resolvedQuality;
-    window.__NOIR_READY__ = !effectsEnabled;
     window.__NOIR_DECOR_READY__ = !effectsEnabled;
     window.__NOIR_CONTACT_READY__ = !effectsEnabled;
-    window.__NOIR_SCENE_STATUS__ = effectsEnabled
-      ? "loading"
-      : explicitlyDisabled
-        ? "disabled"
-        : "failed";
     if (!effectsEnabled) {
+      signalSceneSettled(explicitlyDisabled ? "disabled" : "failed");
       return () => {
         delete document.documentElement.dataset["effects"];
         delete document.documentElement.dataset["effectsQuality"];
@@ -82,42 +81,27 @@ export function LazySiteCanvas({
     }
 
     setQuality(resolvedQuality);
-    const cancelBoot = scheduleSiteCanvasBoot({
-      activate: () => setCanvasEnabled(true),
-      root: document.documentElement,
-      waitForEntryReveal,
-    });
+    let cancelBoot: () => void = () => undefined;
+    if (preloadDuringEntry) {
+      void preloadSiteCanvasModule();
+      setCanvasEnabled(true);
+    } else {
+      cancelBoot = scheduleSiteCanvasBoot({
+        activate: () => setCanvasEnabled(true),
+        root: document.documentElement,
+        waitForEntryReveal: false,
+      });
+    }
     return () => {
       cancelBoot();
       delete document.documentElement.dataset["effects"];
       delete document.documentElement.dataset["effectsQuality"];
     };
-  }, [waitForEntryReveal]);
+  }, [preloadDuringEntry]);
 
-  return (
-    <>
-      {visualFallbackEnabled && !ambientOnly ? (
-        <div
-          aria-hidden="true"
-          className={styles["poster"]}
-          data-canvas-ready={canvasReady ? "true" : "false"}
-          data-hero-poster="true"
-        />
-      ) : null}
-      {quality && canvasEnabled ? (
-        <Suspense fallback={null}>
-          <DeferredSiteCanvas
-            ambientOnly={ambientOnly}
-            onReady={() => setCanvasReady(true)}
-            quality={quality}
-          />
-        </Suspense>
-      ) : null}
-      {visualFallbackEnabled ? (
-        <div aria-hidden="true" className={styles["gridShell"]}>
-          <PersistentSiteGrid />
-        </div>
-      ) : null}
-    </>
-  );
+  return quality && canvasEnabled ? (
+    <Suspense fallback={null}>
+      <DeferredSiteCanvas ambientOnly={ambientOnly} quality={quality} />
+    </Suspense>
+  ) : null;
 }

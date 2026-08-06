@@ -3,13 +3,7 @@
   inset: 0;
   z-index: 1;
   overflow: hidden;
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.canvasShell[data-canvas-ready="true"] {
-  opacity: 1;
 }
 
 .canvasShell canvas {
@@ -114,10 +108,4 @@
 
 .gridCross[data-grid-row="end"] {
   top: 100%;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .canvasShell {
-    transition-duration: 0.01ms;
-  }
 }

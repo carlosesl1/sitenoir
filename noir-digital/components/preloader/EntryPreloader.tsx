@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { EntryRevealCanvas } from "@/components/preloader/EntryRevealCanvas";
 import { resolveEntryLoadProgress } from "@/components/preloader/entry-preloader-state";
+import { NOIR_SCENE_SETTLED_EVENT } from "@/scene/scene-readiness";
 
 import styles from "./EntryPreloader.module.css";
 
@@ -16,25 +17,25 @@ export function EntryPreloader() {
   const reducedMotion = useReducedMotion() ?? false;
   const [documentReady, setDocumentReady] = useState(false);
   const [fontsReady, setFontsReady] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
   const [phase, setPhase] = useState<"loading" | "revealing" | "done">("loading");
 
   const progress = useMemo(
-    () => resolveEntryLoadProgress({ documentReady, fontsReady }),
-    [documentReady, fontsReady],
+    () => resolveEntryLoadProgress({ documentReady, fontsReady, sceneReady }),
+    [documentReady, fontsReady, sceneReady],
   );
 
   useEffect(() => {
-    if (document.documentElement.dataset["routeTransition"] === "true") {
-      setDocumentReady(true);
-      setFontsReady(true);
-      setPhase("done");
-      delete document.documentElement.dataset["entryLoading"];
-      document.documentElement.dataset["entryTextReady"] = "true";
-      document.documentElement.dataset["entryReady"] = "true";
-      return;
-    }
+    if (document.documentElement.dataset["routeTransition"] === "true") return;
 
-    if (reducedMotion) {
+    const synchronizeSceneReadiness = () => setSceneReady(window.__NOIR_READY__ === true);
+    synchronizeSceneReadiness();
+    window.addEventListener(NOIR_SCENE_SETTLED_EVENT, synchronizeSceneReadiness);
+    return () => window.removeEventListener(NOIR_SCENE_SETTLED_EVENT, synchronizeSceneReadiness);
+  }, []);
+
+  useEffect(() => {
+    if (document.documentElement.dataset["routeTransition"] === "true") {
       setDocumentReady(true);
       setFontsReady(true);
       setPhase("done");
@@ -72,14 +73,19 @@ export function EntryPreloader() {
       cancelled = true;
       delete document.documentElement.dataset["entryLoading"];
     };
-  }, [reducedMotion]);
+  }, []);
 
   useEffect(() => {
     if (progress < 100 || phase !== "loading") return;
 
+    if (reducedMotion) {
+      setPhase("done");
+      return;
+    }
+
     const revealTimer = window.setTimeout(() => setPhase("revealing"), REVEAL_DELAY_MS);
     return () => window.clearTimeout(revealTimer);
-  }, [phase, progress]);
+  }, [phase, progress, reducedMotion]);
 
   useEffect(() => {
     if (phase !== "revealing") return;
@@ -107,6 +113,7 @@ export function EntryPreloader() {
     <div
       aria-hidden="true"
       className={`${styles["root"]} ${phase === "revealing" ? styles["revealing"] : ""}`}
+      data-entry-preloader="true"
     >
       <div className={styles["surface"]} />
       <EntryRevealCanvas
