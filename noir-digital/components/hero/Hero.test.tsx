@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { Hero } from "@/components/hero/Hero";
@@ -12,7 +12,11 @@ import {
   heroSupportLines,
 } from "@/data/content";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  delete document.documentElement.dataset["entryTextReady"];
+  delete document.documentElement.dataset["entryReady"];
+});
 
 describe("Hero", () => {
   it("renders one semantic headline with the exact locked lines", () => {
@@ -75,6 +79,27 @@ describe("Hero", () => {
         .slice(8)
         .map((line) => [line.dataset["scrambleDelay"], line.dataset["scrambleLetterDelay"]]),
     ).toEqual(Array.from({ length: 3 }, () => ["0", "10"]));
+  });
+
+  it("starts the decoder only after the entry reveal is complete", async () => {
+    const view = render(<Hero />);
+    const hero = view.container.querySelector<HTMLElement>("#home");
+
+    await waitFor(() => expect(hero).toHaveAttribute("data-scramble-in-view", "true"));
+    expect(hero).toHaveAttribute("data-scramble-active", "false");
+
+    await act(async () => {
+      document.documentElement.dataset["entryTextReady"] = "true";
+      await Promise.resolve();
+    });
+    expect(hero).toHaveAttribute("data-scramble-page-ready", "false");
+    expect(hero).toHaveAttribute("data-scramble-active", "false");
+
+    await act(async () => {
+      document.documentElement.dataset["entryReady"] = "true";
+      await Promise.resolve();
+    });
+    await waitFor(() => expect(hero).toHaveAttribute("data-scramble-active", "true"));
   });
 
   it("exposes a stable decorative anchor for the fixed 3D scene", () => {

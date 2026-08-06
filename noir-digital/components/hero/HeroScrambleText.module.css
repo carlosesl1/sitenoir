@@ -5,6 +5,10 @@
   display: inline-block;
 }
 
+.root[data-scramble-state="waiting"] {
+  color: transparent;
+}
+
 :global([data-theme="light"]) .root {
   --scramble-secondary: #607f02;
 }

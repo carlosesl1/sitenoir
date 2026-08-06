@@ -24,14 +24,14 @@ export function scheduleSiteCanvasBoot({
     }, SITE_CANVAS_BOOT_DELAY_MS);
   };
 
-  if (!waitForEntryReveal || root.dataset["entryTextReady"] === "true") {
+  if (!waitForEntryReveal || root.dataset["entryReady"] === "true") {
     schedule();
   } else {
     observer = new MutationObserver(() => {
-      if (root.dataset["entryTextReady"] === "true") schedule();
+      if (root.dataset["entryReady"] === "true") schedule();
     });
     observer.observe(root, {
-      attributeFilter: ["data-entry-text-ready"],
+      attributeFilter: ["data-entry-ready"],
       attributes: true,
     });
   }

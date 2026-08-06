@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -9,6 +12,15 @@ afterEach(() => {
 });
 
 describe("HeroScrambleText", () => {
+  it("keeps waiting copy visually concealed until the decoder starts", () => {
+    const css = readFileSync(
+      join(process.cwd(), "components/hero/HeroScrambleText.module.css"),
+      "utf8",
+    );
+
+    expect(css).toMatch(/\.root\[data-scramble-state="waiting"\]\s*\{[^}]*color:\s*transparent/);
+  });
+
   it("only creates glyph spans while the decoder is running", () => {
     vi.useFakeTimers();
 

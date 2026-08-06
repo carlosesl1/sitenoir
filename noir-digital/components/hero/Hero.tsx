@@ -44,15 +44,14 @@ export function Hero() {
     const documentRoot = document.documentElement;
     const updateRevealState = () => {
       setPageRevealComplete(
-        (documentRoot.dataset["entryTextReady"] === "true" ||
-          documentRoot.dataset["entryReady"] === "true") &&
+        documentRoot.dataset["entryReady"] === "true" &&
           documentRoot.dataset["routeTransition"] !== "true",
       );
     };
     updateRevealState();
     const observer = new MutationObserver(updateRevealState);
     observer.observe(documentRoot, {
-      attributeFilter: ["data-entry-ready", "data-entry-text-ready", "data-route-transition"],
+      attributeFilter: ["data-entry-ready", "data-route-transition"],
       attributes: true,
     });
     return () => observer.disconnect();

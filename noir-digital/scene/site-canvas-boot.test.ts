@@ -6,14 +6,16 @@ describe("site canvas boot", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     delete document.documentElement.dataset["entryTextReady"];
+    delete document.documentElement.dataset["entryReady"];
   });
 
   afterEach(() => {
     vi.useRealTimers();
     delete document.documentElement.dataset["entryTextReady"];
+    delete document.documentElement.dataset["entryReady"];
   });
 
-  it("keeps the WebGL bundle behind the entry text reveal", async () => {
+  it("keeps the WebGL bundle behind the completed entry reveal", async () => {
     const activate = vi.fn();
     const cleanup = scheduleSiteCanvasBoot({
       activate,
@@ -25,6 +27,10 @@ describe("site canvas boot", () => {
     expect(activate).not.toHaveBeenCalled();
 
     document.documentElement.dataset["entryTextReady"] = "true";
+    await vi.advanceTimersByTimeAsync(SITE_CANVAS_BOOT_DELAY_MS * 2);
+    expect(activate).not.toHaveBeenCalled();
+
+    document.documentElement.dataset["entryReady"] = "true";
     await vi.advanceTimersByTimeAsync(SITE_CANVAS_BOOT_DELAY_MS - 1);
     expect(activate).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(1);

@@ -126,7 +126,7 @@ describe("AiServicesSection", () => {
     expect(css).toMatch(/\.number\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.card h3\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.description\s*\{[^}]*font-family:\s*var\(--font-display\)/);
-    expect(css).toMatch(/\.description\s*\{[^}]*font-size:\s*0\.875rem/);
+    expect(css).toMatch(/\.description\s*\{[^}]*font-size:\s*1rem/);
     expect(css).toMatch(/\.cardFooter\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).not.toContain("stroke-dasharray");
     expect(css).toContain("@media (prefers-reduced-motion: reduce)");
