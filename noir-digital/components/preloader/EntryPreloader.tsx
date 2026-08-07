@@ -1,10 +1,14 @@
 "use client";
 
 import { useReducedMotion } from "motion/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { EntryRevealCanvas } from "@/components/preloader/EntryRevealCanvas";
-import { resolveEntryLoadProgress } from "@/components/preloader/entry-preloader-state";
+import {
+  advanceEntryDisplayProgress,
+  resolveEntryDisplayProgressTarget,
+  resolveEntryLoadProgress,
+} from "@/components/preloader/entry-preloader-state";
 import { NOIR_SCENE_SETTLED_EVENT } from "@/scene/scene-readiness";
 
 import styles from "./EntryPreloader.module.css";
@@ -20,6 +24,8 @@ export function EntryPreloader() {
   const [revealReady, setRevealReady] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
   const [phase, setPhase] = useState<"loading" | "revealing" | "done">("loading");
+  const displayedProgressRef = useRef(0);
+  const progressValueRef = useRef<HTMLSpanElement>(null);
   const markRevealReady = useCallback(() => setRevealReady(true), []);
   const skipRevealInitialization =
     reducedMotion ||
@@ -30,6 +36,44 @@ export function EntryPreloader() {
     () => resolveEntryLoadProgress({ documentReady, fontsReady, sceneReady }),
     [documentReady, fontsReady, sceneReady],
   );
+
+  useEffect(() => {
+    const progressValue = progressValueRef.current;
+    if (!progressValue) return;
+
+    const targetProgress = resolveEntryDisplayProgressTarget(progress, sceneReady);
+    if (reducedMotion || typeof window.requestAnimationFrame !== "function") {
+      displayedProgressRef.current = targetProgress;
+      progressValue.style.transform = `scaleX(${targetProgress / 100})`;
+      return;
+    }
+
+    let animationFrame = 0;
+    let previousTime = performance.now();
+    const animate = (currentTime: number) => {
+      const elapsedMs = Math.min(50, Math.max(0, currentTime - previousTime));
+      previousTime = currentTime;
+      displayedProgressRef.current = advanceEntryDisplayProgress({
+        currentProgress: displayedProgressRef.current,
+        elapsedMs,
+        loadProgress: progress,
+        sceneReady,
+      });
+      progressValue.style.transform = `scaleX(${displayedProgressRef.current / 100})`;
+
+      if (displayedProgressRef.current < targetProgress) {
+        animationFrame = window.requestAnimationFrame(animate);
+      }
+    };
+
+    if (displayedProgressRef.current < targetProgress) {
+      animationFrame = window.requestAnimationFrame(animate);
+    } else {
+      progressValue.style.transform = `scaleX(${targetProgress / 100})`;
+    }
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [progress, reducedMotion, sceneReady]);
 
   useEffect(() => {
     if (document.documentElement.dataset["routeTransition"] === "true") return;
@@ -132,7 +176,7 @@ export function EntryPreloader() {
       />
       <div className={styles["progressWrap"]}>
         <div className={styles["progressTrack"]}>
-          <span className={styles["progressValue"]} style={{ width: `${progress}%` }} />
+          <span ref={progressValueRef} className={styles["progressValue"]} />
         </div>
       </div>
     </div>

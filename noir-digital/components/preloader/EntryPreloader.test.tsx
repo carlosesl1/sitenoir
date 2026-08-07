@@ -86,6 +86,27 @@ describe("EntryPreloader", () => {
     expect(document.documentElement.dataset["entryLoading"]).toBeUndefined();
   });
 
+  it("keeps the compositor progress moving while the scene gate is pending", async () => {
+    window.__NOIR_READY__ = false;
+    const view = render(<EntryPreloader />);
+
+    await act(async () => vi.advanceTimersByTimeAsync(1_200));
+
+    const progressValue = view.container.querySelector<HTMLElement>("span");
+    const waitingScale = Number.parseFloat(
+      progressValue?.style.transform.match(/scaleX\(([^)]+)\)/)?.[1] ?? "0",
+    );
+    expect(waitingScale).toBeGreaterThan(2 / 3);
+    expect(waitingScale).toBeLessThanOrEqual(0.94);
+    expect(view.container.firstChild).not.toBeNull();
+
+    act(() => signalSceneSettled("ready"));
+    await act(async () => vi.advanceTimersByTimeAsync(249));
+
+    expect(progressValue).toHaveStyle({ transform: "scaleX(1)" });
+    expect(view.container.firstChild).not.toBeNull();
+  });
+
   it("does not begin the transition until the reveal shader warmup is ready", async () => {
     let idleCallback: IdleRequestCallback | undefined;
     vi.stubGlobal(
