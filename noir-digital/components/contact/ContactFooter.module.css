@@ -163,7 +163,7 @@
 
 .brandSymbol {
   display: block;
-  width: clamp(2.35rem, 2.8vw, 2.75rem);
+  width: clamp(3.375rem, 3.3vw, 4rem);
   height: auto;
   align-self: center;
   object-fit: contain;

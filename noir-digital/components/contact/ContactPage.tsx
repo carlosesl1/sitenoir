@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 import whatsappIcon from "@iconify-icons/simple-icons/whatsapp";
 import altArrowDownLinear from "@iconify-icons/solar/alt-arrow-down-linear";
 import arrowRightUpLinear from "@iconify-icons/solar/arrow-right-up-linear";
-import globalLinear from "@iconify-icons/solar/global-linear";
+import earthBold from "@iconify-icons/solar/earth-bold";
 import lockKeyholeLinear from "@iconify-icons/solar/lock-keyhole-linear";
 import stopBold from "@iconify-icons/solar/stop-bold";
 import Image from "next/image";
@@ -311,7 +311,7 @@ export function ContactPage() {
             <h2 id="contact-channels-heading">OUTRA FORMA DE CONTATO</h2>
           </div>
 
-          <section className={styles["whatsAppPanel"]}>
+          <section className={styles["whatsAppPanel"]} data-contact-whatsapp-panel>
             <span className={styles["recommended"]}>RECOMENDADO</span>
             <div className={styles["whatsAppHeading"]}>
               <h3>WHATSAPP</h3>
@@ -379,7 +379,7 @@ export function ContactPage() {
               </p>
               <Icon
                 className={styles["globalIcon"]}
-                icon={globalLinear}
+                icon={earthBold}
                 aria-hidden="true"
                 data-contact-global-icon
               />

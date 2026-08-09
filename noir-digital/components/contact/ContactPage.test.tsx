@@ -81,6 +81,8 @@ describe("ContactPage", () => {
     expect(css).toMatch(/\.privacyNote\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.information dd\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.internationalTag\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(/\.internationalTag\s*\{[^}]*min-height:\s*62px/);
+    expect(css).toMatch(/\.globalIcon\s*\{[^}]*width:\s*144px[^}]*mask-image:\s*radial-gradient/);
     expect(css).toMatch(/\.recommended\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.whatsAppSubtitle\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.whatsAppPanel > p\s*\{[^}]*font-family:\s*var\(--font-display\)/);

@@ -67,6 +67,7 @@ describe("ContactFooter", () => {
     );
     expect(css).toContain(':global([data-theme="light"]) .brandSymbol');
     expect(css).toContain(':global([data-theme="light"]) .brandWordmark');
+    expect(css).toMatch(/\.brandSymbol\s*\{[^}]*width:\s*clamp\(3\.375rem,\s*3\.3vw,\s*4rem\)/);
 
     expect(view.container.querySelector("#contact")).toBeInTheDocument();
     expect(view.container.querySelector('[data-scene-anchor="contact"]')).toHaveAttribute(
