@@ -13,7 +13,7 @@
 ## File Structure
 
 - `components/contact/ContactFooter.tsx`: brand lockup markup, agency descriptor, accessible label, and explicit information-cell roles.
-- `components/contact/ContactFooter.module.css`: equal-height symbol/wordmark row and responsive contact/social/links grid ownership.
+- `components/contact/ContactFooter.module.css`: optically proportional symbol/wordmark row and responsive contact/social/links grid ownership.
 - `components/contact/ContactFooter.test.tsx`: footer copy, markup, CSS proportion, and mobile-grid contract.
 - `components/contact/ContactPage.tsx`: agency descriptor in the contact-page brand link.
 - `components/contact/ContactPage.test.tsx`: contact-page descriptor regression coverage.
@@ -34,11 +34,14 @@ expect(screen.queryByText("ESTÚDIO DE ESTRUTURA DIGITAL")).not.toBeInTheDocumen
 expect(view.container.querySelector('[data-footer-brand-name-row="true"]')).toBeInTheDocument();
 ```
 
-Replace the old symbol-width CSS assertion with the equal-height and explicit-grid contract:
+Replace the old symbol-width CSS assertion with the proportional-height and explicit-grid contract:
 
 ```tsx
 expect(css).toMatch(/--brand-name-height:\s*clamp\(/);
-expect(css).toMatch(/\.brandSymbol\s*\{[^}]*height:\s*var\(--brand-name-height\)/);
+expect(css).toMatch(
+  /--brand-symbol-height:\s*calc\(var\(--brand-name-height\)\s*\*\s*1\.2\)/,
+);
+expect(css).toMatch(/\.brandSymbol\s*\{[^}]*height:\s*var\(--brand-symbol-height\)/);
 expect(css).toMatch(/\.brandWordmark\s*\{[^}]*height:\s*var\(--brand-name-height\)/);
 expect(css).toMatch(
   /@media \(max-width:\s*767px\)[\s\S]*\.contactCell\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/,
@@ -65,7 +68,7 @@ Run:
 npm test -- components/contact/ContactFooter.test.tsx components/contact/ContactPage.test.tsx
 ```
 
-Expected: FAIL because the rendered descriptor is still `ESTÚDIO DE ESTRUTURA DIGITAL`, the footer has no `data-footer-brand-name-row`, and the new equal-height/mobile-grid CSS declarations do not exist.
+Expected: FAIL because the rendered descriptor is still `ESTÚDIO DE ESTRUTURA DIGITAL`, the footer has no `data-footer-brand-name-row`, and the new proportional-height/mobile-grid CSS declarations do not exist.
 
 - [ ] **Step 4: Commit the failing tests**
 
@@ -137,13 +140,14 @@ Apply explicit cell classes to the following three cells:
 >
 ```
 
-- [ ] **Step 2: Give the symbol and wordmark one shared height**
+- [ ] **Step 2: Give the symbol and wordmark proportional responsive heights**
 
 Replace the existing brand cell, symbol, lockup, wordmark, and tagline rules with:
 
 ```css
 .brandCell {
   --brand-name-height: clamp(1.75rem, 2vw, 2rem);
+  --brand-symbol-height: calc(var(--brand-name-height) * 1.2);
 
   display: grid;
   grid-column: span 2;
@@ -159,7 +163,13 @@ Replace the existing brand cell, symbol, lockup, wordmark, and tagline rules wit
   gap: clamp(10px, 1vw, 14px);
 }
 
-.brandSymbol,
+.brandSymbol {
+  display: block;
+  width: auto;
+  height: var(--brand-symbol-height);
+  object-fit: contain;
+}
+
 .brandWordmark {
   display: block;
   width: auto;
@@ -341,7 +351,7 @@ Open the homepage at 390 × 844, scroll the brand and information grid into view
   return {
     symbolHeight: sr?.height,
     wordmarkHeight: wr?.height,
-    equalNameHeight: sr && wr ? Math.abs(sr.height - wr.height) < 0.2 : false,
+    symbolRatio: sr && wr ? sr.height / wr.height : null,
     emailContained: er && cr ? er.left >= cr.left && er.right <= cr.right : false,
     contactAboveSocial: cr && sor ? cr.bottom <= sor.top + 1 : false,
     pageOverflows: document.documentElement.scrollWidth > innerWidth,
@@ -349,13 +359,13 @@ Open the homepage at 390 × 844, scroll the brand and information grid into view
 })()
 ```
 
-Expected: equal name heights, contained email, contact above Social, and no page overflow.
+Expected: symbol ratio between `1.19` and `1.21`, contained email, contact above Social, and no page overflow.
 
 - [ ] **Step 3: Inspect the desktop footer at 1920 × 1080**
 
 Run the same measurement at 1920 × 1080.
 
-Expected: symbol and wordmark height difference under `0.2px`, Contact and Social remain separate desktop columns, the descriptor sits below the complete name row, and no horizontal overflow exists.
+Expected: symbol-to-wordmark height ratio between `1.19` and `1.21`, Contact and Social remain separate desktop columns, the descriptor sits below the complete name row, and no horizontal overflow exists.
 
 - [ ] **Step 4: Verify contact-page copy**
 

@@ -59,6 +59,9 @@ describe("ContactFooter", () => {
     const brandWordmark = view.container.querySelector('img[src*="noir-wordmark.svg"]');
     expect(brandSymbol).toHaveAttribute("aria-hidden", "true");
     expect(brandWordmark).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByText("AGÊNCIA DE ESTRUTURA DIGITAL")).toBeInTheDocument();
+    expect(screen.queryByText("ESTÚDIO DE ESTRUTURA DIGITAL")).not.toBeInTheDocument();
+    expect(view.container.querySelector('[data-footer-brand-name-row="true"]')).toBeInTheDocument();
     expect(view.container.querySelector('img[src*="noir-face.png"]')).not.toBeInTheDocument();
 
     const css = readFileSync(
@@ -67,7 +70,16 @@ describe("ContactFooter", () => {
     );
     expect(css).toContain(':global([data-theme="light"]) .brandSymbol');
     expect(css).toContain(':global([data-theme="light"]) .brandWordmark');
-    expect(css).toMatch(/\.brandSymbol\s*\{[^}]*width:\s*clamp\(3\.375rem,\s*3\.3vw,\s*4rem\)/);
+    expect(css).toMatch(/--brand-name-height:\s*clamp\(/);
+    expect(css).toMatch(/--brand-symbol-height:\s*calc\(var\(--brand-name-height\)\s*\*\s*1\.2\)/);
+    expect(css).toMatch(/\.brandSymbol\s*\{[^}]*height:\s*var\(--brand-symbol-height\)/);
+    expect(css).toMatch(/\.brandWordmark\s*\{[^}]*height:\s*var\(--brand-name-height\)/);
+    expect(css).toMatch(
+      /@media \(max-width:\s*767px\)[\s\S]*\.contactCell\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/,
+    );
+    expect(css).toMatch(
+      /@media \(max-width:\s*767px\)[\s\S]*\.linksCell\s*\{[^}]*grid-column:\s*span 1/,
+    );
 
     expect(view.container.querySelector("#contact")).toBeInTheDocument();
     expect(view.container.querySelector('[data-scene-anchor="contact"]')).toHaveAttribute(

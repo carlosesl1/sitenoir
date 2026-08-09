@@ -140,50 +140,52 @@
 }
 
 .brandCell {
+  --brand-name-height: clamp(1.75rem, 2vw, 2rem);
+  --brand-symbol-height: calc(var(--brand-name-height) * 1.2);
+
   display: grid;
   grid-column: span 2;
-  grid-template-columns: auto minmax(0, 1fr);
   align-content: center;
-  column-gap: 16px;
+  justify-items: start;
+  gap: 9px;
   border-right: 1px solid var(--border-default);
 }
 
-.informationCell:nth-child(2),
-.informationCell:nth-child(3) {
+.contactCell,
+.socialCell {
   grid-column: span 1;
 }
 
-.informationCell:nth-child(3) {
+.socialCell {
   border-right: 1px solid var(--border-default);
 }
 
-.informationCell:last-child {
+.linksCell {
   grid-column: span 2;
+}
+
+.brandNameRow {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1vw, 14px);
 }
 
 .brandSymbol {
   display: block;
-  width: clamp(3.375rem, 3.3vw, 4rem);
-  height: auto;
-  align-self: center;
+  width: auto;
+  height: var(--brand-symbol-height);
   object-fit: contain;
-}
-
-.brandLockup {
-  display: grid;
-  align-self: center;
-  gap: 8px;
 }
 
 .brandWordmark {
   display: block;
-  width: clamp(5.75rem, 6.5vw, 6.75rem);
-  height: auto;
+  width: auto;
+  height: var(--brand-name-height);
   object-fit: contain;
 }
 
 .brandTagline {
-  max-width: 22ch;
+  max-width: 27ch;
   font-size: clamp(0.5625rem, 0.62vw, 0.6875rem);
   letter-spacing: 0.04em;
   color: var(--text-secondary);
@@ -198,6 +200,10 @@
 .informationList {
   display: grid;
   gap: 8px;
+}
+
+.contactCell .informationList a {
+  white-space: nowrap;
 }
 
 .closingBar {
@@ -278,19 +284,23 @@
     border-bottom: 1px solid var(--border-default);
   }
 
-  .informationCell:last-child {
+  .brandCell,
+  .contactCell {
     grid-column: 1 / -1;
-    border-right: 0;
   }
 
   .brandCell {
     min-height: 112px;
-    grid-column: 1 / -1;
     border-right: 0;
   }
 
-  .informationCell:nth-child(3) {
-    border-right: 0;
+  .socialCell,
+  .linksCell {
+    grid-column: span 1;
+  }
+
+  .socialCell {
+    border-right: 1px solid var(--border-default);
   }
 
   .closingBar {
@@ -361,12 +371,7 @@
     border-bottom: 1px solid var(--border-default);
   }
 
-  .informationCell:nth-child(3),
-  .informationCell:last-child {
-    border-right: 0;
-  }
-
-  .informationCell:last-child {
+  .linksCell {
     grid-column: 1 / -1;
   }
 }

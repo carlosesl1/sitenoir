@@ -102,6 +102,8 @@ describe("ContactPage", () => {
     const view = render(<ContactPage />);
     const form = screen.getByRole("form", { name: "Dados do projeto" });
 
+    expect(screen.getByText("AGÊNCIA DE ESTRUTURA DIGITAL")).toBeInTheDocument();
+    expect(screen.queryByText("ESTÚDIO DE ESTRUTURA DIGITAL")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
       "VAMOS CRIAR ALGO EXCEPCIONAL JUNTOS.",
     );

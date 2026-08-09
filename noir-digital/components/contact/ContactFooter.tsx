@@ -34,17 +34,17 @@ export function ContactFooter() {
         <div className={styles["informationGrid"]}>
           <section
             className={`${styles["informationCell"]} ${styles["brandCell"]}`}
-            aria-label="NOIR DIGITAL — Estúdio de Estrutura Digital"
+            aria-label="NOIR DIGITAL — Agência de Estrutura Digital"
           >
-            <Image
-              className={styles["brandSymbol"]}
-              src="/brand/noir-symbol.svg"
-              width="164"
-              height="186"
-              alt=""
-              aria-hidden="true"
-            />
-            <div className={styles["brandLockup"]}>
+            <div className={styles["brandNameRow"]} data-footer-brand-name-row="true">
+              <Image
+                className={styles["brandSymbol"]}
+                src="/brand/noir-symbol.svg"
+                width="164"
+                height="186"
+                alt=""
+                aria-hidden="true"
+              />
               <Image
                 className={styles["brandWordmark"]}
                 src="/brand/noir-wordmark.svg"
@@ -53,11 +53,14 @@ export function ContactFooter() {
                 alt=""
                 aria-hidden="true"
               />
-              <span className={styles["brandTagline"]}>ESTÚDIO DE ESTRUTURA DIGITAL</span>
             </div>
+            <span className={styles["brandTagline"]}>AGÊNCIA DE ESTRUTURA DIGITAL</span>
           </section>
 
-          <section className={styles["informationCell"]} aria-labelledby="footer-contact-label">
+          <section
+            className={`${styles["informationCell"]} ${styles["contactCell"]}`}
+            aria-labelledby="footer-contact-label"
+          >
             <h3 id="footer-contact-label">Contato</h3>
             <div className={styles["informationList"]}>
               <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
@@ -65,7 +68,10 @@ export function ContactFooter() {
             </div>
           </section>
 
-          <section className={styles["informationCell"]} aria-labelledby="footer-social-label">
+          <section
+            className={`${styles["informationCell"]} ${styles["socialCell"]}`}
+            aria-labelledby="footer-social-label"
+          >
             <h3 id="footer-social-label">Social</h3>
             <div className={styles["informationList"]}>
               {socialLinks.map((social) => (
@@ -76,7 +82,10 @@ export function ContactFooter() {
             </div>
           </section>
 
-          <nav className={styles["informationCell"]} aria-label="Links do footer">
+          <nav
+            className={`${styles["informationCell"]} ${styles["linksCell"]}`}
+            aria-label="Links do footer"
+          >
             <h3>Links</h3>
             <a href="/contato">Contato</a>
             <a href="/#selected-work">Serviços</a>

@@ -130,7 +130,7 @@ export function ContactPage() {
                 alt=""
                 aria-hidden="true"
               />
-              <small>ESTÚDIO DE ESTRUTURA DIGITAL</small>
+              <small>AGÊNCIA DE ESTRUTURA DIGITAL</small>
             </span>
           </a>
         </section>

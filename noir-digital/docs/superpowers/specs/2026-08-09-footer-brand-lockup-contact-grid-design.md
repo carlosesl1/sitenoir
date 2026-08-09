@@ -16,7 +16,7 @@ Correct the NOIR footer lockup so the brand symbol is optically proportional to 
 
 ## Brand Lockup
 
-The symbol and `NOIR` wordmark form one horizontal name row. Their rendered heights match optically, so the symbol is no taller than the wordmark. The descriptor sits on a second row below the combined symbol-and-wordmark width rather than only below the wordmark.
+The symbol and `NOIR` wordmark form one horizontal name row. Because the symbol is much narrower and appeared too small at an equal numeric height, its rendered height is 120% of the wordmark height and it remains vertically centered beside the wordmark. The descriptor sits on a second row below the combined symbol-and-wordmark width rather than only below the wordmark.
 
 The implementation keeps the existing independent SVG assets because they already support theme filtering and responsive sizing. A small wrapper groups the two assets in the name row, while the descriptor remains live HTML text for accessibility, editing, and responsive wrapping.
 
@@ -35,7 +35,7 @@ The email remains unchanged and fully readable. It must not be reduced to an ill
 
 ## Responsive and Accessibility Requirements
 
-- The symbol and wordmark share one horizontal centerline and equal visual height.
+- The symbol and wordmark share one horizontal centerline, with the symbol rendered at 120% of the wordmark height for optical balance.
 - The descriptor is visible in both dark and light themes.
 - Existing link labels, destinations, focus styles, and minimum interaction heights remain intact.
 - The footer has no horizontal overflow at 390 px and at desktop widths.
