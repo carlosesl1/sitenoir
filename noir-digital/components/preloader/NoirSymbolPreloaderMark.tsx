@@ -32,6 +32,7 @@ function smooth(value: number): number {
 
 function spiralPoint(frontIndex: number, progress: number): { x: number; y: number } {
   const front = NOIR_SYMBOL_FRONTS[frontIndex];
+  if (!front) throw new RangeError(`Unknown NOIR symbol front: ${frontIndex}`);
   const eased = 1 - (1 - progress) ** 3;
   const targetAngle = Math.atan2(front.y - CENTER_Y, front.x - CENTER_X);
   const targetRadius = Math.hypot(front.x - CENTER_X, front.y - CENTER_Y);
@@ -51,7 +52,12 @@ const SPIRAL_PATHS = NOIR_SYMBOL_FRONTS.map((_, frontIndex) => {
   return `M${points.map((point) => `${point.x.toFixed(3)} ${point.y.toFixed(3)}`).join("L")}`;
 });
 
-function setCircle(element: SVGCircleElement | null, x: number, y: number, opacity: number) {
+function setCircle(
+  element: SVGCircleElement | null | undefined,
+  x: number,
+  y: number,
+  opacity: number,
+) {
   if (!element) return;
   element.setAttribute("cx", String(x));
   element.setAttribute("cy", String(y));
@@ -92,9 +98,9 @@ export function NoirSymbolPreloaderMark({
     const complete = (fallback = false) => {
       if (didComplete || disposed) return;
       didComplete = true;
-      root.dataset.symbolPhase = "complete";
-      root.dataset.symbolComplete = "true";
-      if (fallback) root.dataset.symbolFallback = "true";
+      root.dataset["symbolPhase"] = "complete";
+      root.dataset["symbolComplete"] = "true";
+      if (fallback) root.dataset["symbolFallback"] = "true";
       fill.style.opacity = "1";
       onCompleteRef.current();
     };
@@ -117,14 +123,15 @@ export function NoirSymbolPreloaderMark({
         if (disposed) return;
         const elapsedMs = Math.max(0, now - startedAt);
         const frame = resolveNoirSymbolFrame(elapsedMs);
-        root.dataset.symbolPhase = frame.phase;
-        root.dataset.symbolComplete = String(frame.complete);
+        root.dataset["symbolPhase"] = frame.phase;
+        root.dataset["symbolComplete"] = String(frame.complete);
 
         setCircle(heartCoreRef.current, CENTER_X, CENTER_Y, frame.heartOpacity * 0.95);
         setCircle(heartHaloRef.current, CENTER_X, CENTER_Y, frame.heartOpacity * 0.5);
 
         NOIR_SYMBOL_FRONTS.forEach((front, frontIndex) => {
           const contourLength = lengths[front.contour];
+          if (!contourLength) return;
           const seedAt = contourLength * front.seed;
           const segmentLength = contourLength * (front.end - front.seed);
           const drawnLength = Math.max(0.001, segmentLength * frame.drawProgress);
@@ -150,7 +157,7 @@ export function NoirSymbolPreloaderMark({
           if (chase) chase.style.opacity = frame.drawProgress > 0 ? "0.14" : "0";
           if (glow) glow.style.opacity = frame.drawProgress > 0 ? "0.1" : "0";
 
-          const flight = frame.flightProgress[frontIndex];
+          const flight = frame.flightProgress[frontIndex] ?? 0;
           const emissaryPoint = spiralPoint(frontIndex, flight);
           const emissaryOpacity = frame.phase === "flight" ? 0.92 * smooth(flight * 6) : 0;
           setCircle(
@@ -199,7 +206,7 @@ export function NoirSymbolPreloaderMark({
             setCircle(tipRefs.current[frontIndex], front.x, front.y, 0);
             setCircle(tipHaloRefs.current[frontIndex], front.x, front.y, 0);
             tipTrailRefs.current[frontIndex]?.forEach((dot) => {
-              dot.style.opacity = "0";
+              if (dot) dot.style.opacity = "0";
             });
           }
         });
@@ -207,6 +214,7 @@ export function NoirSymbolPreloaderMark({
         flashRefs.current.forEach((flash, contourIndex) => {
           if (!flash) return;
           const contourLength = lengths[contourIndex];
+          if (!contourLength) return;
           const windowLength = contourLength * 0.13;
           flash.style.strokeDasharray = `${windowLength} ${contourLength - windowLength}`;
           flash.style.strokeDashoffset = String(

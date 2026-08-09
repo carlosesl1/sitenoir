@@ -120,7 +120,7 @@ test("lands as a solid white NOIR symbol in the dark theme", async ({ page }) =>
     .first()
     .evaluate((path) => ({
       fill: getComputedStyle(path).fill,
-      groupOpacity: Number(getComputedStyle(path.parentElement as SVGGElement).opacity),
+      groupOpacity: Number(getComputedStyle(path.parentElement as unknown as SVGGElement).opacity),
     }));
   expect(finalMark).toEqual({ fill: "rgb(255, 255, 255)", groupOpacity: 1 });
 });
@@ -195,5 +195,7 @@ test("keeps the ignition window brighter than the bloom bed", async ({ page }) =
     ),
   }));
   expect(layers.flash.every((flash) => flash.dash.length > 0)).toBe(true);
-  expect(layers.flash.every((flash, index) => flash.opacity - layers.glow[index] > 0.3)).toBe(true);
+  expect(
+    layers.flash.every((flash, index) => flash.opacity - (layers.glow[index] ?? 0) > 0.3),
+  ).toBe(true);
 });

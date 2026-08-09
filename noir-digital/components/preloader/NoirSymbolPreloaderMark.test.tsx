@@ -5,11 +5,13 @@ import { NoirSymbolPreloaderMark } from "@/components/preloader/NoirSymbolPreloa
 
 describe("NoirSymbolPreloaderMark", () => {
   let frames: FrameRequestCallback[];
+  let getTotalLength: ReturnType<typeof vi.fn<() => number>>;
 
   beforeEach(() => {
     frames = [];
+    getTotalLength = vi.fn(() => 800);
     Object.defineProperties(SVGElement.prototype, {
-      getTotalLength: { configurable: true, value: vi.fn(() => 800) },
+      getTotalLength: { configurable: true, value: getTotalLength },
       getPointAtLength: {
         configurable: true,
         value: vi.fn((at: number) => ({ x: at / 8, y: at / 10 }) as DOMPoint),
@@ -77,7 +79,7 @@ describe("NoirSymbolPreloaderMark", () => {
   });
 
   it("falls back to the completed mark when SVG measurement fails", () => {
-    vi.mocked(SVGElement.prototype.getTotalLength).mockImplementation(() => {
+    getTotalLength.mockImplementation(() => {
       throw new Error("measurement unavailable");
     });
     const onComplete = vi.fn();
