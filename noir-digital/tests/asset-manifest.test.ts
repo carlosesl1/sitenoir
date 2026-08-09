@@ -143,6 +143,12 @@ test("content-hashes the two critical hero models and serves GLB with immutable 
   );
 });
 
+test("serves WebVTT captions with the MIME required by nosniff browsers", async () => {
+  const htaccess = await readFile(path.join(process.cwd(), "public/.htaccess"), "utf8");
+
+  expect(htaccess).toMatch(/AddType\s+text\/vtt\s+\.vtt/);
+});
+
 test("uses only TikTok Sans and Departure Mono across the runtime typography system", async () => {
   const sourcePaths = [
     "styles/fonts.css",

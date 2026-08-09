@@ -3,6 +3,7 @@ DirectoryIndex index.html index.php
 
 <IfModule mod_mime.c>
   AddType model/gltf-binary .glb
+  AddType text/vtt .vtt
 </IfModule>
 
 <IfModule mod_headers.c>

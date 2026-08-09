@@ -41,4 +41,9 @@ describe("Hostinger deployment safety", () => {
     expect(workflow).toContain("Confira os campos informados.");
     expect(workflow).not.toContain('"firstName":"Deploy Test"');
   });
+
+  it("verifies that production serves WebVTT captions with the required MIME", () => {
+    expect(workflow).toContain("/cases/strong/strong-whey-types.pt-BR.vtt");
+    expect(workflow).toContain("^content-type: text/vtt");
+  });
 });
