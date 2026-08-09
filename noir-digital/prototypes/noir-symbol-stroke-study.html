@@ -10,7 +10,7 @@
         --bg: #08080b;
         --bg-halo: rgba(244, 245, 247, 0.05);
         --bg-vign: rgba(0, 0, 0, 0.55);
-        --ink: #f4f5f7;
+        --ink: #ffffff;
         --focus: rgba(244, 245, 247, 0.55);
         --glow-mult: 1;
         --chase-mult: 1;
@@ -34,7 +34,7 @@
         --bg: #08080b;
         --bg-halo: rgba(244, 245, 247, 0.05);
         --bg-vign: rgba(0, 0, 0, 0.55);
-        --ink: #f4f5f7;
+        --ink: #ffffff;
         --focus: rgba(244, 245, 247, 0.55);
         --glow-mult: 1;
         --chase-mult: 1;
@@ -149,7 +149,7 @@
           draw: { firstT0: 2.2, stagger: 0.35, finalAt: 5.15, chaseLag: 0.07 },
           ignite: { t0: 5.35, dur: 0.9, sigma: 0.55 },
           cam: { from: 1.13, t0: 0.8, dur: 1.9 },
-          fillOpacity: 0.045,
+          fillOpacity: 1,
           embers: { life: 0.45 },
           rewind: { each: 0.42, stagger: 0.05, tail: 0.22 },
         };
@@ -238,9 +238,18 @@
           );
         }
 
-        function twoEndedDash(contour, progress) {
-          const half = (contour.length * progress) / 2;
-          return `${half} ${Math.max(0, contour.length - 2 * half)} ${half} ${contour.length * 4}`;
+        function segmentedDash(contour, progress) {
+          return contour.fronts
+            .flatMap((front) => [
+              front.segmentLength * progress,
+              front.segmentLength * (1 - progress),
+            ])
+            .join(" ");
+        }
+
+        function loopLength(contour, at) {
+          const normalized = at % contour.length;
+          return normalized < 0 ? normalized + contour.length : normalized;
         }
 
         const stage = document.getElementById("stage");
@@ -269,6 +278,19 @@
           groups.tips = make("g", { "data-layer": "tips" }, rig);
 
           const fillPaths = SOURCE_D.map((d) => make("path", { d }, fillGroup));
+          const FRONT_LAYOUT = [
+            [
+              { name: "upper-right", fraction: 0 },
+              { name: "inner-lower", fraction: 0.1344 },
+              { name: "lower-right", fraction: 0.2575 },
+              { name: "top", fraction: 0.4665 },
+              { name: "upper-left", fraction: 0.554 },
+            ],
+            [{ name: "lower-left", fraction: 0 }],
+          ];
+          const FRONT_OFFSETS = FRONT_LAYOUT.map((_, index) =>
+            FRONT_LAYOUT.slice(0, index).reduce((total, items) => total + items.length, 0),
+          );
           const cast = SOURCE_D.map((d, index) => {
             const ghost = make("path", { d }, groups.ghost);
             const length = ghost.getTotalLength();
@@ -288,59 +310,64 @@
               path.style.opacity = "0";
             });
 
-            const seed = main.getPointAtLength(0);
-            const seedAngle = Math.atan2(seed.y - CY, seed.x - CX);
-            const seedRadius = Math.hypot(seed.x - CX, seed.y - CY);
-            const spiralPoints = [];
-            const spiralLengths = [0];
-            for (let step = 0; step <= 64; step += 1) {
-              const u = step / 64;
-              const eased = outCubic(u);
-              const radius = seedRadius * (0.03 + 0.97 * eased);
-              const angle = seedAngle - (1 - eased) * CFG.flight.swing;
-              const point = [CX + Math.cos(angle) * radius, CY + Math.sin(angle) * radius];
-              spiralPoints.push(point);
-              if (step > 0) {
-                const previous = spiralPoints[step - 1];
-                spiralLengths.push(
-                  spiralLengths[step - 1] +
-                    Math.hypot(point[0] - previous[0], point[1] - previous[1]),
-                );
+            const fronts = FRONT_LAYOUT[index].map((definition, frontIndex, definitions) => {
+              const globalIndex = FRONT_OFFSETS[index] + frontIndex;
+              const seedAt = length * definition.fraction;
+              const nextFraction = definitions[frontIndex + 1]?.fraction ?? 1;
+              const segmentLength = length * (nextFraction - definition.fraction);
+              const seed = main.getPointAtLength(seedAt);
+              const seedAngle = Math.atan2(seed.y - CY, seed.x - CX);
+              const seedRadius = Math.hypot(seed.x - CX, seed.y - CY);
+              const spiralPoints = [];
+              const spiralLengths = [0];
+              for (let step = 0; step <= 64; step += 1) {
+                const u = step / 64;
+                const eased = outCubic(u);
+                const radius = seedRadius * (0.03 + 0.97 * eased);
+                const angle = seedAngle - (1 - eased) * CFG.flight.swing;
+                const point = [CX + Math.cos(angle) * radius, CY + Math.sin(angle) * radius];
+                spiralPoints.push(point);
+                if (step > 0) {
+                  const previous = spiralPoints[step - 1];
+                  spiralLengths.push(
+                    spiralLengths[step - 1] +
+                      Math.hypot(point[0] - previous[0], point[1] - previous[1]),
+                  );
+                }
               }
-            }
-            const spiralD = `M${spiralPoints
-              .map((point) => `${point[0].toFixed(3)} ${point[1].toFixed(3)}`)
-              .join("L")}`;
-            const emissaryTrails = [
-              { width: 0.72, fraction: 0.1, opacity: 0.5 },
-              { width: 0.54, fraction: 0.19, opacity: 0.28 },
-              { width: 0.36, fraction: 0.3, opacity: 0.14 },
-            ].map((config) => {
-              const element = make(
-                "path",
-                { d: spiralD, "data-emissary-trail": "" },
+              const spiralD = `M${spiralPoints
+                .map((point) => `${point[0].toFixed(3)} ${point[1].toFixed(3)}`)
+                .join("L")}`;
+              const emissaryTrails = [
+                { width: 0.72, fraction: 0.1, opacity: 0.5 },
+                { width: 0.54, fraction: 0.19, opacity: 0.28 },
+                { width: 0.36, fraction: 0.3, opacity: 0.14 },
+              ].map((config) => {
+                const element = make(
+                  "path",
+                  { d: spiralD, "data-emissary-trail": "", "data-seed": definition.name },
+                  groups.tips,
+                );
+                element.style.strokeWidth = String(config.width);
+                element.style.opacity = "0";
+                return { ...config, element };
+              });
+              const emissaryHalo = make(
+                "circle",
+                { r: 2.05, "data-emissary-halo": "", "data-seed": definition.name },
+                bloom,
+              );
+              const emissaryCore = make(
+                "circle",
+                { r: 0.78, "data-emissary": "", "data-seed": definition.name },
                 groups.tips,
               );
-              element.style.strokeWidth = String(config.width);
-              element.style.opacity = "0";
-              return { ...config, element };
-            });
-            const emissaryHalo = make(
-              "circle",
-              { r: 2.05, "data-emissary-halo": "" },
-              bloom,
-            );
-            const emissaryCore = make(
-              "circle",
-              { r: 0.78, "data-emissary": "" },
-              groups.tips,
-            );
-            emissaryHalo.style.opacity = "0";
-            emissaryCore.style.opacity = "0";
-
-            const tips = [0, 1].map(() => {
               const halo = make("circle", { r: 2.3, "data-tip-halo": "" }, bloom);
-              const core = make("circle", { r: 0.88, "data-pen-tip": "" }, groups.tips);
+              const core = make(
+                "circle",
+                { r: 0.88, "data-pen-tip": "", "data-seed": definition.name },
+                groups.tips,
+              );
               const trail = Array.from({ length: 5 }, (_, trailIndex) =>
                 make(
                   "circle",
@@ -351,10 +378,24 @@
               const embers = Array.from({ length: 3 }, () =>
                 make("circle", { r: 0.24, "data-ember": "" }, groups.tips),
               );
-              [halo, core, ...trail, ...embers].forEach((element) => {
+              [emissaryHalo, emissaryCore, halo, core, ...trail, ...embers].forEach((element) => {
                 element.style.opacity = "0";
               });
-              return { halo, core, trail, embers };
+              return {
+                name: definition.name,
+                globalIndex,
+                seedAt,
+                segmentLength,
+                seed,
+                seedAngle,
+                seedRadius,
+                spiralLengths,
+                spiralTotal: spiralLengths[spiralLengths.length - 1],
+                emissaryTrails,
+                emissaryHalo,
+                emissaryCore,
+                tip: { halo, core, trail, embers },
+              };
             });
 
             const angularSamples = Array.from({ length: 128 }, (_, sampleIndex) => {
@@ -375,15 +416,7 @@
               glow,
               flash,
               main,
-              seed,
-              seedAngle,
-              seedRadius,
-              spiralLengths,
-              spiralTotal: spiralLengths[spiralLengths.length - 1],
-              emissaryTrails,
-              emissaryHalo,
-              emissaryCore,
-              tips,
+              fronts,
               angularSamples,
             };
           });
@@ -469,7 +502,8 @@
               const progress = progressAt(contour, time);
               const rawProgress = clamp01((time - contour.t0) / contour.duration);
               const done = progress >= 0.999;
-              const arrivalStart = CFG.heart.burst + contour.index * CFG.flight.stagger;
+              const arrivalStart =
+                CFG.heart.burst + contour.fronts[0].globalIndex * CFG.flight.stagger;
               const arrivalTime = arrivalStart + CFG.flight.dur;
               const ghostIn = outCubic(clamp01((time - arrivalTime) / 0.55));
               let ghostOpacity = 0.075 * ghostIn;
@@ -484,27 +518,27 @@
                 contour.chase.style.opacity = "0";
                 contour.glow.style.opacity = "0";
               } else if (!done) {
-                const dash = twoEndedDash(contour, progress);
+                const dash = segmentedDash(contour, progress);
                 const chaseProgress = drawEase(
                   clamp01((time - contour.t0 - CFG.draw.chaseLag) / contour.duration),
                 );
                 contour.main.style.strokeDasharray = dash;
                 contour.glow.style.strokeDasharray = dash;
-                contour.chase.style.strokeDasharray = twoEndedDash(contour, chaseProgress);
-                contour.main.style.opacity = "0.9";
+                contour.chase.style.strokeDasharray = segmentedDash(contour, chaseProgress);
+                contour.main.style.opacity = "1";
                 contour.chase.style.opacity = chaseProgress > 0.001 ? "0.14" : "0";
                 contour.glow.style.opacity = "0.06";
-                mainOpacity = 0.9;
+                mainOpacity = 1;
               } else {
                 [contour.main, contour.chase, contour.glow].forEach((path) => {
                   path.style.strokeDasharray = "";
                 });
-                contour.main.style.opacity = "0.9";
+                contour.main.style.opacity = "1";
                 contour.chase.style.opacity = "0.1";
                 contour.glow.style.opacity = String(
-                  Math.min(0.8, 0.1 + 0.52 * sweepEnvelope + 0.5 * lockPulse),
+                  Math.min(0.8, 0.1 + 0.12 * sweepEnvelope + 0.5 * lockPulse),
                 );
-                mainOpacity = 0.9;
+                mainOpacity = 1;
               }
 
               let tipOpacity = 0;
@@ -513,20 +547,17 @@
                 const fadeIn = smooth(rawProgress * 9);
                 const fadeOut = 1 - smooth((rawProgress - 0.94) / 0.06);
                 tipOpacity = 0.95 * fadeIn * fadeOut;
-                const half = (contour.length * progress) / 2;
-                const positions = [half, contour.length - half];
                 const delta = Math.min(0.02 * contour.length, 1.9);
-                contour.tips.forEach((tip, side) => {
-                  const point = contour.main.getPointAtLength(positions[side]);
+                contour.fronts.forEach((front) => {
+                  const tip = front.tip;
+                  const position = front.seedAt + front.segmentLength * progress;
+                  const point = contour.main.getPointAtLength(loopLength(contour, position));
                   setCircle(tip.core, point.x, point.y, tipOpacity);
                   setCircle(tip.halo, point.x, point.y, tipOpacity * 0.55);
                   tip.trail.forEach((dot, trailIndex) => {
                     const offset = (trailIndex + 1) * delta;
-                    const at =
-                      side === 0
-                        ? Math.max(0, positions[side] - offset)
-                        : Math.min(contour.length, positions[side] + offset);
-                    const trailPoint = contour.main.getPointAtLength(at);
+                    const at = front.seedAt + Math.max(0, front.segmentLength * progress - offset);
+                    const trailPoint = contour.main.getPointAtLength(loopLength(contour, at));
                     setCircle(
                       dot,
                       trailPoint.x,
@@ -535,7 +566,7 @@
                     );
                   });
                   tip.embers.forEach((ember, emberIndex) => {
-                    const hash = contour.index * 29 + side * 11 + emberIndex * 7;
+                    const hash = front.globalIndex * 29 + emberIndex * 7;
                     const period = 0.34 + 0.3 * h1(hash);
                     const cycle = Math.floor((time - contour.t0) / period);
                     const birth = contour.t0 + cycle * period;
@@ -545,13 +576,10 @@
                       clamp01((birth - contour.t0) / contour.duration),
                     );
                     if (cycle >= 0 && life < 1 && birthProgress > 0.03 && birthProgress < 0.985) {
-                      const emberAt =
-                        side === 0
-                          ? (contour.length * birthProgress) / 2
-                          : contour.length - (contour.length * birthProgress) / 2;
-                      const p0 = contour.main.getPointAtLength(emberAt);
+                      const emberAt = front.seedAt + front.segmentLength * birthProgress;
+                      const p0 = contour.main.getPointAtLength(loopLength(contour, emberAt));
                       const p1 = contour.main.getPointAtLength(
-                        Math.min(contour.length, emberAt + 0.9),
+                        loopLength(contour, emberAt + 0.9),
                       );
                       const tangentLength = Math.hypot(p1.x - p0.x, p1.y - p0.y) || 1;
                       const tx = (p1.x - p0.x) / tangentLength;
@@ -571,38 +599,47 @@
                   });
                 });
               } else {
-                contour.tips.forEach(hideTip);
+                contour.fronts.forEach((front) => hideTip(front.tip));
               }
 
-              const flightProgress = clamp01((time - arrivalStart) / CFG.flight.dur);
-              let emissaryOpacity = 0;
-              if (time >= CFG.heart.burst && time < contour.t0 + 0.2) {
-                const eased = outCubic(flightProgress);
-                const radius = contour.seedRadius * (0.03 + 0.97 * eased);
-                const angle = contour.seedAngle - (1 - eased) * CFG.flight.swing;
-                const x = CX + Math.cos(angle) * radius;
-                const y = CY + Math.sin(angle) * radius;
-                const pulse = flightProgress >= 1 ? 0.74 + 0.26 * Math.sin(time * 7 + contour.index * 1.3) : 1;
-                emissaryOpacity =
-                  0.92 * smooth(flightProgress * 6) * clamp01(1 - (time - contour.t0) / 0.15) * pulse;
-                setCircle(contour.emissaryCore, x, y, emissaryOpacity);
-                setCircle(contour.emissaryHalo, x, y, emissaryOpacity * 0.55);
-                const headLength = contour.spiralTotal * eased;
-                const tailEnvelope =
-                  smooth(flightProgress * 6) * (1 - smooth((time - arrivalTime) / 0.35));
-                contour.emissaryTrails.forEach((trail) => {
-                  const segment = Math.min(headLength, contour.spiralTotal * trail.fraction);
-                  trail.element.style.strokeDasharray = `${segment} ${contour.spiralTotal * 4}`;
-                  trail.element.style.strokeDashoffset = String(segment - headLength);
-                  trail.element.style.opacity = String(trail.opacity * tailEnvelope);
-                });
-              } else {
-                contour.emissaryCore.style.opacity = "0";
-                contour.emissaryHalo.style.opacity = "0";
-                contour.emissaryTrails.forEach((trail) => {
-                  trail.element.style.opacity = "0";
-                });
-              }
+              contour.fronts.forEach((front) => {
+                const frontStart = CFG.heart.burst + front.globalIndex * CFG.flight.stagger;
+                const frontArrival = frontStart + CFG.flight.dur;
+                const flightProgress = clamp01((time - frontStart) / CFG.flight.dur);
+                if (time >= CFG.heart.burst && time < contour.t0 + 0.2) {
+                  const eased = outCubic(flightProgress);
+                  const radius = front.seedRadius * (0.03 + 0.97 * eased);
+                  const angle = front.seedAngle - (1 - eased) * CFG.flight.swing;
+                  const x = CX + Math.cos(angle) * radius;
+                  const y = CY + Math.sin(angle) * radius;
+                  const pulse =
+                    flightProgress >= 1
+                      ? 0.74 + 0.26 * Math.sin(time * 7 + front.globalIndex * 1.3)
+                      : 1;
+                  const frontOpacity =
+                    0.92 *
+                    smooth(flightProgress * 6) *
+                    clamp01(1 - (time - contour.t0) / 0.15) *
+                    pulse;
+                  setCircle(front.emissaryCore, x, y, frontOpacity);
+                  setCircle(front.emissaryHalo, x, y, frontOpacity * 0.55);
+                  const headLength = front.spiralTotal * eased;
+                  const tailEnvelope =
+                    smooth(flightProgress * 6) * (1 - smooth((time - frontArrival) / 0.35));
+                  front.emissaryTrails.forEach((trail) => {
+                    const segment = Math.min(headLength, front.spiralTotal * trail.fraction);
+                    trail.element.style.strokeDasharray = `${segment} ${front.spiralTotal * 4}`;
+                    trail.element.style.strokeDashoffset = String(segment - headLength);
+                    trail.element.style.opacity = String(trail.opacity * tailEnvelope);
+                  });
+                } else {
+                  front.emissaryCore.style.opacity = "0";
+                  front.emissaryHalo.style.opacity = "0";
+                  front.emissaryTrails.forEach((trail) => {
+                    trail.element.style.opacity = "0";
+                  });
+                }
+              });
 
               if (sweepActive) {
                 let closest = contour.angularSamples[0];
@@ -656,10 +693,12 @@
             heartCore.style.opacity = "0";
             heartHalo.style.opacity = "0";
             cast.forEach((contour) => {
-              contour.emissaryCore.style.opacity = "0";
-              contour.emissaryHalo.style.opacity = "0";
-              contour.emissaryTrails.forEach((trail) => {
-                trail.element.style.opacity = "0";
+              contour.fronts.forEach((front) => {
+                front.emissaryCore.style.opacity = "0";
+                front.emissaryHalo.style.opacity = "0";
+                front.emissaryTrails.forEach((trail) => {
+                  trail.element.style.opacity = "0";
+                });
               });
               contour.flash.style.opacity = "0";
 
@@ -668,9 +707,9 @@
               const amount = clamp01((localTime - start) / CFG.rewind.each);
               const progress =
                 baseState.contours[contour.index].progress * (1 - inOutQuad(amount));
-              const opacity = progress > 0.001 ? 0.9 : 0;
+              const opacity = progress > 0.001 ? 1 : 0;
               if (progress > 0.001 && progress < 0.999) {
-                const dash = twoEndedDash(contour, progress);
+                const dash = segmentedDash(contour, progress);
                 contour.main.style.strokeDasharray = dash;
                 contour.chase.style.strokeDasharray = dash;
                 contour.glow.style.strokeDasharray = dash;
@@ -687,10 +726,10 @@
               let tipOpacity = 0;
               if (progress > 0.001 && progress < 0.999) {
                 tipOpacity = 0.78 * (1 - smooth(amount));
-                const half = (contour.length * progress) / 2;
-                const positions = [half, contour.length - half];
-                contour.tips.forEach((tip, side) => {
-                  const point = contour.main.getPointAtLength(positions[side]);
+                contour.fronts.forEach((front) => {
+                  const tip = front.tip;
+                  const at = front.seedAt + front.segmentLength * progress;
+                  const point = contour.main.getPointAtLength(loopLength(contour, at));
                   setCircle(tip.core, point.x, point.y, tipOpacity);
                   setCircle(tip.halo, point.x, point.y, tipOpacity * 0.55);
                   tip.trail.forEach((dot) => {
@@ -701,7 +740,7 @@
                   });
                 });
               } else {
-                contour.tips.forEach(hideTip);
+                contour.fronts.forEach((front) => hideTip(front.tip));
               }
               baseState.contours[contour.index] = { progress, mainOpacity: opacity, tipOpacity };
             });
@@ -730,15 +769,17 @@
               contour.main.style.strokeDasharray = "";
               contour.chase.style.strokeDasharray = "";
               contour.glow.style.strokeDasharray = "";
-              contour.main.style.opacity = "0.9";
+              contour.main.style.opacity = "1";
               contour.chase.style.opacity = "0.1";
               contour.glow.style.opacity = String(0.1 + 0.03 * breath);
               contour.flash.style.opacity = "0";
-              contour.tips.forEach(hideTip);
-              contour.emissaryCore.style.opacity = "0";
-              contour.emissaryHalo.style.opacity = "0";
-              contour.emissaryTrails.forEach((trail) => {
-                trail.element.style.opacity = "0";
+              contour.fronts.forEach((front) => {
+                hideTip(front.tip);
+                front.emissaryCore.style.opacity = "0";
+                front.emissaryHalo.style.opacity = "0";
+                front.emissaryTrails.forEach((trail) => {
+                  trail.element.style.opacity = "0";
+                });
               });
             });
             heartCore.style.opacity = "0";
@@ -753,7 +794,7 @@
               time,
               contours: state.contours.map(() => ({
                 progress: 1,
-                mainOpacity: 0.9,
+                mainOpacity: 1,
                 tipOpacity: 0,
               })),
               heartOpacity: 0,

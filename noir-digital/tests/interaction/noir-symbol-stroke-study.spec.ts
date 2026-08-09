@@ -99,8 +99,30 @@ test("builds every reference layer for both contours", async ({ page }) => {
   for (const layer of ["ghost", "chase", "glow", "flash", "main"]) {
     await expect(page.locator(`[data-layer="${layer}"] path`)).toHaveCount(2);
   }
-  await expect(page.locator("[data-emissary]")).toHaveCount(2);
-  await expect(page.locator("[data-pen-tip]")).toHaveCount(4);
+  await expect(page.locator("[data-emissary]")).toHaveCount(6);
+  await expect(page.locator("[data-pen-tip]")).toHaveCount(6);
+  await expect(page.locator('[data-emissary][data-seed="upper-right"]')).toHaveCount(1);
+  await expect(page.locator('[data-emissary][data-seed="inner-lower"]')).toHaveCount(1);
+  await expect(page.locator('[data-emissary][data-seed="lower-right"]')).toHaveCount(1);
+  await expect(page.locator('[data-emissary][data-seed="top"]')).toHaveCount(1);
+  await expect(page.locator('[data-emissary][data-seed="upper-left"]')).toHaveCount(1);
+  await expect(page.locator('[data-emissary][data-seed="lower-left"]')).toHaveCount(1);
+});
+
+test("lands as a solid white NOIR symbol in the dark theme", async ({ page }) => {
+  await page.goto(`${httpURL}?probe`);
+  await page.evaluate(() => {
+    document.documentElement.setAttribute("data-theme", "dark");
+    window.__probe?.at(7.3);
+  });
+  const finalMark = await page
+    .locator('[data-layer="fill"] path')
+    .first()
+    .evaluate((path) => ({
+      fill: getComputedStyle(path).fill,
+      groupOpacity: Number(getComputedStyle(path.parentElement as SVGGElement).opacity),
+    }));
+  expect(finalMark).toEqual({ fill: "rgb(255, 255, 255)", groupOpacity: 1 });
 });
 
 test("unravels before pointer and keyboard replay", async ({ page }) => {
@@ -140,4 +162,38 @@ test("supports system and explicit themes", async ({ page }) => {
   expect(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme)).toBe(
     "light",
   );
+});
+
+test("keeps the full symbol inside mobile and desktop viewports", async ({ page }) => {
+  await page.goto(`${httpURL}?probe`);
+  await page.evaluate(() => window.__probe?.at(6.4));
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 390, height: 844 },
+    { width: 1280, height: 720 },
+    { width: 1440, height: 900 },
+  ]) {
+    await page.setViewportSize(viewport);
+    const box = await page.locator("svg").boundingBox();
+    expect(box).not.toBeNull();
+    expect(box?.x).toBeGreaterThanOrEqual(0);
+    expect(box?.y).toBeGreaterThanOrEqual(0);
+    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(viewport.width);
+    expect((box?.y ?? 0) + (box?.height ?? 0)).toBeLessThanOrEqual(viewport.height);
+  }
+});
+
+test("keeps the ignition window brighter than the bloom bed", async ({ page }) => {
+  await page.goto(`${httpURL}?probe`);
+  await page.evaluate(() => window.__probe?.at(5.7));
+  const layers = await page.evaluate(() => ({
+    flash: Array.from(document.querySelectorAll<SVGPathElement>('[data-layer="flash"] path')).map(
+      (path) => ({ opacity: Number(path.style.opacity), dash: path.style.strokeDasharray }),
+    ),
+    glow: Array.from(document.querySelectorAll<SVGPathElement>('[data-layer="glow"] path')).map(
+      (path) => Number(path.style.opacity),
+    ),
+  }));
+  expect(layers.flash.every((flash) => flash.dash.length > 0)).toBe(true);
+  expect(layers.flash.every((flash, index) => flash.opacity - layers.glow[index] > 0.3)).toBe(true);
 });
