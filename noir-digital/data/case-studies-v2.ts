@@ -27,6 +27,7 @@ export type EditorialVideo = {
   readonly kind: "video";
   readonly src: `/cases${string}.mp4`;
   readonly poster: `/cases${string}.webp`;
+  readonly captions: `/cases${string}.pt-BR.vtt`;
   readonly alt: string;
   readonly caption: string;
   readonly width: number;
@@ -399,6 +400,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "video",
             src: "/cases/strong/strong-whey-types.mp4",
             poster: "/cases/strong/strong-whey-types.webp",
+            captions: "/cases/strong/strong-whey-types.pt-BR.vtt",
             alt: "Vídeo Strong Whey Types",
             caption: "Cada produto recebe uma narrativa própria.",
             width: 720,
@@ -408,6 +410,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "video",
             src: "/cases/strong/gladiator-ultra.mp4",
             poster: "/cases/strong/gladiator-ultra.webp",
+            captions: "/cases/strong/gladiator-ultra.pt-BR.vtt",
             alt: "Vídeo Gladiator Ultra da Strong",
             caption: "Movimento e tipografia mantêm a marca reconhecível.",
             width: 720,
@@ -417,6 +420,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "video",
             src: "/cases/strong/cinco-sabores.mp4",
             poster: "/cases/strong/cinco-sabores.webp",
+            captions: "/cases/strong/cinco-sabores.pt-BR.vtt",
             alt: "Vídeo cinco sabores da Strong",
             caption: "A campanha preserva unidade entre diferentes versões.",
             width: 720,
@@ -490,6 +494,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "video",
             src: "/cases/together-motion/migracao-privacy-tools.mp4",
             poster: "/cases/together-motion/migracao-privacy-tools.webp",
+            captions: "/cases/together-motion/migracao-privacy-tools.pt-BR.vtt",
             alt: "Motion de migração da Together para a Privacy Tools",
             caption: "Exportação, tratamento e importação apresentados em ordem.",
             width: 1280,
@@ -563,6 +568,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "video",
             src: "/cases/ecox-hostel-cabanas/nova-cabana.mp4",
             poster: "/cases/ecox-hostel-cabanas/nova-cabana.webp",
+            captions: "/cases/ecox-hostel-cabanas/nova-cabana.pt-BR.vtt",
             alt: "Vídeo da nova cabana da ECOX",
             caption: "A novidade é apresentada por ambientes e detalhes.",
             width: 720,
@@ -572,6 +578,7 @@ export const caseStudiesV2: readonly CaseStudyV2[] = [
             kind: "video",
             src: "/cases/ecox-hostel-cabanas/o-que-voce-encontra.mp4",
             poster: "/cases/ecox-hostel-cabanas/o-que-voce-encontra.webp",
+            captions: "/cases/ecox-hostel-cabanas/o-que-voce-encontra.pt-BR.vtt",
             alt: "Vídeo sobre a estrutura das cabanas da ECOX",
             caption: "As comodidades aparecem dentro da experiência.",
             width: 720,

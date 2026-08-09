@@ -1,3 +1,6 @@
+import { stat } from "node:fs/promises";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { caseStudiesV2, getCaseStudyV2 } from "@/data/case-studies-v2";
@@ -62,6 +65,23 @@ describe("caseStudiesV2", () => {
       .join(" ");
 
     expect(googleCopy).not.toMatch(/(criamos|geramos|aumentamos) as avaliações/i);
+  });
+
+  it("ships a Portuguese caption track for every portfolio video", async () => {
+    const videos = caseStudiesV2.flatMap((study) =>
+      study.sections.flatMap((section) =>
+        section.type === "evidence" ? section.media.filter((media) => media.kind === "video") : [],
+      ),
+    );
+
+    expect(videos.length).toBeGreaterThan(0);
+    for (const video of videos) {
+      if (video.kind !== "video") continue;
+      expect(video.captions).toMatch(/^\/cases\/.+\.pt-BR\.vtt$/);
+      const asset = await stat(path.join(process.cwd(), "public", video.captions.slice(1)));
+      expect(asset.isFile()).toBe(true);
+      expect(asset.size).toBeGreaterThan(20);
+    }
   });
 
   it("returns undefined for unknown slugs", () => {

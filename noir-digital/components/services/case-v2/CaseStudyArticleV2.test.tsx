@@ -56,6 +56,12 @@ describe("CaseStudyArticleV2", () => {
     expect(video).toHaveAttribute("playsinline");
     expect(video).toHaveAttribute("preload", "metadata");
     expect(video).not.toHaveAttribute("autoplay");
+    expect(video?.querySelector("track[kind='captions']")).toHaveAttribute(
+      "src",
+      "/cases/together-motion/migracao-privacy-tools.pt-BR.vtt",
+    );
+    expect(video?.querySelector("track[kind='captions']")).toHaveAttribute("srclang", "pt-BR");
+    expect(video?.querySelector("track[kind='captions']")).toHaveAttribute("default");
   });
 
   it("dispatches the category layout and renders closing navigation", () => {
@@ -72,7 +78,10 @@ describe("CaseStudyArticleV2", () => {
     expect(container.firstElementChild).toHaveAttribute("data-case-layout", "site");
     expect(screen.getByTestId("site-case-hero")).toBeVisible();
     const contactAction = screen.getByRole("link", { name: /Planejar meu site/i });
-    expect(contactAction).toHaveAttribute("href", "/#contact");
+    expect(contactAction).toHaveAttribute(
+      "href",
+      "/contato?service=Sites%20e%20experi%C3%AAncias%20digitais&case=together-site",
+    );
     expect(contactAction).toHaveAttribute("data-spectrum-contact-cta", "true");
     expect(screen.getByRole("navigation", { name: "Navegação entre cases" })).toBeVisible();
   });

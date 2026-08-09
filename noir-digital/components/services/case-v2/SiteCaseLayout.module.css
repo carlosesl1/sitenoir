@@ -41,7 +41,7 @@
   overflow-wrap: anywhere;
   font-size: clamp(3rem, 4.5vw, 4.75rem);
   line-height: 0.9;
-  letter-spacing: -0.05em;
+  letter-spacing: var(--tracking-display);
 }
 
 .summary {
@@ -106,7 +106,7 @@
   margin: 0;
   font-size: clamp(2.4rem, 5vw, 5.2rem);
   line-height: 0.94;
-  letter-spacing: -0.045em;
+  letter-spacing: var(--tracking-display);
 }
 
 .copy > div:last-child > p {

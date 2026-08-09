@@ -103,7 +103,7 @@ export function SiteHeader({ sectionLinksBase }: SiteHeaderProps = {}) {
           />
         ) : null}
       </AnimatePresence>
-      <HeaderStatus hidden={menuLayerActive} />
+      {sectionLinksBase ? null : <HeaderStatus hidden={menuLayerActive} />}
     </header>
   );
 }

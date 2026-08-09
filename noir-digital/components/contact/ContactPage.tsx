@@ -8,7 +8,7 @@ import earthBold from "@iconify-icons/solar/earth-bold";
 import lockKeyholeLinear from "@iconify-icons/solar/lock-keyhole-linear";
 import stopBold from "@iconify-icons/solar/stop-bold";
 import Image from "next/image";
-import { type ChangeEvent, type FormEvent, useRef, useState } from "react";
+import { type ChangeEvent, type FormEvent, useEffect, useRef, useState } from "react";
 
 import {
   contactEmail,
@@ -59,10 +59,21 @@ const EMPTY_FORM: ContactFormValues = {
 
 const FALLBACK_ERROR = "Não foi possível enviar agora. Tente novamente em instantes.";
 
+function isServiceOption(value: string): value is (typeof serviceOptions)[number] {
+  return serviceOptions.includes(value as (typeof serviceOptions)[number]);
+}
+
 export function ContactPage() {
   const [values, setValues] = useState<ContactFormValues>(EMPTY_FORM);
   const [submission, setSubmission] = useState<SubmissionState>({ status: "idle" });
   const submittingRef = useRef(false);
+
+  useEffect(() => {
+    const requestedService = new URLSearchParams(window.location.search).get("service");
+    if (!requestedService || !isServiceOption(requestedService)) return;
+
+    setValues((current) => (current.service ? current : { ...current, service: requestedService }));
+  }, []);
 
   const updateField = (
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -113,6 +124,18 @@ export function ContactPage() {
             Conte-nos sobre o seu projeto. Vamos encontrar a estrutura certa para transformar a
             ideia em um próximo passo claro.
           </p>
+
+          <a
+            className={styles["mobileWhatsAppShortcut"]}
+            href={contactWhatsAppHref}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Conversar agora pelo WhatsApp"
+          >
+            <Icon icon={whatsappIcon} aria-hidden="true" />
+            <span>Conversa rápida no WhatsApp</span>
+            <Icon icon={arrowRightUpLinear} aria-hidden="true" />
+          </a>
 
           <a className={styles["brandLockup"]} href="/" aria-label="NOIR DIGITAL — Início">
             <Image
@@ -298,7 +321,10 @@ export function ContactPage() {
                 />
                 <p>
                   <span>Seus dados estão protegidos.</span>
-                  <span>Não compartilhamos suas informações.</span>
+                  <span>
+                    Não compartilhamos suas informações. Consulte a{" "}
+                    <a href="/privacidade">Política de privacidade</a>.
+                  </span>
                 </p>
               </div>
             </div>

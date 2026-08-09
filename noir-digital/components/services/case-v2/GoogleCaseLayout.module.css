@@ -31,7 +31,7 @@
   overflow-wrap: anywhere;
   font-size: clamp(3rem, 4.5vw, 4.75rem);
   line-height: 0.9;
-  letter-spacing: -0.05em;
+  letter-spacing: var(--tracking-display);
 }
 
 .summary {
@@ -103,7 +103,7 @@
   margin: 0;
   font-size: clamp(2.6rem, 5.7vw, 5.8rem);
   line-height: 0.91;
-  letter-spacing: -0.05em;
+  letter-spacing: var(--tracking-display);
 }
 
 .context div > p {

@@ -24,6 +24,7 @@
   --color-spectral-orange: #ff8a2a;
   --color-spectral-yellow: #f7d94a;
   --color-spectral-green: #55d86a;
+  --color-chapada-green: #55d86a;
   --color-spectral-cyan: #22d6d6;
   --color-spectral-blue: #2f80ff;
   --color-spectral-violet: #a855f7;
@@ -118,6 +119,7 @@
   --focus-color: var(--color-noir-black);
   --selection-background: var(--color-noir-black);
   --selection-foreground: var(--color-noir-warm-white);
+  --color-chapada-green: #116329;
 }
 
 @media (min-width: 1024px) {

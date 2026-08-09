@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ContactPage } from "@/components/contact/ContactPage";
@@ -41,7 +41,10 @@ beforeEach(() => {
   contactMocks.submitContact.mockReset();
 });
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  window.history.replaceState({}, "", "/");
+});
 
 describe("ContactPage", () => {
   it("sizes the long headline from the invitation column instead of the viewport", () => {
@@ -54,6 +57,10 @@ describe("ContactPage", () => {
     expect(css).toMatch(/\.intro h1\s*\{[^}]*font-size:\s*clamp\(1\.5rem, 13\.4cqi, 5\.2rem\)/);
     expect(css).toMatch(
       /@media \(max-width: 767px\)[\s\S]*\.intro h1\s*\{[^}]*font-size:\s*clamp\(2\.55rem, 11vw, 4\.4rem\)/,
+    );
+    expect(css).toMatch(/\.intro h1\s*\{[^}]*letter-spacing:\s*var\(--tracking-display\)/);
+    expect(css).toMatch(
+      /\.field input,[\s\S]*\.field select,[\s\S]*\.field textarea\s*\{[^}]*font-size:\s*1rem/,
     );
   });
 
@@ -93,7 +100,7 @@ describe("ContactPage", () => {
       /\.whatsAppPanel h3\s*\{[^}]*font-size:\s*clamp\(2rem, 9\.5cqi, 2\.65rem\)/,
     );
     expect(css).toMatch(
-      /\.whatsAppActionSurface\s*\{[^}]*font-size:\s*clamp\(0\.625rem, 0\.42rem \+ 1\.1cqi, 0\.875rem\)/,
+      /\.whatsAppActionSurface\s*\{[^}]*font-size:\s*clamp\(0\.6875rem, 0\.5rem \+ 1cqi, 0\.875rem\)/,
     );
     expect(css).toMatch(/\.whatsAppActionSurface\s*\{[^}]*white-space:\s*nowrap/);
   });
@@ -122,6 +129,13 @@ describe("ContactPage", () => {
       "href",
       contactWhatsAppHref,
     );
+    expect(
+      view.container.querySelector('[aria-label="Conversar agora pelo WhatsApp"]'),
+    ).toHaveAttribute("href", contactWhatsAppHref);
+    expect(screen.getByRole("link", { name: "Política de privacidade" })).toHaveAttribute(
+      "href",
+      "/privacidade",
+    );
     expect(screen.getByRole("link", { name: contactEmail })).toHaveAttribute(
       "href",
       `mailto:${contactEmail}`,
@@ -147,10 +161,36 @@ describe("ContactPage", () => {
     expect(within(information).queryByText("Localização")).not.toBeInTheDocument();
     expect(within(information).queryByText("Fortaleza - CE / Brasil")).not.toBeInTheDocument();
     expect(screen.getByText("Seus dados estão protegidos.")).toBeInTheDocument();
-    expect(screen.getByText("Não compartilhamos suas informações.")).toBeInTheDocument();
+    expect(screen.getByText(/Não compartilhamos suas informações/)).toBeInTheDocument();
     expect(screen.getByText("Atendemos projetos em todo o Brasil")).toBeInTheDocument();
     expect(screen.getByText("e também internacionalmente.")).toBeInTheDocument();
     expect(screen.queryByText(/usados apenas para responder ao contato/i)).not.toBeInTheDocument();
+  });
+
+  it("preselects a valid service carried from a case CTA", async () => {
+    window.history.replaceState(
+      {},
+      "",
+      "/contato?service=Sites%20e%20experi%C3%AAncias%20digitais&case=together-site",
+    );
+
+    render(<ContactPage />);
+
+    await waitFor(() =>
+      expect(screen.getByRole("combobox", { name: "Serviço de interesse" })).toHaveValue(
+        "Sites e experiências digitais",
+      ),
+    );
+  });
+
+  it("ignores an unknown service in the URL", async () => {
+    window.history.replaceState({}, "", "/contato?service=produto-inexistente");
+
+    render(<ContactPage />);
+
+    await waitFor(() =>
+      expect(screen.getByRole("combobox", { name: "Serviço de interesse" })).toHaveValue(""),
+    );
   });
 
   it("submits JSON once while loading and includes page provenance", async () => {

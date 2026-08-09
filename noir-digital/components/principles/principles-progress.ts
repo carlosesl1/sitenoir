@@ -11,6 +11,8 @@ export interface PrincipleViewportProgressInput {
   readonly storyViewports?: number;
 }
 
+export const PRINCIPLES_STORY_VIEWPORTS = 5;
+
 function clampProgress(progress: number): number {
   return Math.min(1, Math.max(0, progress));
 }
@@ -46,8 +48,8 @@ export function resolvePrincipleStage(progress: number): PrincipleProgressStage 
 export function resolvePrincipleViewportProgress({
   sectionTop,
   viewportHeight,
-  storyViewports = 8,
+  storyViewports = PRINCIPLES_STORY_VIEWPORTS,
 }: PrincipleViewportProgressInput): number {
-  const travel = Math.max(1, viewportHeight) * Math.max(1, storyViewports);
+  const travel = Math.max(1, viewportHeight) * Math.max(1, storyViewports - 1);
   return clampProgress(-sectionTop / travel);
 }

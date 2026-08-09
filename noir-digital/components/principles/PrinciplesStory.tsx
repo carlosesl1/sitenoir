@@ -5,6 +5,7 @@ import { type CSSProperties, memo, useCallback, useEffect, useRef, useState } fr
 
 import { PrincipleOrbit, type PrincipleOrbitHandle } from "@/components/principles/PrincipleOrbit";
 import {
+  PRINCIPLES_STORY_VIEWPORTS,
   type PrincipleProgressStage,
   resolvePrincipleProgress,
   resolvePrincipleViewportProgress,
@@ -153,7 +154,10 @@ export function PrinciplesStory() {
     const viewportHeight = Math.max(1, window.innerHeight);
     if (viewportHeightRef.current !== viewportHeight) {
       viewportHeightRef.current = viewportHeight;
-      story.style.setProperty("--principles-story-height", `${8 * viewportHeight}px`);
+      story.style.setProperty(
+        "--principles-story-height",
+        `${PRINCIPLES_STORY_VIEWPORTS * viewportHeight}px`,
+      );
       story.style.setProperty("--principles-viewport-height", `${viewportHeight}px`);
     }
     const rect = story.getBoundingClientRect();
@@ -165,6 +169,7 @@ export function PrinciplesStory() {
     const nextProgress = resolvePrincipleViewportProgress({
       sectionTop: rect.top,
       viewportHeight,
+      storyViewports: PRINCIPLES_STORY_VIEWPORTS,
     });
     const { localProgress: nextLocalProgress, stage: nextStage } =
       resolvePrincipleProgress(nextProgress);

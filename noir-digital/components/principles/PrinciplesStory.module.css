@@ -1,6 +1,6 @@
 .story {
   position: relative;
-  height: var(--principles-story-height, 800svh);
+  height: var(--principles-story-height, 500svh);
   background: var(--surface-primary);
   color: var(--text-primary);
 }

@@ -106,6 +106,8 @@ describe("SiteHeader", () => {
       "href",
       "/contato",
     );
+    expect(screen.queryByText("GMT-3 BR")).not.toBeInTheDocument();
+    expect(screen.queryByText(/X 0360 Y/)).not.toBeInTheDocument();
   });
 
   it("operates the theme control without exposing sound", () => {

@@ -109,8 +109,8 @@ describe("PrinciplesStory", () => {
     if (story) {
       story.getBoundingClientRect = () =>
         ({
-          bottom: sectionTop + 8000,
-          height: 8000,
+          bottom: sectionTop + 5000,
+          height: 5000,
           left: 0,
           right: 1000,
           top: sectionTop,
@@ -122,28 +122,28 @@ describe("PrinciplesStory", () => {
     }
 
     act(() => window.dispatchEvent(new Event("scroll")));
-    expect(story?.style.getPropertyValue("--principles-story-height")).toBe("8000px");
+    expect(story?.style.getPropertyValue("--principles-story-height")).toBe("5000px");
     expect(story?.style.getPropertyValue("--principles-viewport-height")).toBe("1000px");
     expect(view.container.querySelector('[data-stage="positioning"]')).toHaveAttribute(
       "data-active",
       "true",
     );
 
-    sectionTop = -1999;
+    sectionTop = -999;
     act(() => window.dispatchEvent(new Event("scroll")));
     expect(view.container.querySelector('[data-stage="positioning"]')).toHaveAttribute(
       "data-active",
       "true",
     );
 
-    sectionTop = -2000;
+    sectionTop = -1000;
     act(() => window.dispatchEvent(new Event("scroll")));
     expect(view.container.querySelector('[data-stage="design"]')).toHaveAttribute(
       "data-active",
       "true",
     );
 
-    sectionTop = -4000;
+    sectionTop = -2000;
     act(() => window.dispatchEvent(new Event("scroll")));
     expect(view.container.querySelector('[data-stage="principles"]')).toHaveAttribute(
       "data-active",
@@ -151,7 +151,7 @@ describe("PrinciplesStory", () => {
     );
     expect(view.container.querySelector('[data-principle-orbit="true"]')).toBeInTheDocument();
 
-    sectionTop = -6000;
+    sectionTop = -3000;
     act(() => window.dispatchEvent(new Event("scroll")));
     expect(view.container.querySelector('[data-stage="technology"]')).toHaveAttribute(
       "data-active",
@@ -159,7 +159,7 @@ describe("PrinciplesStory", () => {
     );
     expect(view.container.querySelector('[data-cursor-closing="false"]')).toBeInTheDocument();
 
-    sectionTop = -6500;
+    sectionTop = -3191;
     act(() => window.dispatchEvent(new Event("scroll")));
     expect(view.container.querySelector('[data-stage="technology"]')).toHaveAttribute(
       "data-active",
@@ -167,21 +167,21 @@ describe("PrinciplesStory", () => {
     );
     expect(view.container.querySelector('[data-cursor-closing="true"]')).toBeInTheDocument();
 
-    sectionTop = -7650;
+    sectionTop = -4650;
     act(() => window.dispatchEvent(new Event("scroll")));
     expect(view.container.querySelector('[data-stage="technology"]')).toHaveAttribute(
       "data-active",
       "true",
     );
 
-    sectionTop = -7651;
+    sectionTop = -4651;
     act(() => window.dispatchEvent(new Event("scroll")));
     expect(view.container.querySelector('[data-stage="technology"]')).toHaveAttribute(
       "data-active",
       "false",
     );
 
-    sectionTop = -4100;
+    sectionTop = -2600;
     act(() => window.dispatchEvent(new Event("scroll")));
     expect(view.container.querySelector('[data-stage="principles"]')).toHaveAttribute(
       "data-active",

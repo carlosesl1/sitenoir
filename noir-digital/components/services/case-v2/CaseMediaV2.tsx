@@ -31,7 +31,6 @@ export function CaseMediaV2({
             sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1199px) 88vw, 1120px"
           />
         ) : (
-          // biome-ignore lint/a11y/useMediaCaption: supplied portfolio edits do not include transcript files.
           <video
             className={styles["video"]}
             aria-label={media.alt}
@@ -43,6 +42,7 @@ export function CaseMediaV2({
             height={media.height}
           >
             <source src={media.src} type="video/mp4" />
+            <track kind="captions" src={media.captions} srcLang="pt-BR" label="Português" default />
           </video>
         )}
       </div>

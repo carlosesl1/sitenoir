@@ -24,18 +24,18 @@ describe("resolvePrincipleStage", () => {
 });
 
 describe("resolvePrincipleViewportProgress", () => {
-  it("copies the eight-viewport story clock from the live section rectangle", () => {
+  it("uses the four scrollable intervals inside a five-viewport story", () => {
     expect(resolvePrincipleViewportProgress({ sectionTop: 200, viewportHeight: 1000 })).toBe(0);
-    expect(resolvePrincipleViewportProgress({ sectionTop: -2000, viewportHeight: 1000 })).toBe(
+    expect(resolvePrincipleViewportProgress({ sectionTop: -1000, viewportHeight: 1000 })).toBe(
       0.25,
     );
-    expect(resolvePrincipleViewportProgress({ sectionTop: -4000, viewportHeight: 1000 })).toBe(0.5);
-    expect(resolvePrincipleViewportProgress({ sectionTop: -8000, viewportHeight: 1000 })).toBe(1);
+    expect(resolvePrincipleViewportProgress({ sectionTop: -2000, viewportHeight: 1000 })).toBe(0.5);
+    expect(resolvePrincipleViewportProgress({ sectionTop: -4000, viewportHeight: 1000 })).toBe(1);
   });
 
   it("clamps progress before entry and after the closing frame", () => {
     expect(resolvePrincipleViewportProgress({ sectionTop: 1500, viewportHeight: 1000 })).toBe(0);
-    expect(resolvePrincipleViewportProgress({ sectionTop: -9000, viewportHeight: 1000 })).toBe(1);
+    expect(resolvePrincipleViewportProgress({ sectionTop: -6000, viewportHeight: 1000 })).toBe(1);
   });
 });
 

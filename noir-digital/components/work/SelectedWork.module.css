@@ -44,7 +44,7 @@
   margin: 0 0 18px;
   color: var(--text-secondary);
   font-family: var(--font-pixel);
-  font-size: 0.625rem;
+  font-size: var(--type-micro);
   line-height: 1;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -56,7 +56,7 @@
   font-size: clamp(2.5rem, 3.75vw, 4rem);
   font-weight: 560;
   line-height: 0.98;
-  letter-spacing: -0.055em;
+  letter-spacing: var(--tracking-display);
 }
 
 .statementLink {
@@ -148,7 +148,7 @@
 }
 
 .serviceHeading span {
-  font-size: 0.5625rem;
+  font-size: var(--type-micro);
   line-height: 1;
   letter-spacing: 0.04em;
 }
@@ -295,7 +295,7 @@
   grid-column: 1 / -1;
   color: var(--text-secondary);
   font-family: var(--font-pixel);
-  font-size: 0.5625rem;
+  font-size: var(--type-micro);
   letter-spacing: 0.04em;
 }
 

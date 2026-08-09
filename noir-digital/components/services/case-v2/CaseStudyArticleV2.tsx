@@ -14,6 +14,17 @@ type Navigation = {
   readonly next: CaseStudyV2 | undefined;
 };
 
+const contactServiceByLayout = {
+  site: "Sites e experiências digitais",
+  video: "Vídeos e motion",
+  google: "Presença no Google",
+} as const;
+
+function getContactHref(study: CaseStudyV2) {
+  const service = encodeURIComponent(contactServiceByLayout[study.categoryLayout]);
+  return `/contato?service=${service}&case=${encodeURIComponent(study.slug)}`;
+}
+
 export function CaseStudyArticleV2({
   project,
   study,
@@ -28,6 +39,7 @@ export function CaseStudyArticleV2({
     video: VideoCaseLayout,
     google: GoogleCaseLayout,
   }[study.categoryLayout];
+  const contactHref = getContactHref(study);
 
   return (
     <article
@@ -42,7 +54,7 @@ export function CaseStudyArticleV2({
         <p>Próximo passo</p>
         <h2>{study.cta.body}</h2>
         <div className={styles["closingAction"]}>
-          <SpectrumContactCta href="/#contact" label={study.cta.label} />
+          <SpectrumContactCta href={contactHref} label={study.cta.label} />
         </div>
       </section>
 
@@ -64,7 +76,7 @@ export function CaseStudyArticleV2({
             {navigation.next.headline}
           </a>
         ) : (
-          <a href="/#contact">
+          <a href={contactHref}>
             <span>Próximo</span>
             Iniciar uma conversa
           </a>

@@ -127,7 +127,7 @@
 .informationList a,
 .legalClosing a {
   display: flex;
-  min-height: 28px;
+  min-height: 44px;
   align-items: center;
   border: 1px dotted transparent;
 }
