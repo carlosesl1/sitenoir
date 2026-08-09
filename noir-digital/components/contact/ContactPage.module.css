@@ -120,11 +120,15 @@
 }
 
 .brandLockup {
-  display: flex;
+  --brand-name-height: clamp(1.75rem, 2vw, 2rem);
+  --brand-symbol-height: calc(var(--brand-name-height) * 1.2);
+
+  display: grid;
   width: fit-content;
   min-height: 52px;
-  align-items: center;
-  gap: 12px;
+  align-content: center;
+  justify-items: start;
+  gap: 9px;
   margin-top: auto;
   border: 1px dotted transparent;
   color: inherit;
@@ -136,31 +140,37 @@
   outline: none;
 }
 
-.brandLockup > img {
-  width: 27px;
-  height: auto;
+.brandNameRow {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1vw, 14px);
 }
 
-.brandLockup > span {
-  display: grid;
-  gap: 4px;
+.brandSymbol {
+  display: block;
+  width: auto;
+  height: var(--brand-symbol-height);
+  object-fit: contain;
 }
 
-.brandLockup span img {
-  width: 92px;
-  height: auto;
+.brandWordmark {
+  display: block;
+  width: auto;
+  height: var(--brand-name-height);
+  object-fit: contain;
 }
 
-.brandLockup small {
-  max-width: 23ch;
+.brandTagline {
+  max-width: 27ch;
   font-family: var(--font-pixel);
-  font-size: 0.5rem;
-  line-height: 1.35;
+  font-size: clamp(0.5625rem, 0.62vw, 0.6875rem);
+  line-height: 1.45;
   letter-spacing: 0.04em;
   color: var(--text-secondary);
 }
 
-:global([data-theme="light"]) .brandLockup img {
+:global([data-theme="light"]) .brandSymbol,
+:global([data-theme="light"]) .brandWordmark {
   filter: brightness(0);
 }
 
@@ -733,17 +743,7 @@
   }
 
   .brandLockup {
-    align-items: flex-start;
     margin-top: 36px;
-  }
-
-  .brandLockup > img {
-    width: 30px;
-    margin-top: 2px;
-  }
-
-  .brandLockup span img {
-    width: 104px;
   }
 
   .fieldGrid {

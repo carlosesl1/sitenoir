@@ -118,6 +118,30 @@ describe("ContactPage", () => {
     );
   });
 
+  it("uses the same brand lockup anatomy and proportions as the home footer", () => {
+    const view = render(<ContactPage />);
+    const brand = view.container.querySelector("[data-contact-brand-lockup]");
+    const nameRow = brand?.querySelector("[data-contact-brand-name-row]");
+    const tagline = brand?.querySelector("[data-contact-brand-tagline]");
+    const css = readFileSync(
+      join(process.cwd(), "components/contact/ContactPage.module.css"),
+      "utf8",
+    );
+
+    expect(nameRow?.querySelector('img[src*="noir-symbol.svg"]')).toBeInTheDocument();
+    expect(nameRow?.querySelector('img[src*="noir-wordmark.svg"]')).toBeInTheDocument();
+    expect(tagline).toHaveTextContent("AGÊNCIA DE ESTRUTURA DIGITAL");
+    expect(css).toMatch(
+      /\.brandLockup\s*\{[^}]*--brand-name-height:\s*clamp\(1\.75rem, 2vw, 2rem\)[^}]*--brand-symbol-height:\s*calc\(var\(--brand-name-height\) \* 1\.2\)/,
+    );
+    expect(css).toMatch(
+      /\.brandNameRow\s*\{[^}]*display:\s*flex[^}]*align-items:\s*center[^}]*gap:\s*clamp\(10px, 1vw, 14px\)/,
+    );
+    expect(css).toMatch(/\.brandSymbol\s*\{[^}]*height:\s*var\(--brand-symbol-height\)/);
+    expect(css).toMatch(/\.brandWordmark\s*\{[^}]*height:\s*var\(--brand-name-height\)/);
+    expect(css).toMatch(/\.brandTagline\s*\{[^}]*max-width:\s*27ch/);
+  });
+
   it("uses TikTok Sans for the highlighted contact copy", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/ContactPage.module.css"),

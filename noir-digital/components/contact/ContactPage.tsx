@@ -175,23 +175,27 @@ export function ContactPage() {
             aria-label="NOIR DIGITAL — Início"
             data-contact-brand-lockup
           >
-            <Image
-              src="/brand/noir-symbol.svg"
-              width={164}
-              height={186}
-              alt=""
-              aria-hidden="true"
-            />
-            <span>
+            <span className={styles["brandNameRow"]} data-contact-brand-name-row>
               <Image
+                className={styles["brandSymbol"]}
+                src="/brand/noir-symbol.svg"
+                width={164}
+                height={186}
+                alt=""
+                aria-hidden="true"
+              />
+              <Image
+                className={styles["brandWordmark"]}
                 src="/brand/noir-wordmark.svg"
                 width={389}
                 height={116}
                 alt=""
                 aria-hidden="true"
               />
-              <small>AGÊNCIA DE ESTRUTURA DIGITAL</small>
             </span>
+            <small className={styles["brandTagline"]} data-contact-brand-tagline>
+              AGÊNCIA DE ESTRUTURA DIGITAL
+            </small>
           </a>
         </section>
 
