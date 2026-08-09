@@ -78,6 +78,46 @@ describe("ContactPage", () => {
     );
   });
 
+  it("places the full WhatsApp card and brand before the form on mobile", () => {
+    const view = render(<ContactPage />);
+    const mobilePanel = view.container.querySelector('[data-contact-whatsapp-panel="mobile"]');
+    const desktopPanel = view.container.querySelector('[data-contact-whatsapp-panel="desktop"]');
+    const brand = view.container.querySelector("[data-contact-brand-lockup]");
+    const formPanel = view.container.querySelector("[data-contact-form-panel]");
+    const css = readFileSync(
+      join(process.cwd(), "components/contact/ContactPage.module.css"),
+      "utf8",
+    );
+
+    if (!mobilePanel || !desktopPanel || !brand || !formPanel) {
+      throw new Error("Expected contact mobile ordering hooks to be rendered.");
+    }
+
+    expect(mobilePanel).toBeInTheDocument();
+    expect(desktopPanel).toBeInTheDocument();
+    expect(brand).toBeInTheDocument();
+    expect(formPanel).toBeInTheDocument();
+    expect(
+      mobilePanel.compareDocumentPosition(brand) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      brand.compareDocumentPosition(formPanel) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      view.container.querySelector('[aria-label="Conversar agora pelo WhatsApp"]'),
+    ).not.toBeInTheDocument();
+    expect(css).toMatch(/\.mobileWhatsAppPanel\s*\{[^}]*display:\s*none/);
+    expect(css).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*\.mobileWhatsAppPanel\s*\{[^}]*display:\s*grid/,
+    );
+    expect(css).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*\.desktopWhatsAppPanel\s*\{[^}]*display:\s*none/,
+    );
+    expect(css).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*\.channels > \.panelHeading\s*\{[^}]*display:\s*none/,
+    );
+  });
+
   it("uses TikTok Sans for the highlighted contact copy", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/ContactPage.module.css"),
@@ -129,9 +169,6 @@ describe("ContactPage", () => {
       "href",
       contactWhatsAppHref,
     );
-    expect(
-      view.container.querySelector('[aria-label="Conversar agora pelo WhatsApp"]'),
-    ).toHaveAttribute("href", contactWhatsAppHref);
     expect(screen.getByRole("link", { name: "Política de privacidade" })).toHaveAttribute(
       "href",
       "/privacidade",
@@ -146,10 +183,10 @@ describe("ContactPage", () => {
     );
 
     expect(view.container.querySelector("[data-contact-select-icon]")).toBeInTheDocument();
-    expect(view.container.querySelector("[data-contact-whatsapp-icon]")).toBeInTheDocument();
-    expect(view.container.querySelectorAll("[data-contact-cta-icon]")).toHaveLength(2);
-    expect(view.container.querySelectorAll('[data-spectrum-contact-cta="true"]')).toHaveLength(2);
-    expect(view.container.querySelectorAll("[data-spectrum-contact-surface]")).toHaveLength(2);
+    expect(view.container.querySelectorAll("[data-contact-whatsapp-icon]")).toHaveLength(2);
+    expect(view.container.querySelectorAll("[data-contact-cta-icon]")).toHaveLength(3);
+    expect(view.container.querySelectorAll('[data-spectrum-contact-cta="true"]')).toHaveLength(3);
+    expect(view.container.querySelectorAll("[data-spectrum-contact-surface]")).toHaveLength(3);
     expect(view.container.querySelector("[data-contact-privacy-icon]")).toBeInTheDocument();
     expect(view.container.querySelector("[data-contact-global-icon]")).toBeInTheDocument();
     expect(screen.queryByText("↗")).not.toBeInTheDocument();

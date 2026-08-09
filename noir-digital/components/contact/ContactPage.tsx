@@ -63,6 +63,48 @@ function isServiceOption(value: string): value is (typeof serviceOptions)[number
   return serviceOptions.includes(value as (typeof serviceOptions)[number]);
 }
 
+function WhatsAppPanel({ variant }: { readonly variant: "desktop" | "mobile" }) {
+  const variantClass =
+    variant === "mobile" ? styles["mobileWhatsAppPanel"] : styles["desktopWhatsAppPanel"];
+
+  return (
+    <section
+      className={`${styles["whatsAppPanel"]} ${variantClass}`}
+      data-contact-whatsapp-panel={variant}
+    >
+      <span className={styles["recommended"]}>RECOMENDADO</span>
+      <div className={styles["whatsAppHeading"]}>
+        <h3>WHATSAPP</h3>
+        <p className={styles["whatsAppSubtitle"]}>RESPOSTA RÁPIDA</p>
+      </div>
+      <div className={styles["whatsAppMark"]} aria-hidden="true" data-contact-whatsapp-icon>
+        <Icon icon={whatsappIcon} />
+      </div>
+      <p>Prefere falar diretamente? Abra uma conversa com a mensagem inicial já pronta.</p>
+      <a
+        className={`${spectrumStyles["root"]} ${styles["whatsAppAction"]}`}
+        href={contactWhatsAppHref}
+        target="_blank"
+        rel="noreferrer"
+        data-spectrum-contact-cta="true"
+      >
+        <span
+          className={`${spectrumStyles["surface"]} ${styles["actionSurface"]} ${styles["whatsAppActionSurface"]}`}
+          data-spectrum-contact-surface
+        >
+          <span>Iniciar conversa no WhatsApp</span>
+          <Icon
+            className={styles["ctaIcon"]}
+            icon={arrowRightUpLinear}
+            aria-hidden="true"
+            data-contact-cta-icon
+          />
+        </span>
+      </a>
+    </section>
+  );
+}
+
 export function ContactPage() {
   const [values, setValues] = useState<ContactFormValues>(EMPTY_FORM);
   const [submission, setSubmission] = useState<SubmissionState>({ status: "idle" });
@@ -125,19 +167,14 @@ export function ContactPage() {
             ideia em um próximo passo claro.
           </p>
 
-          <a
-            className={styles["mobileWhatsAppShortcut"]}
-            href={contactWhatsAppHref}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Conversar agora pelo WhatsApp"
-          >
-            <Icon icon={whatsappIcon} aria-hidden="true" />
-            <span>Conversa rápida no WhatsApp</span>
-            <Icon icon={arrowRightUpLinear} aria-hidden="true" />
-          </a>
+          <WhatsAppPanel variant="mobile" />
 
-          <a className={styles["brandLockup"]} href="/" aria-label="NOIR DIGITAL — Início">
+          <a
+            className={styles["brandLockup"]}
+            href="/"
+            aria-label="NOIR DIGITAL — Início"
+            data-contact-brand-lockup
+          >
             <Image
               src="/brand/noir-symbol.svg"
               width={164}
@@ -158,7 +195,11 @@ export function ContactPage() {
           </a>
         </section>
 
-        <section className={styles["formPanel"]} aria-labelledby="project-data-heading">
+        <section
+          className={styles["formPanel"]}
+          aria-labelledby="project-data-heading"
+          data-contact-form-panel
+        >
           <div className={styles["panelHeading"]}>
             <span>01</span>
             <h2 id="project-data-heading">DADOS DO PROJETO</h2>
@@ -337,37 +378,7 @@ export function ContactPage() {
             <h2 id="contact-channels-heading">OUTRA FORMA DE CONTATO</h2>
           </div>
 
-          <section className={styles["whatsAppPanel"]} data-contact-whatsapp-panel>
-            <span className={styles["recommended"]}>RECOMENDADO</span>
-            <div className={styles["whatsAppHeading"]}>
-              <h3>WHATSAPP</h3>
-              <p className={styles["whatsAppSubtitle"]}>RESPOSTA RÁPIDA</p>
-            </div>
-            <div className={styles["whatsAppMark"]} aria-hidden="true" data-contact-whatsapp-icon>
-              <Icon icon={whatsappIcon} />
-            </div>
-            <p>Prefere falar diretamente? Abra uma conversa com a mensagem inicial já pronta.</p>
-            <a
-              className={`${spectrumStyles["root"]} ${styles["whatsAppAction"]}`}
-              href={contactWhatsAppHref}
-              target="_blank"
-              rel="noreferrer"
-              data-spectrum-contact-cta="true"
-            >
-              <span
-                className={`${spectrumStyles["surface"]} ${styles["actionSurface"]} ${styles["whatsAppActionSurface"]}`}
-                data-spectrum-contact-surface
-              >
-                <span>Iniciar conversa no WhatsApp</span>
-                <Icon
-                  className={styles["ctaIcon"]}
-                  icon={arrowRightUpLinear}
-                  aria-hidden="true"
-                  data-contact-cta-icon
-                />
-              </span>
-            </a>
-          </section>
+          <WhatsAppPanel variant="desktop" />
 
           <section className={styles["information"]} aria-labelledby="contact-info-heading">
             <div className={styles["panelHeading"]}>

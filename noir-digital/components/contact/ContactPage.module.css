@@ -119,10 +119,6 @@
   color: var(--text-secondary);
 }
 
-.mobileWhatsAppShortcut {
-  display: none;
-}
-
 .brandLockup {
   display: flex;
   width: fit-content;
@@ -431,6 +427,10 @@
   );
 }
 
+.mobileWhatsAppPanel {
+  display: none;
+}
+
 .whatsAppPanel::before {
   position: absolute;
   top: -10%;
@@ -723,39 +723,27 @@
     font-size: clamp(2.55rem, 11vw, 4.4rem);
   }
 
-  .mobileWhatsAppShortcut {
-    display: flex;
-    min-height: 52px;
-    align-items: center;
-    gap: 12px;
-    margin-top: 24px;
-    padding: 0 14px;
-    border: 1px solid var(--border-strong);
-    color: var(--text-primary);
-    font-family: var(--font-interface);
-    font-size: var(--type-label);
-    line-height: 1.3;
-    text-decoration: none;
-    text-transform: uppercase;
+  .mobileWhatsAppPanel {
+    display: grid;
+    margin-top: 32px;
   }
 
-  .mobileWhatsAppShortcut span {
-    flex: 1;
-  }
-
-  .mobileWhatsAppShortcut svg {
-    width: 18px;
-    height: 18px;
-    flex: 0 0 auto;
-  }
-
-  .mobileWhatsAppShortcut:focus-visible {
-    border-color: var(--focus-color);
-    outline: none;
+  .desktopWhatsAppPanel {
+    display: none;
   }
 
   .brandLockup {
-    margin-top: 52px;
+    align-items: flex-start;
+    margin-top: 36px;
+  }
+
+  .brandLockup > img {
+    width: 30px;
+    margin-top: 2px;
+  }
+
+  .brandLockup span img {
+    width: 104px;
   }
 
   .fieldGrid {
@@ -776,6 +764,10 @@
   .channels {
     display: block;
     border-top: 1px solid var(--border-default);
+  }
+
+  .channels > .panelHeading {
+    display: none;
   }
 
   .whatsAppPanel {
