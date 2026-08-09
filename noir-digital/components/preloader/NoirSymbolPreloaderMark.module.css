@@ -1,0 +1,102 @@
+.mark {
+  --symbol-ink: #fff;
+
+  display: block;
+  width: 118px;
+  height: auto;
+  overflow: visible;
+}
+
+:global([data-theme="light"]) .mark {
+  --symbol-ink: #030303;
+}
+
+.source {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.ghost,
+.main,
+.chase,
+.glow,
+.flash,
+.emissaryTrail {
+  fill: none;
+  stroke: var(--symbol-ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ghost {
+  stroke-width: 0.28;
+  opacity: 0.075;
+}
+
+.main {
+  stroke-width: 0.62;
+  opacity: 0;
+}
+
+.chase {
+  stroke-width: 1.86;
+  opacity: 0;
+}
+
+.glow,
+.flash {
+  stroke-width: 1.86;
+  opacity: 0;
+}
+
+.emissaryTrail {
+  stroke-width: 0.72;
+  opacity: 0;
+}
+
+.emissary,
+.emissaryHalo,
+.tip,
+.tipHalo,
+.trailDot,
+.heart,
+.heartHalo {
+  fill: var(--symbol-ink);
+  stroke: none;
+  opacity: 0;
+}
+
+.fill,
+.waitingBloom {
+  fill: var(--symbol-ink);
+  stroke: none;
+}
+
+.fill {
+  opacity: 0;
+}
+
+.waitingBloom {
+  opacity: 0;
+}
+
+.mark[data-symbol-complete="true"] .waitingBloom {
+  animation: symbol-wait 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes symbol-wait {
+  from {
+    opacity: 0.28;
+  }
+
+  to {
+    opacity: 0.42;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark[data-symbol-complete="true"] .waitingBloom {
+    animation: none;
+    opacity: 0.28;
+  }
+}
