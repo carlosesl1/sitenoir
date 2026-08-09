@@ -102,3 +102,42 @@ test("builds every reference layer for both contours", async ({ page }) => {
   await expect(page.locator("[data-emissary]")).toHaveCount(2);
   await expect(page.locator("[data-pen-tip]")).toHaveCount(4);
 });
+
+test("unravels before pointer and keyboard replay", async ({ page }) => {
+  await page.goto(`${httpURL}?probe`);
+  for (const input of ["pointer", "Enter", "Space"] as const) {
+    await page.evaluate(() => window.__probe?.at(6.4));
+    if (input === "pointer") await page.locator("main").click();
+    else await page.locator("main").press(input);
+    await expect.poll(() => page.evaluate(() => window.__probe?.state().phase)).toBe("rewind");
+    expect(
+      (await page.evaluate(() => window.__probe?.rewind(0.2, 6.4)))?.contours.some(
+        (item) => item.progress < 1,
+      ),
+    ).toBe(true);
+  }
+});
+
+test("uses a complete static mark for reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto(`${httpURL}?probe`);
+  const state = await page.evaluate(() => window.__probe?.state());
+  expect(state).toMatchObject({ phase: "rest" });
+  expect(state?.contours.every((item) => item.progress === 1)).toBe(true);
+});
+
+test("supports system and explicit themes", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.goto(`${httpURL}?probe`);
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme)).toBe(
+    "light",
+  );
+  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme)).toBe(
+    "dark",
+  );
+  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "light"));
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme)).toBe(
+    "light",
+  );
+});

@@ -16,6 +16,41 @@
         --chase-mult: 1;
       }
 
+      @media (prefers-color-scheme: light) {
+        :root {
+          color-scheme: light;
+          --bg: #f5f5f3;
+          --bg-halo: rgba(16, 16, 19, 0.045);
+          --bg-vign: rgba(16, 16, 19, 0.07);
+          --ink: #131316;
+          --focus: rgba(19, 19, 22, 0.5);
+          --glow-mult: 0.45;
+          --chase-mult: 0.7;
+        }
+      }
+
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #08080b;
+        --bg-halo: rgba(244, 245, 247, 0.05);
+        --bg-vign: rgba(0, 0, 0, 0.55);
+        --ink: #f4f5f7;
+        --focus: rgba(244, 245, 247, 0.55);
+        --glow-mult: 1;
+        --chase-mult: 1;
+      }
+
+      :root[data-theme="light"] {
+        color-scheme: light;
+        --bg: #f5f5f3;
+        --bg-halo: rgba(16, 16, 19, 0.045);
+        --bg-vign: rgba(16, 16, 19, 0.07);
+        --ink: #131316;
+        --focus: rgba(19, 19, 22, 0.5);
+        --glow-mult: 0.45;
+        --chase-mult: 0.7;
+      }
+
       * { box-sizing: border-box; }
       html, body { width: 100%; height: 100%; }
       body {
@@ -116,6 +151,7 @@
           cam: { from: 1.13, t0: 0.8, dur: 1.9 },
           fillOpacity: 0.045,
           embers: { life: 0.45 },
+          rewind: { each: 0.42, stagger: 0.05, tail: 0.22 },
         };
         const T_LOCK = CFG.ignite.t0 + CFG.ignite.dur;
 
@@ -211,6 +247,8 @@
         const rig = document.getElementById("rig");
         const source = document.getElementById("source");
         const fillGroup = document.getElementById("fill-body");
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        let mode = "run";
         let lastState = null;
 
         try {
@@ -604,25 +642,193 @@
             return lastState;
           }
 
+          const rewindTotal =
+            CFG.rewind.each + (cast.length - 1) * CFG.rewind.stagger + CFG.rewind.tail;
+          let rewindBaseTime = 0;
+          let rewindT0 = 0;
+          let t0 = performance.now();
+          let hiddenAt = null;
           const probeHold = location.search.includes("probe");
+
+          function renderRewind(localTime, baseTime) {
+            const baseState = render(baseTime);
+            const totalProgress = clamp01(localTime / rewindTotal);
+            heartCore.style.opacity = "0";
+            heartHalo.style.opacity = "0";
+            cast.forEach((contour) => {
+              contour.emissaryCore.style.opacity = "0";
+              contour.emissaryHalo.style.opacity = "0";
+              contour.emissaryTrails.forEach((trail) => {
+                trail.element.style.opacity = "0";
+              });
+              contour.flash.style.opacity = "0";
+
+              const reverseIndex = cast.length - 1 - contour.index;
+              const start = reverseIndex * CFG.rewind.stagger;
+              const amount = clamp01((localTime - start) / CFG.rewind.each);
+              const progress =
+                baseState.contours[contour.index].progress * (1 - inOutQuad(amount));
+              const opacity = progress > 0.001 ? 0.9 : 0;
+              if (progress > 0.001 && progress < 0.999) {
+                const dash = twoEndedDash(contour, progress);
+                contour.main.style.strokeDasharray = dash;
+                contour.chase.style.strokeDasharray = dash;
+                contour.glow.style.strokeDasharray = dash;
+              } else if (progress >= 0.999) {
+                contour.main.style.strokeDasharray = "";
+                contour.chase.style.strokeDasharray = "";
+                contour.glow.style.strokeDasharray = "";
+              }
+              contour.main.style.opacity = String(opacity);
+              contour.chase.style.opacity = String(opacity * 0.11);
+              contour.glow.style.opacity = String(opacity * 0.08);
+              contour.ghost.style.opacity = String(0.032 * (1 - smooth(totalProgress)));
+
+              let tipOpacity = 0;
+              if (progress > 0.001 && progress < 0.999) {
+                tipOpacity = 0.78 * (1 - smooth(amount));
+                const half = (contour.length * progress) / 2;
+                const positions = [half, contour.length - half];
+                contour.tips.forEach((tip, side) => {
+                  const point = contour.main.getPointAtLength(positions[side]);
+                  setCircle(tip.core, point.x, point.y, tipOpacity);
+                  setCircle(tip.halo, point.x, point.y, tipOpacity * 0.55);
+                  tip.trail.forEach((dot) => {
+                    dot.style.opacity = "0";
+                  });
+                  tip.embers.forEach((ember) => {
+                    ember.style.opacity = "0";
+                  });
+                });
+              } else {
+                contour.tips.forEach(hideTip);
+              }
+              baseState.contours[contour.index] = { progress, mainOpacity: opacity, tipOpacity };
+            });
+
+            const fillOpacity = baseState.fillOpacity * (1 - clamp01(localTime * 3));
+            const scale = lerp(baseState.scale, CFG.cam.from, smooth(totalProgress));
+            fillGroup.style.opacity = String(fillOpacity);
+            stage.style.transform = `scale(${scale})`;
+            rig.style.opacity = String(1 - smooth((totalProgress - 0.82) / 0.18));
+            document.documentElement.dataset.phase = "rewind";
+            lastState = {
+              ...baseState,
+              phase: "rewind",
+              time: localTime,
+              heartOpacity: 0,
+              fillOpacity,
+              scale,
+            };
+            return lastState;
+          }
+
+          function renderStatic(time) {
+            const state = render(T_LOCK + 1);
+            const breath = 0.5 + 0.5 * Math.sin(time * 0.5);
+            cast.forEach((contour) => {
+              contour.main.style.strokeDasharray = "";
+              contour.chase.style.strokeDasharray = "";
+              contour.glow.style.strokeDasharray = "";
+              contour.main.style.opacity = "0.9";
+              contour.chase.style.opacity = "0.1";
+              contour.glow.style.opacity = String(0.1 + 0.03 * breath);
+              contour.flash.style.opacity = "0";
+              contour.tips.forEach(hideTip);
+              contour.emissaryCore.style.opacity = "0";
+              contour.emissaryHalo.style.opacity = "0";
+              contour.emissaryTrails.forEach((trail) => {
+                trail.element.style.opacity = "0";
+              });
+            });
+            heartCore.style.opacity = "0";
+            heartHalo.style.opacity = "0";
+            fillGroup.style.opacity = String(CFG.fillOpacity);
+            stage.style.transform = "scale(1)";
+            rig.style.opacity = "1";
+            document.documentElement.dataset.phase = "rest";
+            lastState = {
+              ...state,
+              phase: "rest",
+              time,
+              contours: state.contours.map(() => ({
+                progress: 1,
+                mainOpacity: 0.9,
+                tipOpacity: 0,
+              })),
+              heartOpacity: 0,
+              fillOpacity: CFG.fillOpacity,
+              scale: 1,
+            };
+            return lastState;
+          }
+
+          function replay() {
+            if (reduceMotion.matches || mode === "rewind") return;
+            const time = probeHold ? (lastState?.time ?? 0) : (performance.now() - t0) / 1000;
+            if (time < CFG.draw.firstT0 + 0.2) return;
+            rewindBaseTime = time;
+            rewindT0 = performance.now();
+            mode = "rewind";
+            renderRewind(0, rewindBaseTime);
+          }
+
+          stage.addEventListener("pointerdown", (event) => {
+            if (event.button === 0) replay();
+          });
+          stage.addEventListener("keydown", (event) => {
+            if (event.metaKey || event.ctrlKey || event.altKey) return;
+            if (event.code === "Space" || event.code === "Enter") {
+              event.preventDefault();
+              replay();
+            }
+          });
+
+          document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+              hiddenAt = performance.now();
+            } else if (hiddenAt !== null) {
+              const away = performance.now() - hiddenAt;
+              t0 += away;
+              rewindT0 += away;
+              hiddenAt = null;
+            }
+          });
+
           if (probeHold) {
-            render(0);
+            if (reduceMotion.matches) renderStatic(0);
+            else render(0);
             window.__probe = {
               at(time) {
-                return structuredClone(render(time));
+                mode = "run";
+                return structuredClone(reduceMotion.matches ? renderStatic(time) : render(time));
               },
               state() {
                 return structuredClone(lastState || render(0));
               },
+              rewind(localTime, baseTime = 6.4) {
+                mode = "rewind";
+                return structuredClone(renderRewind(localTime, baseTime));
+              },
             };
           } else {
-            let start = performance.now();
             function frame(now) {
-              render((now - start) / 1000);
+              if (reduceMotion.matches) {
+                renderStatic(now / 1000);
+              } else if (mode === "rewind") {
+                const localTime = (now - rewindT0) / 1000;
+                renderRewind(localTime, rewindBaseTime);
+                if (localTime > rewindTotal) {
+                  mode = "run";
+                  t0 = now;
+                }
+              } else {
+                render((now - t0) / 1000);
+              }
               requestAnimationFrame(frame);
             }
             requestAnimationFrame((now) => {
-              start = now;
+              t0 = now;
               requestAnimationFrame(frame);
             });
           }
