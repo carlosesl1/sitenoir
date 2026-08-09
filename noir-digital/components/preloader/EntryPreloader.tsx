@@ -1,14 +1,11 @@
 "use client";
 
 import { useReducedMotion } from "motion/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { EntryRevealCanvas } from "@/components/preloader/EntryRevealCanvas";
-import {
-  advanceEntryDisplayProgress,
-  resolveEntryDisplayProgressTarget,
-  resolveEntryLoadProgress,
-} from "@/components/preloader/entry-preloader-state";
+import { canRevealEntry } from "@/components/preloader/entry-preloader-state";
+import { NoirSymbolPreloaderMark } from "@/components/preloader/NoirSymbolPreloaderMark";
 import { NOIR_SCENE_SETTLED_EVENT } from "@/scene/scene-readiness";
 
 import styles from "./EntryPreloader.module.css";
@@ -23,57 +20,23 @@ export function EntryPreloader() {
   const [fontsReady, setFontsReady] = useState(false);
   const [revealReady, setRevealReady] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
+  const [symbolReady, setSymbolReady] = useState(reducedMotion);
   const [phase, setPhase] = useState<"loading" | "revealing" | "done">("loading");
-  const displayedProgressRef = useRef(0);
-  const progressValueRef = useRef<HTMLSpanElement>(null);
   const markRevealReady = useCallback(() => setRevealReady(true), []);
+  const markSymbolReady = useCallback(() => setSymbolReady(true), []);
   const skipRevealInitialization =
     reducedMotion ||
     (typeof document !== "undefined" &&
       document.documentElement.dataset["routeTransition"] === "true");
 
-  const progress = useMemo(
-    () => resolveEntryLoadProgress({ documentReady, fontsReady, sceneReady }),
-    [documentReady, fontsReady, sceneReady],
-  );
-
-  useEffect(() => {
-    const progressValue = progressValueRef.current;
-    if (!progressValue) return;
-
-    const targetProgress = resolveEntryDisplayProgressTarget(progress, sceneReady);
-    if (reducedMotion || typeof window.requestAnimationFrame !== "function") {
-      displayedProgressRef.current = targetProgress;
-      progressValue.style.transform = `scaleX(${targetProgress / 100})`;
-      return;
-    }
-
-    let animationFrame = 0;
-    let previousTime = performance.now();
-    const animate = (currentTime: number) => {
-      const elapsedMs = Math.min(50, Math.max(0, currentTime - previousTime));
-      previousTime = currentTime;
-      displayedProgressRef.current = advanceEntryDisplayProgress({
-        currentProgress: displayedProgressRef.current,
-        elapsedMs,
-        loadProgress: progress,
-        sceneReady,
-      });
-      progressValue.style.transform = `scaleX(${displayedProgressRef.current / 100})`;
-
-      if (displayedProgressRef.current < targetProgress) {
-        animationFrame = window.requestAnimationFrame(animate);
-      }
-    };
-
-    if (displayedProgressRef.current < targetProgress) {
-      animationFrame = window.requestAnimationFrame(animate);
-    } else {
-      progressValue.style.transform = `scaleX(${targetProgress / 100})`;
-    }
-
-    return () => window.cancelAnimationFrame(animationFrame);
-  }, [progress, reducedMotion, sceneReady]);
+  const entryCanReveal = canRevealEntry({
+    documentReady,
+    fontsReady,
+    sceneReady,
+    symbolReady,
+    revealReady,
+    reducedMotion,
+  });
 
   useEffect(() => {
     if (document.documentElement.dataset["routeTransition"] === "true") return;
@@ -126,7 +89,7 @@ export function EntryPreloader() {
   }, []);
 
   useEffect(() => {
-    if (progress < 100 || (!reducedMotion && !revealReady) || phase !== "loading") return;
+    if (!entryCanReveal || phase !== "loading") return;
 
     if (reducedMotion) {
       setPhase("done");
@@ -135,7 +98,7 @@ export function EntryPreloader() {
 
     const revealTimer = window.setTimeout(() => setPhase("revealing"), REVEAL_DELAY_MS);
     return () => window.clearTimeout(revealTimer);
-  }, [phase, progress, reducedMotion, revealReady]);
+  }, [entryCanReveal, phase, reducedMotion]);
 
   useEffect(() => {
     if (phase !== "revealing") return;
@@ -174,10 +137,8 @@ export function EntryPreloader() {
         onReady={markRevealReady}
         skipInitialization={skipRevealInitialization}
       />
-      <div className={styles["progressWrap"]}>
-        <div className={styles["progressTrack"]}>
-          <span ref={progressValueRef} className={styles["progressValue"]} />
-        </div>
+      <div className={styles["markWrap"]}>
+        <NoirSymbolPreloaderMark onComplete={markSymbolReady} reducedMotion={reducedMotion} />
       </div>
     </div>
   );
