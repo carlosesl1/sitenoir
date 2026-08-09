@@ -12,6 +12,8 @@
         --bg-vign: rgba(0, 0, 0, 0.55);
         --ink: #f4f5f7;
         --focus: rgba(244, 245, 247, 0.55);
+        --glow-mult: 1;
+        --chase-mult: 1;
       }
 
       * { box-sizing: border-box; }
@@ -42,6 +44,7 @@
         display: grid;
         place-items: center;
         cursor: pointer;
+        will-change: transform;
       }
       .stage:focus-visible {
         outline: 1px solid var(--focus);
@@ -49,6 +52,30 @@
       }
       svg { display: block; width: 100%; height: 100%; overflow: visible; }
       #source { fill: var(--ink); }
+      [data-layer="fill"] { fill: var(--ink); stroke: none; }
+      [data-layer="ghost"] path,
+      [data-layer="chase"] path,
+      [data-layer="glow"] path,
+      [data-layer="flash"] path,
+      [data-layer="main"] path,
+      [data-emissary-trail] {
+        fill: none;
+        stroke: var(--ink);
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      [data-layer="chase"] { opacity: var(--chase-mult); }
+      [data-bloom] { opacity: var(--glow-mult); }
+      [data-emissary],
+      [data-emissary-halo],
+      [data-pen-tip],
+      [data-tip-halo],
+      [data-trail-dot],
+      [data-ember],
+      [data-heart] {
+        fill: var(--ink);
+        stroke: none;
+      }
     </style>
   </head>
   <body>
@@ -60,11 +87,553 @@
       aria-label="Ícone da NOIR sendo desenhado. Ative para reproduzir novamente."
     >
       <svg viewBox="0 0 164 186" role="img" aria-label="Ícone da NOIR">
-        <g id="source">
+        <defs>
+          <filter id="bloom" x="-35%" y="-35%" width="170%" height="170%">
+            <feGaussianBlur stdDeviation="2.7"></feGaussianBlur>
+          </filter>
+        </defs>
+        <g id="rig">
+          <g id="fill-body" data-layer="fill"></g>
+          <g id="source">
           <path data-source-path d="M141.536 58.991V126.54C141.533 126.713 141.487 126.883 141.399 127.033C141.312 127.183 141.187 127.308 141.037 127.396L98.7618 152.098C97.4206 152.855 96.3049 153.951 95.5273 155.273C94.7498 156.595 94.3382 158.098 94.3339 159.629V172.55C94.3092 173.315 94.4986 174.071 94.8812 174.735C95.2638 175.399 95.8244 175.946 96.501 176.313C97.1776 176.68 97.9436 176.854 98.714 176.816C99.4843 176.778 100.229 176.529 100.865 176.096L159.635 142.349C160.936 141.712 162.025 140.717 162.771 139.483C163.517 138.249 163.889 136.827 163.841 135.389V50.2743C163.838 48.9156 163.472 47.5819 162.779 46.4094C162.087 45.2368 161.094 44.2673 159.9 43.5995L85.9098 1.09177C84.7709 0.410521 83.4729 0.0350626 82.1433 0.00233892C80.8137 -0.0303847 79.4985 0.280754 78.327 0.90514L19.978 34.4217C19.2099 34.866 18.5744 35.5045 18.1364 36.2719C17.6984 37.0394 17.4735 37.9083 17.4848 38.7901C17.496 39.6719 17.743 40.5349 18.2005 41.2912C18.6579 42.0474 19.3095 42.6697 20.0887 43.0945L92.8616 84.9107C93.3209 85.1271 93.7062 85.4722 93.9698 85.9034C94.2334 86.3346 94.3639 86.833 94.345 87.3369V135.641C94.3741 136.451 94.6109 137.241 95.0329 137.936C95.4548 138.63 96.0482 139.207 96.757 139.611C97.4657 140.015 98.2666 140.233 99.0841 140.246C99.9016 140.258 100.709 140.064 101.43 139.681L114.06 132.436C114.856 131.913 115.509 131.204 115.961 130.371C116.413 129.538 116.65 128.606 116.651 127.66V78.2579C116.639 76.623 116.195 75.0198 115.361 73.6093C114.527 72.1988 113.334 71.0305 111.902 70.2218L57.6486 39.0655C57.5912 39.0314 57.5438 38.9831 57.5109 38.9254C57.478 38.8677 57.4607 38.8025 57.4607 38.7362C57.4607 38.6699 57.478 38.6047 57.5109 38.547C57.5438 38.4893 57.5912 38.441 57.6486 38.4068L81.4376 24.7499C81.5967 24.6561 81.7783 24.6067 81.9634 24.6067C82.1485 24.6067 82.3301 24.6561 82.4892 24.7499L141.248 58.508C141.334 58.5563 141.407 58.6264 141.457 58.7112C141.508 58.796 141.535 58.8925 141.536 58.991Z"></path>
           <path data-source-path d="M22.3364 145.566V81.4198C22.3349 81.3294 22.3579 81.2402 22.403 81.1616C22.4482 81.083 22.5137 81.0179 22.5929 80.973C22.6721 80.9282 22.762 80.9052 22.8532 80.9066C22.9444 80.9079 23.0335 80.9335 23.1113 80.9807L62.542 103.596C62.6533 103.668 62.7455 103.765 62.811 103.88C62.8765 103.994 62.9133 104.123 62.9183 104.255V172.495C62.9203 173.524 63.1828 174.535 63.6819 175.437C64.1809 176.339 64.9004 177.101 65.7743 177.655L79.3238 185.417C79.9617 185.699 80.6601 185.819 81.3564 185.767C82.0527 185.715 82.7251 185.492 83.3133 185.119C83.9015 184.746 84.387 184.234 84.7263 183.628C85.0656 183.023 85.248 182.344 85.2572 181.651V96.3064C85.2674 94.7049 84.8548 93.1287 84.0606 91.7344C83.2663 90.34 82.118 89.176 80.7297 88.3581L9.53972 47.541C8.57497 46.9644 7.47176 46.6555 6.34542 46.6464C5.21908 46.6374 4.11098 46.9286 3.13693 47.4895C2.16289 48.0505 1.35867 48.8607 0.808361 49.8353C0.258047 50.81 -0.0181594 51.9134 0.00861455 53.0301V136.015C-0.0524743 137.173 0.212266 138.325 0.773279 139.343C1.33429 140.361 2.1695 141.204 3.18565 141.778L16.1927 149.189C16.827 149.522 17.5372 149.688 18.2549 149.67C18.9726 149.653 19.6737 149.453 20.2908 149.089C20.9079 148.725 21.4202 148.21 21.7784 147.593C22.1367 146.976 22.3288 146.278 22.3364 145.566Z"></path>
+          </g>
         </g>
       </svg>
     </main>
+    <script>
+      (() => {
+        "use strict";
+
+        const SVG_NS = "http://www.w3.org/2000/svg";
+        const CX = 82;
+        const CY = 93;
+        const CFG = {
+          heart: { appearT0: 0.5, appearDur: 0.7, burst: 1.35 },
+          flight: { dur: 0.6, stagger: 0.05, swing: 2.4 },
+          draw: { firstT0: 2.2, stagger: 0.35, finalAt: 5.15, chaseLag: 0.07 },
+          ignite: { t0: 5.35, dur: 0.9, sigma: 0.55 },
+          cam: { from: 1.13, t0: 0.8, dur: 1.9 },
+          fillOpacity: 0.045,
+          embers: { life: 0.45 },
+        };
+        const T_LOCK = CFG.ignite.t0 + CFG.ignite.dur;
+
+        const clamp01 = (value) => (value < 0 ? 0 : value > 1 ? 1 : value);
+        const lerp = (a, b, amount) => a + (b - a) * amount;
+        const smooth = (value) => {
+          const t = clamp01(value);
+          return t * t * (3 - 2 * t);
+        };
+        const gauss = (value, sigma) => Math.exp(-(value * value) / (2 * sigma * sigma));
+        const h1 = (value) => {
+          const noise = Math.sin(value * 127.1) * 43758.5453;
+          return noise - Math.floor(noise);
+        };
+        const outCubic = (value) => 1 - (1 - value) ** 3;
+        const inOutQuad = (value) =>
+          value < 0.5 ? 2 * value * value : -1 + (4 - 2 * value) * value;
+
+        function cubicBezier(x1, y1, x2, y2) {
+          const cx = 3 * x1;
+          const bx = 3 * (x2 - x1) - cx;
+          const ax = 1 - cx - bx;
+          const cy = 3 * y1;
+          const by = 3 * (y2 - y1) - cy;
+          const ay = 1 - cy - by;
+          const sampleX = (t) => ((ax * t + bx) * t + cx) * t;
+          const sampleY = (t) => ((ay * t + by) * t + cy) * t;
+          const sampleDX = (t) => (3 * ax * t + 2 * bx) * t + cx;
+          function solveT(x) {
+            let t = x;
+            for (let i = 0; i < 8; i += 1) {
+              const derivative = sampleDX(t);
+              if (Math.abs(derivative) < 1e-6) break;
+              t -= (sampleX(t) - x) / derivative;
+            }
+            if (t >= 0 && t <= 1 && Math.abs(sampleX(t) - x) < 1e-4) return t;
+            let low = 0;
+            let high = 1;
+            t = x;
+            for (let i = 0; i < 22; i += 1) {
+              const current = sampleX(t);
+              if (Math.abs(current - x) < 1e-4) return t;
+              if (x > current) low = t;
+              else high = t;
+              t = (low + high) / 2;
+            }
+            return t;
+          }
+          return (x) => {
+            if (x <= 0) return 0;
+            if (x >= 1) return 1;
+            return sampleY(solveT(x));
+          };
+        }
+
+        const drawEase = cubicBezier(0.7, 0.02, 0.16, 1);
+        const sweepEase = cubicBezier(0.6, 0.05, 0.25, 1);
+        const settleEase = cubicBezier(0.23, 1, 0.32, 1);
+
+        function make(tag, attrs, parent) {
+          const element = document.createElementNS(SVG_NS, tag);
+          for (const [name, value] of Object.entries(attrs)) {
+            element.setAttribute(name, String(value));
+          }
+          if (parent) parent.appendChild(element);
+          return element;
+        }
+
+        function phaseAt(time) {
+          if (time < CFG.heart.appearT0) return "void";
+          if (time < CFG.heart.burst) return "heart";
+          if (time < CFG.draw.firstT0) return "flight";
+          if (time < CFG.ignite.t0) return "draw";
+          if (time < T_LOCK) return "ignite";
+          return "rest";
+        }
+
+        function cameraScaleAt(time) {
+          if (time < CFG.cam.t0) return CFG.cam.from;
+          return lerp(
+            CFG.cam.from,
+            1,
+            settleEase(clamp01((time - CFG.cam.t0) / CFG.cam.dur)),
+          );
+        }
+
+        function twoEndedDash(contour, progress) {
+          const half = (contour.length * progress) / 2;
+          return `${half} ${Math.max(0, contour.length - 2 * half)} ${half} ${contour.length * 4}`;
+        }
+
+        const stage = document.getElementById("stage");
+        const rig = document.getElementById("rig");
+        const source = document.getElementById("source");
+        const fillGroup = document.getElementById("fill-body");
+        let lastState = null;
+
+        try {
+          const SOURCE_D = Array.from(source.querySelectorAll("[data-source-path]"), (path) =>
+            path.getAttribute("d"),
+          );
+          if (SOURCE_D.length !== 2 || SOURCE_D.some((path) => !path)) {
+            throw new Error("canonical source paths are unavailable");
+          }
+
+          const groups = {};
+          groups.ghost = make("g", { "data-layer": "ghost" }, rig);
+          groups.chase = make("g", { "data-layer": "chase" }, rig);
+          const bloom = make("g", { "data-bloom": "", filter: "url(#bloom)" }, rig);
+          groups.glow = make("g", { "data-layer": "glow" }, bloom);
+          groups.flash = make("g", { "data-layer": "flash" }, bloom);
+          groups.main = make("g", { "data-layer": "main" }, rig);
+          groups.tips = make("g", { "data-layer": "tips" }, rig);
+
+          const fillPaths = SOURCE_D.map((d) => make("path", { d }, fillGroup));
+          const cast = SOURCE_D.map((d, index) => {
+            const ghost = make("path", { d }, groups.ghost);
+            const length = ghost.getTotalLength();
+            if (!Number.isFinite(length) || length <= 0) {
+              throw new Error(`invalid contour ${index}`);
+            }
+            const chase = make("path", { d }, groups.chase);
+            const glow = make("path", { d }, groups.glow);
+            const flash = make("path", { d }, groups.flash);
+            const main = make("path", { d }, groups.main);
+            ghost.style.strokeWidth = "0.28";
+            chase.style.strokeWidth = "1.86";
+            glow.style.strokeWidth = "1.86";
+            flash.style.strokeWidth = "2.2";
+            main.style.strokeWidth = "0.62";
+            [ghost, chase, glow, flash, main].forEach((path) => {
+              path.style.opacity = "0";
+            });
+
+            const seed = main.getPointAtLength(0);
+            const seedAngle = Math.atan2(seed.y - CY, seed.x - CX);
+            const seedRadius = Math.hypot(seed.x - CX, seed.y - CY);
+            const spiralPoints = [];
+            const spiralLengths = [0];
+            for (let step = 0; step <= 64; step += 1) {
+              const u = step / 64;
+              const eased = outCubic(u);
+              const radius = seedRadius * (0.03 + 0.97 * eased);
+              const angle = seedAngle - (1 - eased) * CFG.flight.swing;
+              const point = [CX + Math.cos(angle) * radius, CY + Math.sin(angle) * radius];
+              spiralPoints.push(point);
+              if (step > 0) {
+                const previous = spiralPoints[step - 1];
+                spiralLengths.push(
+                  spiralLengths[step - 1] +
+                    Math.hypot(point[0] - previous[0], point[1] - previous[1]),
+                );
+              }
+            }
+            const spiralD = `M${spiralPoints
+              .map((point) => `${point[0].toFixed(3)} ${point[1].toFixed(3)}`)
+              .join("L")}`;
+            const emissaryTrails = [
+              { width: 0.72, fraction: 0.1, opacity: 0.5 },
+              { width: 0.54, fraction: 0.19, opacity: 0.28 },
+              { width: 0.36, fraction: 0.3, opacity: 0.14 },
+            ].map((config) => {
+              const element = make(
+                "path",
+                { d: spiralD, "data-emissary-trail": "" },
+                groups.tips,
+              );
+              element.style.strokeWidth = String(config.width);
+              element.style.opacity = "0";
+              return { ...config, element };
+            });
+            const emissaryHalo = make(
+              "circle",
+              { r: 2.05, "data-emissary-halo": "" },
+              bloom,
+            );
+            const emissaryCore = make(
+              "circle",
+              { r: 0.78, "data-emissary": "" },
+              groups.tips,
+            );
+            emissaryHalo.style.opacity = "0";
+            emissaryCore.style.opacity = "0";
+
+            const tips = [0, 1].map(() => {
+              const halo = make("circle", { r: 2.3, "data-tip-halo": "" }, bloom);
+              const core = make("circle", { r: 0.88, "data-pen-tip": "" }, groups.tips);
+              const trail = Array.from({ length: 5 }, (_, trailIndex) =>
+                make(
+                  "circle",
+                  { r: 0.7 * (1 - (trailIndex + 1) / 7), "data-trail-dot": "" },
+                  groups.tips,
+                ),
+              );
+              const embers = Array.from({ length: 3 }, () =>
+                make("circle", { r: 0.24, "data-ember": "" }, groups.tips),
+              );
+              [halo, core, ...trail, ...embers].forEach((element) => {
+                element.style.opacity = "0";
+              });
+              return { halo, core, trail, embers };
+            });
+
+            const angularSamples = Array.from({ length: 128 }, (_, sampleIndex) => {
+              const point = main.getPointAtLength((length * sampleIndex) / 128);
+              return {
+                angle: Math.atan2(point.y - CY, point.x - CX),
+                at: (length * sampleIndex) / 128,
+              };
+            });
+            const t0 = CFG.draw.firstT0 + index * CFG.draw.stagger;
+            return {
+              index,
+              length,
+              t0,
+              duration: CFG.draw.finalAt - t0,
+              ghost,
+              chase,
+              glow,
+              flash,
+              main,
+              seed,
+              seedAngle,
+              seedRadius,
+              spiralLengths,
+              spiralTotal: spiralLengths[spiralLengths.length - 1],
+              emissaryTrails,
+              emissaryHalo,
+              emissaryCore,
+              tips,
+              angularSamples,
+            };
+          });
+
+          const heartHalo = make("circle", { cx: CX, cy: CY, r: 3.6, "data-heart": "halo" }, bloom);
+          const heartCore = make(
+            "circle",
+            { cx: CX, cy: CY, r: 1.8, "data-heart": "core" },
+            groups.tips,
+          );
+          heartCore.style.opacity = "0";
+          heartHalo.style.opacity = "0";
+          fillGroup.style.opacity = "0";
+          source.style.opacity = "0";
+
+          function progressAt(contour, time) {
+            return drawEase(clamp01((time - contour.t0) / contour.duration));
+          }
+
+          function hideTip(tip) {
+            tip.core.style.opacity = "0";
+            tip.halo.style.opacity = "0";
+            tip.trail.forEach((dot) => {
+              dot.style.opacity = "0";
+            });
+            tip.embers.forEach((ember) => {
+              ember.style.opacity = "0";
+            });
+          }
+
+          function setCircle(circle, x, y, opacity) {
+            circle.setAttribute("cx", String(x));
+            circle.setAttribute("cy", String(y));
+            circle.style.opacity = String(opacity);
+          }
+
+          function angleDifference(a, b) {
+            let difference = (a - b) % (Math.PI * 2);
+            if (difference > Math.PI) difference -= Math.PI * 2;
+            if (difference < -Math.PI) difference += Math.PI * 2;
+            return difference;
+          }
+
+          function setFlashWindow(contour, center, opacity) {
+            const width = contour.length * 0.13;
+            contour.flash.style.strokeDasharray = `${width} ${contour.length - width}`;
+            contour.flash.style.strokeDashoffset = String(width / 2 - center);
+            contour.flash.style.opacity = String(opacity);
+          }
+
+          function render(time) {
+            const scale = cameraScaleAt(time);
+            stage.style.transform = `scale(${scale})`;
+            rig.style.opacity = String(clamp01(time / 0.35));
+            document.documentElement.dataset.phase = phaseAt(time);
+
+            let heartOpacity = 0;
+            if (time < CFG.draw.firstT0 + 0.4) {
+              const appear = outCubic(
+                clamp01((time - CFG.heart.appearT0) / CFG.heart.appearDur),
+              );
+              const squeeze = 1 - 0.18 * smooth((time - (CFG.heart.burst - 0.22)) / 0.22);
+              const spend = 1 - smooth((time - CFG.heart.burst) / 0.3);
+              const radius = 1.8 * appear * squeeze * spend;
+              heartOpacity = Math.min(1, 0.95 * appear * spend);
+              heartCore.setAttribute("r", String(radius));
+              heartHalo.setAttribute("r", String(radius * 3));
+              heartCore.style.opacity = String(heartOpacity);
+              heartHalo.style.opacity = String(Math.min(0.6, 0.5 * appear * spend));
+            } else {
+              heartCore.style.opacity = "0";
+              heartHalo.style.opacity = "0";
+            }
+
+            const sweepU = (time - CFG.ignite.t0) / CFG.ignite.dur;
+            const sweepActive = sweepU > 0 && sweepU < 1;
+            const theta = -Math.PI / 2 + Math.PI * 2 * sweepEase(clamp01(sweepU));
+            const sweepEnvelope = Math.sin(Math.PI * clamp01(sweepU)) ** 0.7;
+            const lockPulse = gauss(time - (T_LOCK + 0.05), 0.22);
+            const contourStates = [];
+
+            cast.forEach((contour) => {
+              const progress = progressAt(contour, time);
+              const rawProgress = clamp01((time - contour.t0) / contour.duration);
+              const done = progress >= 0.999;
+              const arrivalStart = CFG.heart.burst + contour.index * CFG.flight.stagger;
+              const arrivalTime = arrivalStart + CFG.flight.dur;
+              const ghostIn = outCubic(clamp01((time - arrivalTime) / 0.55));
+              let ghostOpacity = 0.075 * ghostIn;
+              if (time > CFG.ignite.t0) {
+                ghostOpacity = lerp(0.075, 0.032, smooth((time - CFG.ignite.t0) / 0.8));
+              }
+              contour.ghost.style.opacity = String(ghostOpacity);
+
+              let mainOpacity = 0;
+              if (progress <= 0.001) {
+                contour.main.style.opacity = "0";
+                contour.chase.style.opacity = "0";
+                contour.glow.style.opacity = "0";
+              } else if (!done) {
+                const dash = twoEndedDash(contour, progress);
+                const chaseProgress = drawEase(
+                  clamp01((time - contour.t0 - CFG.draw.chaseLag) / contour.duration),
+                );
+                contour.main.style.strokeDasharray = dash;
+                contour.glow.style.strokeDasharray = dash;
+                contour.chase.style.strokeDasharray = twoEndedDash(contour, chaseProgress);
+                contour.main.style.opacity = "0.9";
+                contour.chase.style.opacity = chaseProgress > 0.001 ? "0.14" : "0";
+                contour.glow.style.opacity = "0.06";
+                mainOpacity = 0.9;
+              } else {
+                [contour.main, contour.chase, contour.glow].forEach((path) => {
+                  path.style.strokeDasharray = "";
+                });
+                contour.main.style.opacity = "0.9";
+                contour.chase.style.opacity = "0.1";
+                contour.glow.style.opacity = String(
+                  Math.min(0.8, 0.1 + 0.52 * sweepEnvelope + 0.5 * lockPulse),
+                );
+                mainOpacity = 0.9;
+              }
+
+              let tipOpacity = 0;
+              const drawing = progress > 0.001 && rawProgress < 1;
+              if (drawing) {
+                const fadeIn = smooth(rawProgress * 9);
+                const fadeOut = 1 - smooth((rawProgress - 0.94) / 0.06);
+                tipOpacity = 0.95 * fadeIn * fadeOut;
+                const half = (contour.length * progress) / 2;
+                const positions = [half, contour.length - half];
+                const delta = Math.min(0.02 * contour.length, 1.9);
+                contour.tips.forEach((tip, side) => {
+                  const point = contour.main.getPointAtLength(positions[side]);
+                  setCircle(tip.core, point.x, point.y, tipOpacity);
+                  setCircle(tip.halo, point.x, point.y, tipOpacity * 0.55);
+                  tip.trail.forEach((dot, trailIndex) => {
+                    const offset = (trailIndex + 1) * delta;
+                    const at =
+                      side === 0
+                        ? Math.max(0, positions[side] - offset)
+                        : Math.min(contour.length, positions[side] + offset);
+                    const trailPoint = contour.main.getPointAtLength(at);
+                    setCircle(
+                      dot,
+                      trailPoint.x,
+                      trailPoint.y,
+                      tipOpacity * 0.4 * (1 - (trailIndex + 1) / 6),
+                    );
+                  });
+                  tip.embers.forEach((ember, emberIndex) => {
+                    const hash = contour.index * 29 + side * 11 + emberIndex * 7;
+                    const period = 0.34 + 0.3 * h1(hash);
+                    const cycle = Math.floor((time - contour.t0) / period);
+                    const birth = contour.t0 + cycle * period;
+                    const age = time - birth;
+                    const life = age / CFG.embers.life;
+                    const birthProgress = drawEase(
+                      clamp01((birth - contour.t0) / contour.duration),
+                    );
+                    if (cycle >= 0 && life < 1 && birthProgress > 0.03 && birthProgress < 0.985) {
+                      const emberAt =
+                        side === 0
+                          ? (contour.length * birthProgress) / 2
+                          : contour.length - (contour.length * birthProgress) / 2;
+                      const p0 = contour.main.getPointAtLength(emberAt);
+                      const p1 = contour.main.getPointAtLength(
+                        Math.min(contour.length, emberAt + 0.9),
+                      );
+                      const tangentLength = Math.hypot(p1.x - p0.x, p1.y - p0.y) || 1;
+                      const tx = (p1.x - p0.x) / tangentLength;
+                      const ty = (p1.y - p0.y) / tangentLength;
+                      const sign = h1(hash + cycle * 13) > 0.5 ? 1 : -1;
+                      const speed = 4.2 + 5.4 * h1(hash + cycle * 31);
+                      setCircle(
+                        ember,
+                        p0.x - ty * sign * age * speed + tx * age * 2.1,
+                        p0.y + tx * sign * age * speed + ty * age * 2.1,
+                        0.7 * (1 - life) ** 1.6,
+                      );
+                      ember.setAttribute("r", String(Math.max(0.07, 0.33 * (1 - life * 0.8))));
+                    } else {
+                      ember.style.opacity = "0";
+                    }
+                  });
+                });
+              } else {
+                contour.tips.forEach(hideTip);
+              }
+
+              const flightProgress = clamp01((time - arrivalStart) / CFG.flight.dur);
+              let emissaryOpacity = 0;
+              if (time >= CFG.heart.burst && time < contour.t0 + 0.2) {
+                const eased = outCubic(flightProgress);
+                const radius = contour.seedRadius * (0.03 + 0.97 * eased);
+                const angle = contour.seedAngle - (1 - eased) * CFG.flight.swing;
+                const x = CX + Math.cos(angle) * radius;
+                const y = CY + Math.sin(angle) * radius;
+                const pulse = flightProgress >= 1 ? 0.74 + 0.26 * Math.sin(time * 7 + contour.index * 1.3) : 1;
+                emissaryOpacity =
+                  0.92 * smooth(flightProgress * 6) * clamp01(1 - (time - contour.t0) / 0.15) * pulse;
+                setCircle(contour.emissaryCore, x, y, emissaryOpacity);
+                setCircle(contour.emissaryHalo, x, y, emissaryOpacity * 0.55);
+                const headLength = contour.spiralTotal * eased;
+                const tailEnvelope =
+                  smooth(flightProgress * 6) * (1 - smooth((time - arrivalTime) / 0.35));
+                contour.emissaryTrails.forEach((trail) => {
+                  const segment = Math.min(headLength, contour.spiralTotal * trail.fraction);
+                  trail.element.style.strokeDasharray = `${segment} ${contour.spiralTotal * 4}`;
+                  trail.element.style.strokeDashoffset = String(segment - headLength);
+                  trail.element.style.opacity = String(trail.opacity * tailEnvelope);
+                });
+              } else {
+                contour.emissaryCore.style.opacity = "0";
+                contour.emissaryHalo.style.opacity = "0";
+                contour.emissaryTrails.forEach((trail) => {
+                  trail.element.style.opacity = "0";
+                });
+              }
+
+              if (sweepActive) {
+                let closest = contour.angularSamples[0];
+                let closestDistance = Number.POSITIVE_INFINITY;
+                contour.angularSamples.forEach((sample) => {
+                  const distance = Math.abs(angleDifference(sample.angle, theta));
+                  if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closest = sample;
+                  }
+                });
+                const intensity = gauss(closestDistance, CFG.ignite.sigma) * sweepEnvelope;
+                setFlashWindow(contour, closest.at, 0.82 * intensity);
+              } else if (lockPulse > 0.01) {
+                contour.flash.style.strokeDasharray = "";
+                contour.flash.style.opacity = String(0.55 * lockPulse);
+              } else {
+                contour.flash.style.opacity = "0";
+              }
+
+              contourStates.push({ progress, mainOpacity, tipOpacity });
+            });
+
+            const fillOpacity = CFG.fillOpacity * smooth((time - T_LOCK) / 0.9);
+            fillGroup.style.opacity = String(fillOpacity);
+            fillPaths.forEach((path) => {
+              path.style.opacity = "1";
+            });
+            lastState = {
+              phase: phaseAt(time),
+              time,
+              contours: contourStates,
+              heartOpacity,
+              fillOpacity,
+              scale,
+            };
+            return lastState;
+          }
+
+          const probeHold = location.search.includes("probe");
+          if (probeHold) {
+            render(0);
+            window.__probe = {
+              at(time) {
+                return structuredClone(render(time));
+              },
+              state() {
+                return structuredClone(lastState || render(0));
+              },
+            };
+          } else {
+            let start = performance.now();
+            function frame(now) {
+              render((now - start) / 1000);
+              requestAnimationFrame(frame);
+            }
+            requestAnimationFrame((now) => {
+              start = now;
+              requestAnimationFrame(frame);
+            });
+          }
+        } catch (error) {
+          source.style.opacity = "1";
+          document.documentElement.dataset.fallback = "true";
+          console.error(
+            `NOIR stroke study fallback: ${error instanceof Error ? error.message : String(error)}`,
+          );
+        }
+      })();
+    </script>
   </body>
 </html>
