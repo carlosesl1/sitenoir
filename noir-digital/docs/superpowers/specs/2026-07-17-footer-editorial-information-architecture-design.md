@@ -14,7 +14,6 @@ Uma grade horizontal, delimitada por linhas finas, contendo:
 - **Contato:** o e-mail já existente no projeto.
 - **Social:** os nomes de redes já cadastrados, sem inventar URLs ausentes.
 - **Links:** Work e Services, apontando para os destinos internos existentes.
-- **Legal:** Privacidade e Termos, com links provisórios para `/privacidade` e `/termos`.
 
 As colunas usarão divisórias verticais no desktop. A informação será tipográfica e compacta, seguindo a linguagem técnica já usada pelo site.
 
@@ -26,7 +25,7 @@ Uma segunda faixa, mais baixa, contendo:
 - Ao centro: `DO ESCURO, HÁ IDEIAS QUE MARCAM.`
 - À direita: os links Privacidade e Termos, seguidos pela marca circular já existente.
 
-Os links legais aparecem também nesta barra porque ela funciona como fechamento utilitário independente da faixa institucional acima.
+Os links legais aparecem somente nesta barra, evitando duplicação com a faixa institucional.
 
 ## Integração com o footer atual
 
@@ -34,15 +33,16 @@ Os links legais aparecem também nesta barra porque ela funciona como fechamento
 - O anchor da cena 3D, materiais, flare, controles de mouse e camadas de fundo não serão alterados.
 - O palco principal ganha um contêiner próprio com altura preservada.
 - As duas novas faixas entram no fluxo normal logo após esse contêiner, evitando sobreposição com o 3D e o texto grande.
+- As faixas permanecem transparentes para deixar visível o fundo geral da página.
 - O e-mail e as redes que hoje ficam posicionados sobre o palco passam para a faixa informativa, eliminando duplicação visual.
 
 ## Responsividade
 
 ### Desktop
 
-- Faixa superior em cinco colunas.
+- Faixa superior distribuída dentro dos três módulos do grid persistente do site, sem criar novos eixos verticais.
 - Barra inferior distribuída em três zonas: copyright, manifesto e legal/marca.
-- Divisórias verticais e horizontais preservam a leitura de grade das referências.
+- As divisórias verticais reutilizam exatamente o inset e os terços da malha global; somente as linhas horizontais próprias das duas faixas são adicionadas.
 
 ### Tablet
 
@@ -53,7 +53,7 @@ Os links legais aparecem também nesta barra porque ela funciona como fechamento
 ### Mobile
 
 - Marca ocupa a largura completa.
-- Contato, Social, Links e Legal formam uma grade de duas colunas.
+- Contato e Social formam uma grade de duas colunas; Links ocupa a largura completa abaixo.
 - O manifesto ocupa uma linha própria.
 - Copyright fica separado dos links legais e da marca circular, sem texto fora da tela.
 - Todos os elementos mantêm áreas de toque adequadas e nenhuma informação depende de hover.
@@ -80,4 +80,3 @@ Os links legais aparecem também nesta barra porque ela funciona como fechamento
 - Atualizar o teste do componente para cobrir o manifesto, copyright e os destinos internos/legais.
 - Executar o teste direcionado do footer e a checagem de tipos.
 - Verificar visualmente a home em um viewport desktop e um mobile, confirmando que o palco 3D não mudou e que as duas faixas não causam overflow horizontal.
-
