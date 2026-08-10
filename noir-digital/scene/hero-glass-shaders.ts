@@ -32,7 +32,13 @@ uniform float uContrast;
 uniform float uGamma;
 uniform float uSpecularStrength;
 uniform float uFresnelStrength;
+uniform float uFaceTransmission;
 uniform vec3 uFresnelSideDir;
+uniform float uNeutralRimPower;
+uniform float uNeutralRimStrength;
+uniform float uSpectralRimPower;
+uniform float uSpectralRimStrength;
+uniform float uSpectralSaturation;
 uniform vec4 uTintColorA;
 uniform vec4 uTintColorB;
 uniform vec2 uTintLocalYRange;
@@ -137,20 +143,24 @@ void main() {
     color = texture2D(uTexture, uv).rgb;
   }
 
+  vec3 refractedSpectrum = max(color, vec3(0.0));
   color = saturation(color, uSaturation);
   color *= uBrightness;
   color = (color - 0.5) * uContrast + 0.5;
   color = pow(max(color, 0.0), vec3(1.0 / max(uGamma, 0.0001)));
 
+  float viewAlignment = abs(dot(normal, eyeDirection));
+  float grazing = clamp(1.0 - viewAlignment, 0.0, 1.0);
+  float frontFacing = smoothstep(0.08, 0.9, viewAlignment);
+
   float gradientRange = max(uTintLocalYRange.y - uTintLocalYRange.x, 0.00001);
   float gradientFactor = clamp((modelLocalY - uTintLocalYRange.x) / gradientRange, 0.0, 1.0);
   vec4 tint = mix(uTintColorB, uTintColorA, gradientFactor);
-  float thicknessMask = clamp(1.0 - abs(dot(normal, eyeDirection)), 0.0, 1.0);
   float tintAlpha = clamp(tint.a, 0.0, 1.0);
   tintAlpha *= mix(
     clamp(uTintThicknessMaxAlpha, 0.0, 1.0),
     clamp(uTintThicknessMinAlpha, 0.0, 1.0),
-    thicknessMask
+    grazing
   );
 
   float beerMix = clamp(uTintEnabled, 0.0, 1.0) * tintAlpha;
@@ -165,7 +175,24 @@ void main() {
     step(vec3(0.5), blend)
   );
   color = mix(beerColor, mix(color, hard, hardMix), clamp(uDark, 0.0, 1.0));
-  float frontFacing = smoothstep(0.08, 0.9, abs(dot(normal, eyeDirection)));
+
+  float faceAttenuation = mix(
+    1.0,
+    clamp(uFaceTransmission, 0.0, 1.0),
+    frontFacing
+  );
+  float spectralRim = pow(grazing, max(uSpectralRimPower, 0.0001))
+    * max(uSpectralRimStrength, 0.0);
+  float neutralRim = pow(grazing, max(uNeutralRimPower, 0.0001))
+    * max(uNeutralRimStrength, 0.0);
+  vec3 spectralSource = saturation(
+    refractedSpectrum,
+    max(uSpectralSaturation, 1.0)
+  );
+
+  color *= faceAttenuation;
+  color += spectralSource * spectralRim;
+  color += vec3(neutralRim);
   color = mix(
     color,
     uGlassBaseColor,
