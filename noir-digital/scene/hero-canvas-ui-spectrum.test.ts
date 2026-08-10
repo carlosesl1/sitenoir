@@ -1,7 +1,8 @@
-import { AdditiveBlending, DoubleSide } from "three";
+import { AdditiveBlending, BufferGeometry, DoubleSide, MeshBasicMaterial } from "three";
 import { describe, expect, it } from "vitest";
 
 import { HERO_CANVAS_UI_SPECTRUM_CONFIG } from "@/scene/hero-canvas-ui-spectrum-config";
+import { createHeroCanvasUiSpectrumLayers } from "@/scene/hero-canvas-ui-spectrum-layers";
 import { createHeroCanvasUiSpectrumMaterial } from "@/scene/hero-canvas-ui-spectrum-material";
 import { HERO_CANVAS_UI_SPECTRUM_FRAGMENT_SHADER } from "@/scene/hero-canvas-ui-spectrum-shaders";
 
@@ -49,5 +50,27 @@ describe("Canvas UI hero spectrum", () => {
     );
 
     material.dispose();
+  });
+
+  it("renders physical glass and spectrum over the exact same geometry", () => {
+    const geometry = new BufferGeometry();
+    const physicalMaterial = new MeshBasicMaterial();
+    const spectrumMaterial = createHeroCanvasUiSpectrumMaterial();
+    const layers = createHeroCanvasUiSpectrumLayers({
+      geometry,
+      physicalMaterial,
+      spectrumMaterial,
+    });
+
+    expect(layers.map((layer) => layer.id)).toEqual(["physical", "spectrum"]);
+    expect(layers[0].geometry).toBe(geometry);
+    expect(layers[1].geometry).toBe(geometry);
+    expect(layers[0].material).toBe(physicalMaterial);
+    expect(layers[1].material).toBe(spectrumMaterial);
+    expect(layers[1].renderOrder).toBeGreaterThan(layers[0].renderOrder);
+
+    geometry.dispose();
+    physicalMaterial.dispose();
+    spectrumMaterial.dispose();
   });
 });
