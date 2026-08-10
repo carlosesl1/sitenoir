@@ -9,10 +9,14 @@ export const HERO_CANVAS_UI_SPECTRAL_VERTEX_SHADER = /* glsl */ `
   }
 `;
 
+function toGlslFloat(value: number): string {
+  return Number.isInteger(value) ? value.toFixed(1) : String(value);
+}
+
 const beamCalls = HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.beams
   .map(
     ({ angle, center, length, phase, strength, width }) =>
-      `beam += spectralBeam(vUv, vec2(${center[0]}, ${center[1]}), ${angle}, ${width}, ${length}, ${strength}, ${phase});`,
+      `beam += spectralBeam(vUv, vec2(${toGlslFloat(center[0])}, ${toGlslFloat(center[1])}), ${toGlslFloat(angle)}, ${toGlslFloat(width)}, ${toGlslFloat(length)}, ${toGlslFloat(strength)}, ${toGlslFloat(phase)});`,
   )
   .join("\n");
 
