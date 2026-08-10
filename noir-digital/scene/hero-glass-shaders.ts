@@ -38,6 +38,7 @@ uniform float uNeutralRimPower;
 uniform float uNeutralRimStrength;
 uniform float uSpectralRimPower;
 uniform float uSpectralRimStrength;
+uniform float uSpectralEdgeFloor;
 uniform float uSpectralSaturation;
 uniform vec4 uTintColorA;
 uniform vec4 uTintColorB;
@@ -185,9 +186,18 @@ void main() {
     * max(uSpectralRimStrength, 0.0);
   float neutralRim = pow(grazing, max(uNeutralRimPower, 0.0001))
     * max(uNeutralRimStrength, 0.0);
-  vec3 spectralSource = saturation(
-    refractedSpectrum,
-    max(uSpectralSaturation, 1.0)
+  float spectralPhase = uv.x * 1.8
+    + uv.y * 1.15
+    + dot(normal, vec3(0.23, 0.37, 0.17));
+  vec3 spectralPalette = 0.5 + 0.5 * cos(
+    6.2831853 * (spectralPhase + vec3(0.0, 0.3333, 0.6667))
+  );
+  vec3 spectralSource = max(
+    saturation(
+      mix(refractedSpectrum, spectralPalette, clamp(uSpectralEdgeFloor, 0.0, 1.0)),
+      max(uSpectralSaturation, 1.0)
+    ),
+    vec3(0.0)
   );
 
   color *= faceAttenuation;

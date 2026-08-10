@@ -109,6 +109,7 @@ export function HeroGlassAsset({ reducedMotion }: { readonly reducedMotion: bool
         uSpecularStrength: { value: HERO_GLASS_CONFIG.specularStrength },
         uSpectralRimPower: { value: theme.spectralRimPower },
         uSpectralRimStrength: { value: theme.spectralRimStrength },
+        uSpectralEdgeFloor: { value: theme.spectralEdgeFloor },
         uSpectralSaturation: { value: HERO_GLASS_CONFIG.spectralSaturation },
         uTexture: { value: texture },
         uTintColorA: { value: colorVector(theme.tintColorA) },

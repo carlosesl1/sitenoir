@@ -20,6 +20,16 @@ describe("hero prismatic glass material", () => {
     );
   });
 
+  it("keeps a continuous white and spectral edge over dark pixels", () => {
+    expect(HERO_GLASS_CONFIG.dark.neutralRimPower).toBeLessThanOrEqual(4.2);
+    expect(HERO_GLASS_CONFIG.dark.neutralRimStrength).toBeGreaterThanOrEqual(1);
+    expect(HERO_GLASS_CONFIG.dark.spectralRimPower).toBeLessThanOrEqual(1.8);
+    expect(HERO_GLASS_CONFIG.dark.spectralEdgeFloor).toBeGreaterThanOrEqual(0.2);
+    expect(HERO_GLASS_FRAGMENT_SHADER).toContain("uniform float uSpectralEdgeFloor;");
+    expect(HERO_GLASS_FRAGMENT_SHADER).toContain("vec3 spectralPalette =");
+    expect(HERO_GLASS_FRAGMENT_SHADER).toContain("mix(refractedSpectrum, spectralPalette,");
+  });
+
   it("defines explicit face, neutral-rim, and spectral-rim shader controls", () => {
     for (const uniform of [
       "uFaceTransmission",
