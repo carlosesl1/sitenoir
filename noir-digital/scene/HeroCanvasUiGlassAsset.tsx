@@ -3,20 +3,12 @@
 import { MeshTransmissionMaterial } from "@react-three/drei/core/MeshTransmissionMaterial";
 import { useLoader, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useMemo } from "react";
-import {
-  Color,
-  DoubleSide,
-  Mesh,
-  MeshBasicMaterial,
-  PMREMGenerator,
-  RingGeometry,
-  type WebGLRenderTarget,
-} from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import type { WebGLRenderTarget } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
+import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";
 import {
   HERO_CANVAS_UI_GLASS_CONFIG as config,
   resolveHeroCanvasUiThickness,
@@ -34,24 +26,7 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
   const gl = useThree((state) => state.gl);
   const { texture } = useHeroRefraction();
   const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
-  const environment = useMemo<WebGLRenderTarget>(() => {
-    const room = new RoomEnvironment();
-    const ringMaterial = new MeshBasicMaterial({
-      color: new Color(config.highlight).multiplyScalar(15),
-      side: DoubleSide,
-      toneMapped: false,
-    });
-    const ring = new Mesh(new RingGeometry(0.5, 1, 64), ringMaterial);
-    ring.position.set(2, 3, -2);
-    ring.scale.setScalar(10);
-    ring.lookAt(0, 0, 0);
-    room.add(ring);
-    const pmrem = new PMREMGenerator(gl);
-    const target = pmrem.fromScene(room, config.environmentBlur, 0.1, 1000);
-    room.dispose();
-    pmrem.dispose();
-    return target;
-  }, [gl]);
+  const environment = useMemo<WebGLRenderTarget>(() => createHeroCanvasUiEnvironment(gl), [gl]);
 
   useLayoutEffect(() => () => geometry.dispose(), [geometry]);
   useLayoutEffect(() => () => environment.dispose(), [environment]);

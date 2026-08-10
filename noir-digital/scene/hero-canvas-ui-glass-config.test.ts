@@ -2,26 +2,33 @@ import { describe, expect, it } from "vitest";
 
 import {
   HERO_CANVAS_UI_GLASS_CONFIG,
+  HERO_CANVAS_UI_REFLECTOR_CONFIG,
+  HERO_CANVAS_UI_RING_CONFIG,
   resolveHeroCanvasUiThickness,
 } from "@/scene/hero-canvas-ui-glass-config";
 
 describe("Canvas UI hero glass configuration", () => {
   it("keeps the glass neutral while bounding chromatic refraction", () => {
     expect(HERO_CANVAS_UI_GLASS_CONFIG).toMatchObject({
-      anisotropicBlur: 0.04,
+      anisotropicBlur: 0.03,
       backside: false,
       chromaticAberration: 0.07,
-      clearcoat: 0.5,
-      clearcoatRoughness: 0.06,
-      environmentBlur: 0.04,
-      environmentIntensity: 1,
-      highlight: "#066aff",
+      clearcoat: 1,
+      clearcoatRoughness: 0.02,
+      environmentBlur: 0.02,
+      environmentIntensity: 1.6,
+      highlight: "#ffffff",
       ior: 1.58,
-      roughness: 0.08,
+      roughness: 0.05,
       samples: 6,
       thickness: 4,
       transmission: 1,
     });
+    expect(HERO_CANVAS_UI_RING_CONFIG.color).toBe("#ffffff");
+    expect(HERO_CANVAS_UI_REFLECTOR_CONFIG).toHaveLength(3);
+    expect(
+      HERO_CANVAS_UI_REFLECTOR_CONFIG.every((reflector) => reflector.color === "#ffffff"),
+    ).toBe(true);
     expect(HERO_CANVAS_UI_GLASS_CONFIG.chromaticAberration).toBeGreaterThanOrEqual(0.04);
     expect(HERO_CANVAS_UI_GLASS_CONFIG.chromaticAberration).toBeLessThanOrEqual(0.07);
     expect(HERO_CANVAS_UI_GLASS_CONFIG.ior).toBeGreaterThanOrEqual(1.5);
