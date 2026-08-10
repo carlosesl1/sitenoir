@@ -149,10 +149,10 @@ describe("Hero", () => {
       /@media \(min-width: 768px\)[\s\S]*\.actionRow::before\s*\{[^}]*grid-column:\s*2[^}]*content:\s*""/,
     );
     expect(css).toMatch(
-      /@media \(min-width: 768px\)[\s\S]*\.actionRow\s*\{[^}]*top:\s*calc\(81\.5svh \+ 24px\)[^}]*right:\s*auto[^}]*left:\s*50%[^}]*max-width:\s*760px[^}]*transform:\s*translateX\(-50%\)/,
+      /@media \(min-width: 768px\)[\s\S]*\.actionRow\s*\{[^}]*top:\s*calc\(81\.5svh \+ 24px\)[^}]*right:\s*auto[^}]*left:\s*50%[^}]*width:\s*min\(calc\(100vw - 64px\), 840px\)[^}]*max-width:\s*840px[^}]*transform:\s*translateX\(-50%\)/,
     );
     expect(css).toMatch(
-      /@media \(min-width: 768px\)[\s\S]*\.description\s*\{[^}]*grid-column:\s*1[^}]*padding-right:\s*0[^}]*white-space:\s*nowrap/,
+      /@media \(min-width: 768px\)[\s\S]*\.description\s*\{[^}]*grid-column:\s*1[^}]*padding-right:\s*0[^}]*font-size:\s*1rem[^}]*letter-spacing:\s*0[^}]*white-space:\s*nowrap/,
     );
     expect(css).toMatch(
       /@media \(min-width: 768px\)[\s\S]*\.heroCtaSlot\s*\{[^}]*grid-column:\s*3[^}]*padding-left:\s*0[^}]*border-left:\s*0/,
@@ -171,7 +171,10 @@ describe("Hero", () => {
     );
     expect(css).toMatch(/font-size:\s*clamp\(2\.75rem, 5\.75vw, 7\.4rem\)/);
     expect(css).toMatch(
-      /@media \(min-width: 768px\) and \(max-height: 720px\)[\s\S]*\.actionRow\s*\{[^}]*top:\s*calc\(66\.8svh \+ 20px\)[^}]*right:\s*auto[^}]*left:\s*50%[^}]*width:\s*calc\(100vw - clamp\(120px, 32\.5vw, 666px\) - clamp\(32px, 14\.5vw, 297px\)\)[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 1px minmax\(220px, 260px\)[^}]*column-gap:\s*clamp\(24px, 3vw, 40px\)/,
+      /@media \(min-width: 768px\) and \(max-height: 720px\)[\s\S]*\.actionRow\s*\{[^}]*top:\s*calc\(66\.8svh \+ 20px\)[^}]*right:\s*auto[^}]*left:\s*50%[^}]*width:\s*min\(calc\(100vw - 64px\), 840px\)[^}]*max-width:\s*840px[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 1px minmax\(220px, 260px\)[^}]*column-gap:\s*clamp\(24px, 3vw, 40px\)/,
+    );
+    expect(css).toMatch(
+      /@media \(min-width: 768px\) and \(max-width: 899px\)[\s\S]*\.actionRow\s*\{[^}]*width:\s*calc\(100vw - 64px\)[^}]*max-width:\s*760px[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 1px minmax\(200px, 220px\)[^}]*column-gap:\s*16px[^}]*\}[\s\S]*\.description\s*\{[^}]*font-size:\s*0\.875rem[^}]*letter-spacing:\s*-0\.02em/,
     );
   });
 });
