@@ -11,7 +11,7 @@ import {
 
 describe("critical hero preloads", () => {
   it("preloads only the two models required by the first hero frame", () => {
-    expect(HERO_MODEL_SOURCE).toMatch(/^\/assets\/v1\/model\/noir-reference-[a-f0-9]{12}\.glb$/);
+    expect(HERO_MODEL_SOURCE).toMatch(/^\/assets\/v1\/model\/noir-adjusted-[a-f0-9]{12}\.glb$/);
     expect(CRITICAL_HERO_MODEL_SOURCES).toEqual([
       HERO_MODEL_SOURCE,
       "/assets/v1/model/cursor-a69d5b3f772e.glb",

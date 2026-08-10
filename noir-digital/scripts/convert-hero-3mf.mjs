@@ -1,5 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { extname, resolve } from "node:path";
 
 import { JSDOM } from "jsdom";
 import { Box3, Group, Mesh, MeshBasicMaterial, Vector3 } from "three";
@@ -11,7 +11,9 @@ import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferG
 const [, , inputArgument, outputArgument, targetArgument] = process.argv;
 
 if (!inputArgument || !outputArgument) {
-  throw new Error("Usage: node scripts/convert-hero-3mf.mjs <input.3mf> <output.glb> [target.glb]");
+  throw new Error(
+    "Usage: node scripts/convert-hero-3mf.mjs <input.3mf|input.glb> <output.glb> [target.glb]",
+  );
 }
 
 const inputPath = resolve(inputArgument);
@@ -76,10 +78,23 @@ async function targetWidthFromGlb(path) {
   return bounds.getSize(new Vector3()).x;
 }
 
-const inputBytes = await readFile(inputPath);
-const source = new ThreeMFLoader().parse(exactArrayBuffer(inputBytes));
+async function loadSource(bytes, path) {
+  if (extname(path).toLowerCase() === ".3mf") {
+    return new ThreeMFLoader().parse(exactArrayBuffer(bytes));
+  }
+  if (extname(path).toLowerCase() === ".glb") {
+    const gltf = await new Promise((onLoad, onError) => {
+      new GLTFLoader().parse(exactArrayBuffer(bytes), "", onLoad, onError);
+    });
+    return gltf.scene;
+  }
+  throw new Error("Only .3mf and .glb hero sources are supported.");
+}
 
-// This source was authored Y-up already; bake its existing object transforms only.
+const inputBytes = await readFile(inputPath);
+const source = await loadSource(inputBytes, inputPath);
+
+// Hero sources are authored Y-up; bake their existing object transforms only.
 source.updateMatrixWorld(true);
 
 const geometries = [];
