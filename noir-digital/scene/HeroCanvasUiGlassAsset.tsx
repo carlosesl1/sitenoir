@@ -5,6 +5,7 @@ import { useLayoutEffect, useMemo } from "react";
 import {
   Color,
   DoubleSide,
+  Mesh,
   MeshBasicMaterial,
   MeshPhysicalMaterial,
   PMREMGenerator,
