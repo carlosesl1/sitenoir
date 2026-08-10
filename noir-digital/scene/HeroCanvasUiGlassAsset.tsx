@@ -42,7 +42,7 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
     ring.lookAt(0, 0, 0);
     room.add(ring);
     const pmrem = new PMREMGenerator(gl);
-    const target = pmrem.fromScene(room, 0.6, 0.1, 1000);
+    const target = pmrem.fromScene(room, config.environmentBlur, 0.1, 1000);
     room.dispose();
     pmrem.dispose();
     return target;
