@@ -13,7 +13,6 @@ describe("Canvas UI hero glass configuration", () => {
       chromaticAberration: 0.055,
       clearcoat: 0.5,
       clearcoatRoughness: 0.06,
-      dispersion: 1.5,
       environmentBlur: 0.04,
       environmentIntensity: 1,
       highlight: "#066aff",
@@ -29,6 +28,7 @@ describe("Canvas UI hero glass configuration", () => {
     expect(HERO_CANVAS_UI_GLASS_CONFIG.ior).toBeLessThanOrEqual(1.65);
     expect(HERO_CANVAS_UI_GLASS_CONFIG.roughness).toBeLessThanOrEqual(0.12);
     expect(HERO_CANVAS_UI_GLASS_CONFIG.samples).toBeLessThanOrEqual(6);
+    expect(HERO_CANVAS_UI_GLASS_CONFIG).not.toHaveProperty("dispersion");
   });
 
   it("keeps optical thickness stable after the parent scene scale", () => {

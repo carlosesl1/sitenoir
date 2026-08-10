@@ -1,5 +1,6 @@
 "use client";
 
+import { MeshTransmissionMaterial } from "@react-three/drei/core/MeshTransmissionMaterial";
 import { useLoader, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useMemo } from "react";
 import {
@@ -7,17 +8,19 @@ import {
   DoubleSide,
   Mesh,
   MeshBasicMaterial,
-  MeshPhysicalMaterial,
   PMREMGenerator,
   RingGeometry,
   type WebGLRenderTarget,
 } from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+
 import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
-import { HERO_CANVAS_UI_GLASS_CONFIG as config } from "@/scene/hero-canvas-ui-glass-config";
-import { createHeroCanvasUiSpectrumLayers } from "@/scene/hero-canvas-ui-spectrum-layers";
-import { createHeroCanvasUiSpectrumMaterial } from "@/scene/hero-canvas-ui-spectrum-material";
+import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
+import {
+  HERO_CANVAS_UI_GLASS_CONFIG as config,
+  resolveHeroCanvasUiThickness,
+} from "@/scene/hero-canvas-ui-glass-config";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
 
@@ -29,6 +32,7 @@ interface HeroCanvasUiGlassAssetProps {
 export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetProps) {
   const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
   const gl = useThree((state) => state.gl);
+  const { texture } = useHeroRefraction();
   const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
   const environment = useMemo<WebGLRenderTarget>(() => {
     const room = new RoomEnvironment();
@@ -48,50 +52,28 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
     pmrem.dispose();
     return target;
   }, [gl]);
-  const material = useMemo(
-    () =>
-      new MeshPhysicalMaterial({
-        clearcoat: config.clearcoat,
-        clearcoatRoughness: config.clearcoatRoughness,
-        color: 0xffffff,
-        dispersion: config.dispersion,
-        envMap: environment.texture,
-        envMapIntensity: config.environmentIntensity,
-        ior: config.ior,
-        metalness: 0,
-        roughness: config.roughness,
-        thickness: config.thickness / Math.max(sceneScale, 0.0001),
-        transmission: config.transmission,
-      }),
-    [environment.texture, sceneScale],
-  );
-  const spectrumMaterial = useMemo(() => createHeroCanvasUiSpectrumMaterial(), []);
-  const layers = useMemo(
-    () =>
-      createHeroCanvasUiSpectrumLayers({
-        geometry,
-        physicalMaterial: material,
-        spectrumMaterial,
-      }),
-    [geometry, material, spectrumMaterial],
-  );
 
   useLayoutEffect(() => () => geometry.dispose(), [geometry]);
-  useLayoutEffect(() => () => material.dispose(), [material]);
-  useLayoutEffect(() => () => spectrumMaterial.dispose(), [spectrumMaterial]);
   useLayoutEffect(() => () => environment.dispose(), [environment]);
 
   return (
-    <>
-      {layers.map((layer) => (
-        <mesh
-          key={layer.id}
-          geometry={layer.geometry}
-          material={layer.material}
-          onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
-          renderOrder={layer.renderOrder}
-        />
-      ))}
-    </>
+    <mesh geometry={geometry} onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}>
+      <MeshTransmissionMaterial
+        anisotropicBlur={config.anisotropicBlur}
+        backside={config.backside}
+        buffer={texture}
+        chromaticAberration={config.chromaticAberration}
+        clearcoat={config.clearcoat}
+        clearcoatRoughness={config.clearcoatRoughness}
+        color="#ffffff"
+        envMap={environment.texture}
+        envMapIntensity={config.environmentIntensity}
+        ior={config.ior}
+        roughness={config.roughness}
+        samples={config.samples}
+        thickness={resolveHeroCanvasUiThickness(sceneScale)}
+        transmission={config.transmission}
+      />
+    </mesh>
   );
 }
