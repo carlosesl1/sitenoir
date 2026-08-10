@@ -2,6 +2,7 @@
 
 import { lazy, Suspense, useEffect, useState } from "react";
 
+import { type HeroGlassVariant, resolveHeroGlassVariant } from "@/scene/hero-glass-variant";
 import { resolveSceneQuality, type SceneQuality } from "@/scene/scene-quality";
 import { resetSceneReadiness, signalSceneSettled } from "@/scene/scene-readiness";
 import { scheduleSiteCanvasBoot } from "@/scene/site-canvas-boot";
@@ -40,6 +41,7 @@ export function LazySiteCanvas({
 }) {
   const [quality, setQuality] = useState<SceneQuality | null>(null);
   const [canvasEnabled, setCanvasEnabled] = useState(false);
+  const [heroGlassVariant, setHeroGlassVariant] = useState<HeroGlassVariant>("current");
 
   if (preloadDuringEntry && typeof window !== "undefined") {
     void preloadSiteCanvasModule();
@@ -47,7 +49,9 @@ export function LazySiteCanvas({
 
   useEffect(() => {
     resetSceneReadiness();
-    const effectsParameter = new URLSearchParams(window.location.search).get("effects");
+    const search = window.location.search;
+    const effectsParameter = new URLSearchParams(search).get("effects");
+    setHeroGlassVariant(resolveHeroGlassVariant(search));
     const connection: unknown = Reflect.get(navigator, "connection");
     const deviceMemory: unknown = Reflect.get(navigator, "deviceMemory");
     const effectiveType: unknown =
@@ -104,7 +108,11 @@ export function LazySiteCanvas({
 
   return quality && canvasEnabled ? (
     <Suspense fallback={null}>
-      <DeferredSiteCanvas ambientOnly={ambientOnly} quality={quality} />
+      <DeferredSiteCanvas
+        ambientOnly={ambientOnly}
+        heroGlassVariant={heroGlassVariant}
+        quality={quality}
+      />
     </Suspense>
   ) : null;
 }

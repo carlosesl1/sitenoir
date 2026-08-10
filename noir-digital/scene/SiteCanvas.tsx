@@ -14,6 +14,7 @@ import { HeroModel } from "@/scene/HeroModel";
 import { HeroOpticalBackground } from "@/scene/HeroOpticalBackground";
 import { HeroPointerLight } from "@/scene/HeroPointerLight";
 import { HeroRefractionBuffer } from "@/scene/HeroRefractionBuffer";
+import type { HeroGlassVariant } from "@/scene/hero-glass-variant";
 import { PersistentSiteGrid } from "@/scene/PersistentSiteGrid";
 import { PointerModel } from "@/scene/PointerModel";
 import { PrinciplePointerModel } from "@/scene/PrinciplePointerModel";
@@ -36,6 +37,7 @@ const ProgressiveSceneContent = lazy(() =>
 );
 
 interface HeroSceneContentProps {
+  readonly heroGlassVariant: HeroGlassVariant;
   readonly onReady: () => void;
   readonly reducedMotion: boolean;
   readonly scrollProgress: ScrollProgressValue;
@@ -46,7 +48,12 @@ interface ScrollProgressValue {
   readonly on: (event: "change", listener: (latest: number) => void) => () => void;
 }
 
-function HeroSceneContent({ onReady, reducedMotion, scrollProgress }: HeroSceneContentProps) {
+function HeroSceneContent({
+  heroGlassVariant,
+  onReady,
+  reducedMotion,
+  scrollProgress,
+}: HeroSceneContentProps) {
   const width = useThree((state) => state.size.width);
   const height = useThree((state) => state.size.height);
   const layout = sceneLayouts[resolveViewportFamily(width)];
@@ -55,6 +62,7 @@ function HeroSceneContent({ onReady, reducedMotion, scrollProgress }: HeroSceneC
   return (
     <>
       <HeroModel
+        heroGlassVariant={heroGlassVariant}
         layout={heroLayout}
         reducedMotion={reducedMotion}
         scrollProgress={scrollProgress}
@@ -152,9 +160,11 @@ function DemandFrameInvalidator({
 
 export function SiteCanvas({
   ambientOnly = false,
+  heroGlassVariant,
   quality,
 }: {
   readonly ambientOnly?: boolean;
+  readonly heroGlassVariant: HeroGlassVariant;
   readonly quality: SceneQuality;
 }) {
   const reducedMotion = useReducedMotion() ?? false;
@@ -233,6 +243,7 @@ export function SiteCanvas({
               >
                 <Suspense fallback={null}>
                   <HeroSceneContent
+                    heroGlassVariant={heroGlassVariant}
                     onReady={markHeroSceneReady}
                     reducedMotion={deterministicMotion}
                     scrollProgress={scrollYProgress}

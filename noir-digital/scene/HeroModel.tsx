@@ -4,7 +4,9 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import { type Group, MathUtils } from "three";
 
+import { HeroCanvasUiGlassAsset } from "@/scene/HeroCanvasUiGlassAsset";
 import { HeroGlassAsset } from "@/scene/HeroGlassAsset";
+import type { HeroGlassVariant } from "@/scene/hero-glass-variant";
 import { resolveHeroExitProgress } from "@/scene/hero-motion";
 import { resolveSceneFrameDelta } from "@/scene/scene-frame";
 import type { ModelTransform } from "@/scene/scene-layout";
@@ -14,6 +16,7 @@ interface ProgressSource {
 }
 
 interface HeroModelProps {
+  readonly heroGlassVariant: HeroGlassVariant;
   readonly layout: ModelTransform;
   readonly reducedMotion: boolean;
   readonly scrollProgress: ProgressSource;
@@ -23,8 +26,14 @@ function degrees(value: number): number {
   return MathUtils.degToRad(value);
 }
 
-export function HeroModel({ layout, reducedMotion, scrollProgress }: HeroModelProps) {
+export function HeroModel({
+  heroGlassVariant,
+  layout,
+  reducedMotion,
+  scrollProgress,
+}: HeroModelProps) {
   const groupRef = useRef<Group>(null);
+  const GlassAsset = heroGlassVariant === "canvas-ui" ? HeroCanvasUiGlassAsset : HeroGlassAsset;
   useFrame((_state, delta) => {
     const frameDelta = resolveSceneFrameDelta(delta);
     const group = groupRef.current;
@@ -65,7 +74,7 @@ export function HeroModel({ layout, reducedMotion, scrollProgress }: HeroModelPr
       ]}
       scale={layout.scale}
     >
-      <HeroGlassAsset reducedMotion={reducedMotion} />
+      <GlassAsset reducedMotion={reducedMotion} sceneScale={layout.scale} />
     </group>
   );
 }

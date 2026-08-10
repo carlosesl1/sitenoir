@@ -3,7 +3,6 @@
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useMemo, useRef } from "react";
 import {
-  BufferGeometry,
   Color,
   type Mesh,
   Plane,
@@ -14,7 +13,6 @@ import {
   Vector4,
 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 import { pointerStore } from "@/features/pointer/pointer-store";
 import { useTheme } from "@/features/theme/ThemeProvider";
@@ -23,6 +21,7 @@ import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
 import { pointerSnapshotToUv } from "@/scene/hero-effects";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { HERO_GLASS_FRAGMENT_SHADER, HERO_GLASS_VERTEX_SHADER } from "@/scene/hero-glass-shaders";
+import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
 import { resolveSceneFrameDelta } from "@/scene/scene-frame";
 import { sceneTransitionStore } from "@/scene/scene-transition";
 
@@ -31,7 +30,12 @@ function colorVector(hex: string): Vector4 {
   return new Vector4(color.r, color.g, color.b, 1);
 }
 
-export function HeroGlassAsset({ reducedMotion }: { readonly reducedMotion: boolean }) {
+interface HeroGlassAssetProps {
+  readonly reducedMotion: boolean;
+  readonly sceneScale: number;
+}
+
+export function HeroGlassAsset({ reducedMotion }: HeroGlassAssetProps) {
   const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
   const { resolvedTheme } = useTheme();
   const { screenResolution, texture } = useHeroRefraction();
@@ -39,28 +43,7 @@ export function HeroGlassAsset({ reducedMotion }: { readonly reducedMotion: bool
   const size = useThree((state) => state.size);
   const meshRef = useRef<Mesh>(null);
 
-  const geometry = useMemo(() => {
-    source.scene.updateMatrixWorld(true);
-    const parts: BufferGeometry[] = [];
-    source.scene.traverse((object) => {
-      if ("isMesh" in object && object.isMesh === true && "geometry" in object) {
-        const sourceGeometry = object.geometry;
-        if (sourceGeometry instanceof BufferGeometry) {
-          const part = sourceGeometry.clone();
-          part.applyMatrix4(object.matrixWorld);
-          parts.push(part);
-        }
-      }
-    });
-    const combined = mergeGeometries(parts, false) ?? parts[0] ?? new BufferGeometry();
-    for (const part of parts) {
-      if (part !== combined) part.dispose();
-    }
-    combined.center();
-    combined.computeBoundingBox();
-    combined.computeVertexNormals();
-    return combined;
-  }, [source.scene]);
+  const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
 
   const localYRange = useMemo(() => {
     const bounds = geometry.boundingBox;

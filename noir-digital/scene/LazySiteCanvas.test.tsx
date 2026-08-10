@@ -8,7 +8,11 @@ const siteCanvasModuleProbe = vi.hoisted(() => ({ loaded: vi.fn() }));
 
 vi.mock("@/scene/SiteCanvas", () => {
   siteCanvasModuleProbe.loaded();
-  return { SiteCanvas: () => null };
+  return {
+    SiteCanvas: ({ heroGlassVariant }: { heroGlassVariant: string }) => (
+      <div data-testid="mock-site-canvas" data-hero-glass-variant={heroGlassVariant} />
+    ),
+  };
 });
 
 describe("LazySiteCanvas", () => {
@@ -46,5 +50,21 @@ describe("LazySiteCanvas", () => {
 
     expect(window.__NOIR_READY__).toBe(true);
     expect(window.__NOIR_SCENE_STATUS__).toBe("disabled");
+  });
+
+  it("passes the opt-in Canvas UI variant to the deferred scene", async () => {
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
+      getExtension: vi.fn(),
+    } as unknown as WebGLRenderingContext);
+    window.history.replaceState({}, "", "/?glass=canvas-ui");
+
+    const view = render(<LazySiteCanvas preloadDuringEntry />);
+
+    await vi.waitFor(() =>
+      expect(view.getByTestId("mock-site-canvas")).toHaveAttribute(
+        "data-hero-glass-variant",
+        "canvas-ui",
+      ),
+    );
   });
 });
