@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { AdditiveBlending, Mesh, type Scene, type ShaderMaterial, type WebGLRenderer } from "three";
 import { describe, expect, it, vi } from "vitest";
@@ -97,5 +97,21 @@ describe("Canvas UI spectral source", () => {
 
     expect(geometryDispose).toHaveBeenCalledTimes(1);
     expect(materialDispose).toHaveBeenCalledTimes(1);
+  });
+
+  it("activates the source only for Canvas UI and restores capture state", () => {
+    const bufferSource = readFileSync(
+      join(process.cwd(), "scene/HeroRefractionBuffer.tsx"),
+      "utf8",
+    );
+    const siteCanvasSource = readFileSync(join(process.cwd(), "scene/SiteCanvas.tsx"), "utf8");
+
+    expect(bufferSource).toContain("spectralSourceActive = false");
+    expect(bufferSource).toContain("createHeroCanvasUiSpectralSource()");
+    expect(bufferSource).toContain("resolveHeroCanvasUiSpectralIntensity(size.width)");
+    expect(bufferSource).toContain("spectralSource.render(gl, spectralIntensity)");
+    expect(bufferSource).toContain("try {");
+    expect(bufferSource).toContain("finally {");
+    expect(siteCanvasSource).toContain('spectralSourceActive={heroGlassVariant === "canvas-ui"}');
   });
 });

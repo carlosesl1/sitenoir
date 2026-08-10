@@ -240,6 +240,7 @@ export function SiteCanvas({
               <HeroRefractionBuffer
                 active={!principleScene.active}
                 resolutionScale={qualityConfig.refractionResolutionScale}
+                spectralSourceActive={heroGlassVariant === "canvas-ui"}
               >
                 <Suspense fallback={null}>
                   <HeroSceneContent
