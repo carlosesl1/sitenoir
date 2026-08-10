@@ -1,7 +1,7 @@
 export const HERO_CANVAS_UI_GLASS_CONFIG = {
   anisotropicBlur: 0.04,
   backside: false,
-  chromaticAberration: 0.055,
+  chromaticAberration: 0.07,
   clearcoat: 0.5,
   clearcoatRoughness: 0.06,
   environmentBlur: 0.04,

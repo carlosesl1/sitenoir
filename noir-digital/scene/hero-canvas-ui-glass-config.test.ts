@@ -10,7 +10,7 @@ describe("Canvas UI hero glass configuration", () => {
     expect(HERO_CANVAS_UI_GLASS_CONFIG).toMatchObject({
       anisotropicBlur: 0.04,
       backside: false,
-      chromaticAberration: 0.055,
+      chromaticAberration: 0.07,
       clearcoat: 0.5,
       clearcoatRoughness: 0.06,
       environmentBlur: 0.04,
