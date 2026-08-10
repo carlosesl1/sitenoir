@@ -20,6 +20,7 @@ import {
 
 import { projects } from "@/data/projects";
 import { setDataFlag, setWebGlCardVisibility } from "@/scene/work-card-dom";
+import { resolveWorkCardCurl } from "@/scene/work-card-framing";
 import {
   createImageCanvasGate,
   createWorkCardTexture,
@@ -315,7 +316,7 @@ export function WorkCardLayer() {
     const blend = 1 - Math.exp(-frameDelta / response);
     smoothedVelocity.current += (targetVelocity - smoothedVelocity.current) * blend;
     if (settle) smoothedVelocity.current = 0;
-    const curl = 0.06 * smoothedVelocity.current;
+    const curl = resolveWorkCardCurl(smoothedVelocity.current * 800);
     for (let index = 0; index < materials.length; index += 1) {
       const element = resolveElement(elements.current, index);
       const shouldMeasure =

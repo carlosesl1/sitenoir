@@ -1,9 +1,6 @@
 import { setDataFlag } from "@/scene/work-card-dom";
 
-export function resolveWorkCardCurl(scrollVelocity: number): number {
-  const normalizedVelocity = Math.min(1, Math.abs(scrollVelocity) / 800);
-  return normalizedVelocity * 0.06;
-}
+export { resolveWorkCardCurl } from "@/scene/work-card-framing";
 
 export function shouldRenderWorkCardCanvas({
   imageReady,
