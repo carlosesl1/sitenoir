@@ -1,0 +1,59 @@
+.comparison {
+  display: grid;
+  min-height: 100dvh;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  padding: 1px;
+  background: #3a3a3a;
+}
+
+.panel {
+  min-width: 0;
+  background: #000;
+}
+
+.label {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-height: 32px;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid #3a3a3a;
+  color: #f4f4f0;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+.frame {
+  position: absolute;
+  inset: 0 auto auto 0;
+  display: block;
+  border: 0;
+  transform-origin: top left;
+}
+
+.status {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  margin: 0;
+  place-items: center;
+  color: #a8a8a8;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+}
+
+@media (max-width: 899px) {
+  .comparison {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
