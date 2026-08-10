@@ -4,8 +4,13 @@ import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { HERO_GLASS_FRAGMENT_SHADER } from "@/scene/hero-glass-shaders";
 
 describe("hero prismatic glass material", () => {
-  it("keeps the dark face restrained while reserving energy for the rims", () => {
-    expect(HERO_GLASS_CONFIG.dark.faceTransmission).toBeLessThan(0.35);
+  it("preserves enough refracted scene energy for a transparent dark face", () => {
+    expect(HERO_GLASS_CONFIG.dark.faceTransmission).toBeGreaterThanOrEqual(0.72);
+    expect(HERO_GLASS_CONFIG.dark.brightness).toBeGreaterThanOrEqual(0.6);
+    expect(HERO_GLASS_CONFIG.dark.tintMaximumAlpha).toBeLessThan(0.1);
+  });
+
+  it("reserves stronger energy for the rims", () => {
     expect(HERO_GLASS_CONFIG.dark.neutralRimStrength).toBeGreaterThan(
       HERO_GLASS_CONFIG.dark.faceTransmission,
     );
