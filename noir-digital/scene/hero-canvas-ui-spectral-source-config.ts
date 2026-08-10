@@ -9,14 +9,14 @@ export interface HeroCanvasUiSpectralBeam {
 
 export const HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG = {
   beams: [
-    { angle: -0.55, center: [0.22, 0.48], length: 0.3, phase: 0, strength: 1, width: 0.065 },
-    { angle: 0.38, center: [0.43, 0.55], length: 0.34, phase: 0.08, strength: 0.88, width: 0.08 },
-    { angle: -0.32, center: [0.65, 0.46], length: 0.28, phase: 0.16, strength: 0.78, width: 0.06 },
-    { angle: 0.5, center: [0.82, 0.56], length: 0.24, phase: 0.22, strength: 0.62, width: 0.05 },
+    { angle: -0.65, center: [0.24, 0.64], length: 0.15, phase: 0, strength: 1, width: 0.04 },
+    { angle: 0.48, center: [0.44, 0.46], length: 0.18, phase: 0.08, strength: 0.88, width: 0.048 },
+    { angle: -0.42, center: [0.63, 0.65], length: 0.13, phase: 0.16, strength: 0.78, width: 0.035 },
+    { angle: 0.62, center: [0.78, 0.53], length: 0.14, phase: 0.22, strength: 0.62, width: 0.032 },
   ] satisfies readonly HeroCanvasUiSpectralBeam[],
-  desktopIntensity: 0.62,
+  desktopIntensity: 0.52,
   mobileBreakpoint: 768,
-  mobileIntensity: 0.48,
+  mobileIntensity: 0.4,
 } as const;
 
 export function resolveHeroCanvasUiSpectralIntensity(viewportWidth: number): number {

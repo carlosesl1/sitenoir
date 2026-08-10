@@ -16,7 +16,7 @@ describe("Canvas UI hero glass configuration", () => {
       clearcoat: 1,
       clearcoatRoughness: 0.02,
       environmentBlur: 0.02,
-      environmentIntensity: 1.6,
+      environmentIntensity: 1.9,
       highlight: "#ffffff",
       ior: 1.58,
       roughness: 0.05,
@@ -26,6 +26,9 @@ describe("Canvas UI hero glass configuration", () => {
     });
     expect(HERO_CANVAS_UI_RING_CONFIG.color).toBe("#ffffff");
     expect(HERO_CANVAS_UI_REFLECTOR_CONFIG).toHaveLength(3);
+    expect(HERO_CANVAS_UI_REFLECTOR_CONFIG.map((reflector) => reflector.intensity)).toEqual([
+      78, 62.4, 90,
+    ]);
     expect(
       HERO_CANVAS_UI_REFLECTOR_CONFIG.every((reflector) => reflector.color === "#ffffff"),
     ).toBe(true);

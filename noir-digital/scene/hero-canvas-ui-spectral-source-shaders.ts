@@ -26,13 +26,13 @@ export const HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER = /* glsl */ `
   uniform float uIntensity;
   varying vec2 vUv;
 
-  vec3 prismSpectrum(float value) {
-    float t = fract(value);
-    return clamp(vec3(
-      1.5 - abs(4.0 * t - 3.0),
-      1.5 - abs(4.0 * t - 2.0),
-      1.5 - abs(4.0 * t - 1.0)
-    ), 0.0, 1.0);
+  vec3 dispersedSpectrum(float transversePosition, float phase) {
+    float channelShift = 0.58 + phase * 0.3;
+    float red = exp(-pow((transversePosition + channelShift) * 1.6, 2.0));
+    float green = exp(-pow(transversePosition * 1.75, 2.0));
+    float blue = exp(-pow((transversePosition - channelShift) * 1.6, 2.0));
+    float whiteCore = exp(-pow(transversePosition * 2.4, 2.0));
+    return clamp(vec3(red, green, blue) + whiteCore * 0.42, 0.0, 1.0);
   }
 
   vec4 spectralBeam(
@@ -51,7 +51,7 @@ export const HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER = /* glsl */ `
     float longitudinal = 1.0 - smoothstep(beamLength * 0.72, beamLength, abs(point.x));
     float transverse = exp(-pow(abs(point.y) / width, 2.0));
     float mask = longitudinal * transverse * strength;
-    vec3 color = prismSpectrum(point.y / max(width * 2.5, 0.0001) + 0.5 + phase);
+    vec3 color = dispersedSpectrum(point.y / max(width, 0.0001), phase);
     return vec4(color * mask, mask);
   }
 
