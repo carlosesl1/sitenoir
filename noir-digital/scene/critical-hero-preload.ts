@@ -1,4 +1,4 @@
-export const HERO_MODEL_SOURCE = "/assets/v1/model/hello-6991848c1d51.glb";
+export const HERO_MODEL_SOURCE = "/assets/v1/model/noir-reference-5432229eb949.glb";
 export const POINTER_MODEL_SOURCE = "/assets/v1/model/cursor-a69d5b3f772e.glb";
 
 export const CRITICAL_HERO_MODEL_SOURCES = [HERO_MODEL_SOURCE, POINTER_MODEL_SOURCE] as const;
