@@ -47,7 +47,7 @@ export const HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER = /* glsl */ `
   }
 
   vec3 dispersedSpectrum(float transversePosition, float phase) {
-    float palettePosition = (1.15 - transversePosition) / 2.3 + phase * 0.05;
+    float palettePosition = (0.72 - transversePosition) / 1.44 + phase * 0.05;
     vec3 paletteColor = spectralPalette(palettePosition);
     float whiteCore = exp(-pow(transversePosition * 6.0, 2.0));
     return mix(paletteColor, vec3(1.0), whiteCore * 0.72) * 2.2;
