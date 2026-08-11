@@ -5,7 +5,7 @@ export const HERO_CANVAS_UI_GLASS_CONFIG = {
   clearcoat: 1,
   clearcoatRoughness: 0.02,
   environmentBlur: 0.18,
-  environmentIntensity: 1.9,
+  environmentIntensity: 0.72,
   highlight: "#ffffff",
   ior: 1.58,
   roughness: 0.05,
