@@ -2,7 +2,7 @@
 
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
-import { Color, type PointLight } from "three";
+import { Color, type RectAreaLight } from "three";
 
 import { pointerStore } from "@/features/pointer/pointer-store";
 import { computeHeroLightTarget, pointerSnapshotToUv } from "@/scene/hero-effects";
@@ -13,8 +13,8 @@ interface HeroPointerLightProps {
   readonly reducedMotion: boolean;
 }
 
-const CONTACT_LIGHT_DISTANCE = 14;
-const HERO_LIGHT_DISTANCE = 42;
+const CONTACT_LIGHT_INTENSITY = 3.5;
+const HERO_LIGHT_INTENSITY = 28;
 
 function readToken(name: string): Color {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -22,13 +22,16 @@ function readToken(name: string): Color {
 }
 
 export function HeroPointerLight({ reducedMotion }: HeroPointerLightProps) {
-  const lightRef = useRef<PointLight>(null);
+  const lightRef = useRef<RectAreaLight>(null);
   const currentAngle = useRef(Math.atan2(9, 4));
   const color = useMemo(() => readToken("--color-noir-warm-white"), []);
 
   useEffect(() => {
     const light = lightRef.current;
-    if (light) light.color.copy(color);
+    if (light) {
+      light.color.copy(color);
+      light.lookAt(0, 0, 0);
+    }
   }, [color]);
 
   useFrame((_state, delta) => {
@@ -36,7 +39,7 @@ export function HeroPointerLight({ reducedMotion }: HeroPointerLightProps) {
     const light = lightRef.current;
     if (!light) return;
     const transition = sceneTransitionStore.getSnapshot();
-    light.distance = transition.contactVisible ? CONTACT_LIGHT_DISTANCE : HERO_LIGHT_DISTANCE;
+    light.intensity = transition.contactVisible ? CONTACT_LIGHT_INTENSITY : HERO_LIGHT_INTENSITY;
     if (transition.opticalFrozen) return;
     const snapshot = pointerStore.getSnapshot();
     const pointer =
@@ -54,15 +57,16 @@ export function HeroPointerLight({ reducedMotion }: HeroPointerLightProps) {
       radius * Math.sin(currentAngle.current),
       8,
     );
+    light.lookAt(0, 0, 0);
   }, -1);
 
   return (
-    <pointLight
+    <rectAreaLight
       ref={lightRef}
       position={[4, 9, 8]}
-      intensity={900}
-      distance={HERO_LIGHT_DISTANCE}
-      decay={1.5}
+      intensity={HERO_LIGHT_INTENSITY}
+      width={14}
+      height={6}
     />
   );
 }
