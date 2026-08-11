@@ -8,6 +8,7 @@ describe("HeroPointerLight", () => {
 
     expect(source).toContain("type RectAreaLight");
     expect(source).toContain("<rectAreaLight");
+    expect(source).toContain("const HERO_LIGHT_INTENSITY = 28;");
     expect(source).toContain("width={14}");
     expect(source).toContain("height={6}");
     expect(source).toContain("light.lookAt(0, 0, 0)");

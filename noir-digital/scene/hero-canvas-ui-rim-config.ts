@@ -6,6 +6,8 @@ export const HERO_CANVAS_UI_RIM_CONFIG = {
   haloEnd: 0.88,
   haloOpacity: 0.16,
   haloStart: 0.34,
+  pointerLightOpacity: 0.12,
+  pointerLightRadius: 0.42,
   polygonOffsetFactor: -1,
   polygonOffsetUnits: -1,
 } as const;

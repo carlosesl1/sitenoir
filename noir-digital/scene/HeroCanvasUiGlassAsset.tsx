@@ -1,11 +1,12 @@
 "use client";
 
 import { MeshTransmissionMaterial } from "@react-three/drei/core/MeshTransmissionMaterial";
-import { useLoader, useThree } from "@react-three/fiber";
+import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useMemo } from "react";
-import { Color, FrontSide, NormalBlending, type WebGLRenderTarget } from "three";
+import { Color, FrontSide, NormalBlending, Vector2, type WebGLRenderTarget } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
+import { pointerStore } from "@/features/pointer/pointer-store";
 import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
 import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";
@@ -18,20 +19,24 @@ import {
   HERO_CANVAS_UI_RIM_FRAGMENT_SHADER,
   HERO_CANVAS_UI_RIM_VERTEX_SHADER,
 } from "@/scene/hero-canvas-ui-rim-shaders";
+import { pointerSnapshotToUv } from "@/scene/hero-effects";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
+import { resolveSceneFrameDelta } from "@/scene/scene-frame";
+import { sceneTransitionStore } from "@/scene/scene-transition";
 
 interface HeroCanvasUiGlassAssetProps {
   readonly reducedMotion: boolean;
   readonly sceneScale: number;
 }
 
-export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetProps) {
+export function HeroCanvasUiGlassAsset({ reducedMotion, sceneScale }: HeroCanvasUiGlassAssetProps) {
   const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
   const gl = useThree((state) => state.gl);
   const { texture } = useHeroRefraction();
   const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
   const environment = useMemo<WebGLRenderTarget>(() => createHeroCanvasUiEnvironment(gl), [gl]);
+  const pointerLightTarget = useMemo(() => new Vector2(0.5, 0.5), []);
   const rimUniforms = useMemo(
     () => ({
       uColor: { value: new Color(rimConfig.color) },
@@ -41,12 +46,26 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
       uHaloEnd: { value: rimConfig.haloEnd },
       uHaloOpacity: { value: rimConfig.haloOpacity },
       uHaloStart: { value: rimConfig.haloStart },
+      uPointerLightPosition: { value: new Vector2(0.5, 0.5) },
+      uPointerLightOpacity: { value: rimConfig.pointerLightOpacity },
+      uPointerLightRadius: { value: rimConfig.pointerLightRadius },
     }),
     [],
   );
 
   useLayoutEffect(() => () => geometry.dispose(), [geometry]);
   useLayoutEffect(() => () => environment.dispose(), [environment]);
+
+  useFrame((_state, delta) => {
+    if (sceneTransitionStore.getSnapshot().opticalFrozen) return;
+    const frameDelta = resolveSceneFrameDelta(delta);
+    const snapshot = pointerStore.getSnapshot();
+    const pointer =
+      reducedMotion || !snapshot.inside ? { x: 0.5, y: 0.5 } : pointerSnapshotToUv(snapshot);
+    pointerLightTarget.set(pointer.x, pointer.y);
+    const smoothing = 1 - Math.exp(-6 * frameDelta);
+    rimUniforms.uPointerLightPosition.value.lerp(pointerLightTarget, smoothing);
+  }, -2);
 
   return (
     <>
