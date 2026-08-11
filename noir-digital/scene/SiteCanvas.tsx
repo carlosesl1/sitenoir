@@ -271,10 +271,7 @@ export function SiteCanvas({
           )}
           <FullscreenDither />
           <HeroFluidProvider reducedMotion={deterministicMotion}>
-            <HeroLensFlare
-              active={heroGlassVariant !== "canvas-ui"}
-              resolutionScale={qualityConfig.flareResolutionScale}
-            />
+            <HeroLensFlare active resolutionScale={qualityConfig.flareResolutionScale} />
           </HeroFluidProvider>
         </Canvas>
       </SceneErrorBoundary>

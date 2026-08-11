@@ -145,6 +145,9 @@ describe("Canvas UI spectral source", () => {
     expect(bufferSource).toContain("try {");
     expect(bufferSource).toContain("finally {");
     expect(siteCanvasSource).toContain('spectralSourceActive={heroGlassVariant === "canvas-ui"}');
-    expect(siteCanvasSource).toContain('active={heroGlassVariant !== "canvas-ui"}');
+    expect(siteCanvasSource).toContain(
+      "<HeroLensFlare active resolutionScale={qualityConfig.flareResolutionScale} />",
+    );
+    expect(siteCanvasSource).not.toContain('active={heroGlassVariant !== "canvas-ui"}');
   });
 });

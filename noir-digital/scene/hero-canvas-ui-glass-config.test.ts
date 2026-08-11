@@ -14,7 +14,7 @@ describe("Canvas UI hero glass configuration", () => {
       chromaticAberration: 0.07,
       clearcoat: 1,
       clearcoatRoughness: 0.02,
-      environmentBlur: 0.02,
+      environmentBlur: 0.18,
       environmentIntensity: 1.9,
       highlight: "#ffffff",
       ior: 1.58,
@@ -32,6 +32,8 @@ describe("Canvas UI hero glass configuration", () => {
     ).toBe(true);
     expect(HERO_CANVAS_UI_GLASS_CONFIG.chromaticAberration).toBeGreaterThanOrEqual(0.04);
     expect(HERO_CANVAS_UI_GLASS_CONFIG.chromaticAberration).toBeLessThanOrEqual(0.07);
+    expect(HERO_CANVAS_UI_GLASS_CONFIG.environmentBlur).toBeGreaterThanOrEqual(0.14);
+    expect(HERO_CANVAS_UI_GLASS_CONFIG.environmentBlur).toBeLessThanOrEqual(0.22);
     expect(HERO_CANVAS_UI_GLASS_CONFIG.ior).toBeGreaterThanOrEqual(1.5);
     expect(HERO_CANVAS_UI_GLASS_CONFIG.ior).toBeLessThanOrEqual(1.65);
     expect(HERO_CANVAS_UI_GLASS_CONFIG.roughness).toBeLessThanOrEqual(0.12);
