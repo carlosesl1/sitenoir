@@ -68,10 +68,9 @@ describe("Canvas UI spectral source", () => {
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain(
       "(1.15 - transversePosition) / 2.3",
     );
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("float whiteCore");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain(
-      "mix(paletteColor, vec3(1.0), whiteCore * 0.72) * 2.2",
-    );
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("float whiteCore");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("mix(paletteColor, vec3(1.0)");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("return paletteColor * 2.2");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("smoothstep(0.18, 0.72, transverse)");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("float red = exp");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("hsvToRgb");
