@@ -51,14 +51,26 @@ describe("Canvas UI spectral source", () => {
     const { HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER } = await import(shaderModulePath);
 
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("dispersedSpectrum");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("hsvToRgb");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("vec3(hue, 1.0, 1.0)");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("spectralPalette");
+    for (const color of [
+      "vec3(0.823529, 0.188235, 0.070588)",
+      "vec3(0.988235, 0.901961, 0.035294)",
+      "vec3(0.129412, 0.827451, 0.266667)",
+      "vec3(0.011765, 0.207843, 0.486275)",
+    ]) {
+      expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain(color);
+    }
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("normalizeSpectrumColor");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain(
+      "color / max(max(color.r, color.g), color.b)",
+    );
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("float whiteCore");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain(
-      "mix(vividRgb, vec3(1.0), whiteCore * 0.72) * 2.2",
+      "mix(paletteColor, vec3(1.0), whiteCore * 0.72) * 2.2",
     );
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("smoothstep(0.18, 0.72, transverse)");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("float red = exp");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("hsvToRgb");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("fract(value)");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("spectralBeam");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER.match(/spectralBeam\(/g)).toHaveLength(5);

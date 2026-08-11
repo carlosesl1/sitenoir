@@ -26,16 +26,31 @@ export const HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER = /* glsl */ `
   uniform float uIntensity;
   varying vec2 vUv;
 
-  vec3 hsvToRgb(vec3 hsv) {
-    vec3 shifted = abs(fract(hsv.xxx + vec3(0.0, 0.666667, 0.333333)) * 6.0 - 3.0);
-    return hsv.z * mix(vec3(1.0), clamp(shifted - 1.0, 0.0, 1.0), hsv.y);
+  vec3 normalizeSpectrumColor(vec3 color) {
+    return color / max(max(color.r, color.g), color.b);
+  }
+
+  vec3 spectralPalette(float position) {
+    vec3 red = normalizeSpectrumColor(vec3(0.823529, 0.188235, 0.070588));
+    vec3 yellow = normalizeSpectrumColor(vec3(0.988235, 0.901961, 0.035294));
+    vec3 green = normalizeSpectrumColor(vec3(0.129412, 0.827451, 0.266667));
+    vec3 blue = normalizeSpectrumColor(vec3(0.011765, 0.207843, 0.486275));
+    float segment = clamp(position, 0.0, 1.0) * 3.0;
+
+    if (segment < 1.0) {
+      return mix(red, yellow, smoothstep(0.0, 1.0, segment));
+    }
+    if (segment < 2.0) {
+      return mix(yellow, green, smoothstep(1.0, 2.0, segment));
+    }
+    return mix(green, blue, smoothstep(2.0, 3.0, segment));
   }
 
   vec3 dispersedSpectrum(float transversePosition, float phase) {
-    float hue = clamp(0.33 - transversePosition * 0.33 + phase * 0.05, 0.0, 0.72);
-    vec3 vividRgb = hsvToRgb(vec3(hue, 1.0, 1.0));
+    float palettePosition = (1.15 - transversePosition) / 2.3 + phase * 0.05;
+    vec3 paletteColor = spectralPalette(palettePosition);
     float whiteCore = exp(-pow(transversePosition * 6.0, 2.0));
-    return mix(vividRgb, vec3(1.0), whiteCore * 0.72) * 2.2;
+    return mix(paletteColor, vec3(1.0), whiteCore * 0.72) * 2.2;
   }
 
   vec4 spectralBeam(
