@@ -26,13 +26,16 @@ export const HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER = /* glsl */ `
   uniform float uIntensity;
   varying vec2 vUv;
 
+  vec3 hsvToRgb(vec3 hsv) {
+    vec3 shifted = abs(fract(hsv.xxx + vec3(0.0, 0.666667, 0.333333)) * 6.0 - 3.0);
+    return hsv.z * mix(vec3(1.0), clamp(shifted - 1.0, 0.0, 1.0), hsv.y);
+  }
+
   vec3 dispersedSpectrum(float transversePosition, float phase) {
-    float channelShift = 0.58 + phase * 0.3;
-    float red = exp(-pow((transversePosition + channelShift) * 1.6, 2.0));
-    float green = exp(-pow(transversePosition * 1.75, 2.0));
-    float blue = exp(-pow((transversePosition - channelShift) * 1.6, 2.0));
-    float whiteCore = exp(-pow(transversePosition * 2.4, 2.0));
-    return clamp(vec3(red, green, blue) + whiteCore * 0.42, 0.0, 1.0);
+    float hue = clamp(0.33 - transversePosition * 0.33 + phase * 0.05, 0.0, 0.72);
+    vec3 vividRgb = hsvToRgb(vec3(hue, 1.0, 1.0));
+    float whiteCore = exp(-pow(transversePosition * 6.0, 2.0));
+    return mix(vividRgb, vec3(1.0), whiteCore * 0.72) * 2.2;
   }
 
   vec4 spectralBeam(
@@ -50,7 +53,8 @@ export const HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER = /* glsl */ `
     point = mat2(cosine, -sine, sine, cosine) * point;
     float longitudinal = 1.0 - smoothstep(beamLength * 0.72, beamLength, abs(point.x));
     float transverse = exp(-pow(abs(point.y) / width, 2.0));
-    float mask = longitudinal * transverse * strength;
+    float luminousTransverse = smoothstep(0.18, 0.72, transverse);
+    float mask = longitudinal * luminousTransverse * strength;
     vec3 color = dispersedSpectrum(point.y / max(width, 0.0001), phase);
     return vec4(color * mask, mask);
   }
