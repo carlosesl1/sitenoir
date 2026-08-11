@@ -8,7 +8,7 @@ const environmentPath = join(process.cwd(), "scene/hero-canvas-ui-environment.ts
 const environmentModulePath = "@/scene/" + "hero-canvas-ui-environment";
 
 describe("Canvas UI optical environment", () => {
-  it("contains one white ring and three angled white reflector cards", async () => {
+  it("contains three angled white reflector cards without a circular emitter", async () => {
     expect(existsSync(environmentPath)).toBe(true);
     if (!existsSync(environmentPath)) return;
 
@@ -22,7 +22,8 @@ describe("Canvas UI optical environment", () => {
       (mesh) => mesh.userData["canvasUiRole"] === "reflector",
     );
 
-    expect(rings).toHaveLength(1);
+    expect(opticalMeshes).toHaveLength(3);
+    expect(rings).toHaveLength(0);
     expect(reflectors).toHaveLength(3);
     for (const mesh of opticalMeshes) {
       expect(mesh.material).toBeInstanceOf(MeshBasicMaterial);

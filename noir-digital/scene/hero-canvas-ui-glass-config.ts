@@ -14,13 +14,6 @@ export const HERO_CANVAS_UI_GLASS_CONFIG = {
   transmission: 1,
 } as const;
 
-export const HERO_CANVAS_UI_RING_CONFIG = {
-  color: "#ffffff",
-  intensity: 34,
-  position: [2, 3, -2],
-  scale: [10, 10, 10],
-} as const;
-
 export const HERO_CANVAS_UI_REFLECTOR_CONFIG = [
   {
     color: "#ffffff",

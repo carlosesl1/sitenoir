@@ -5,7 +5,6 @@ import {
   Mesh,
   MeshBasicMaterial,
   PMREMGenerator,
-  RingGeometry,
   type WebGLRenderer,
   type WebGLRenderTarget,
 } from "three";
@@ -14,7 +13,6 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import {
   HERO_CANVAS_UI_GLASS_CONFIG,
   HERO_CANVAS_UI_REFLECTOR_CONFIG,
-  HERO_CANVAS_UI_RING_CONFIG,
 } from "@/scene/hero-canvas-ui-glass-config";
 
 function createOpticalMaterial(color: string, intensity: number): MeshBasicMaterial {
@@ -27,17 +25,6 @@ function createOpticalMaterial(color: string, intensity: number): MeshBasicMater
 
 export function createHeroCanvasUiEnvironmentRoom(): RoomEnvironment {
   const room = new RoomEnvironment();
-  const ring = new Mesh(
-    new RingGeometry(0.5, 1, 64),
-    createOpticalMaterial(HERO_CANVAS_UI_RING_CONFIG.color, HERO_CANVAS_UI_RING_CONFIG.intensity),
-  );
-  ring.position.set(...HERO_CANVAS_UI_RING_CONFIG.position);
-  ring.scale.set(...HERO_CANVAS_UI_RING_CONFIG.scale);
-  ring.lookAt(0, 0, 0);
-  ring.userData["canvasUiOptical"] = true;
-  ring.userData["canvasUiRole"] = "ring";
-  room.add(ring);
-
   for (const reflectorConfig of HERO_CANVAS_UI_REFLECTOR_CONFIG) {
     const reflector = new Mesh(
       new BoxGeometry(1, 1, 1),

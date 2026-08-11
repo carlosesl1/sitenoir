@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import {
   HERO_CANVAS_UI_GLASS_CONFIG,
   HERO_CANVAS_UI_REFLECTOR_CONFIG,
-  HERO_CANVAS_UI_RING_CONFIG,
   resolveHeroCanvasUiThickness,
 } from "@/scene/hero-canvas-ui-glass-config";
 
@@ -24,7 +23,6 @@ describe("Canvas UI hero glass configuration", () => {
       thickness: 4,
       transmission: 1,
     });
-    expect(HERO_CANVAS_UI_RING_CONFIG.color).toBe("#ffffff");
     expect(HERO_CANVAS_UI_REFLECTOR_CONFIG).toHaveLength(3);
     expect(HERO_CANVAS_UI_REFLECTOR_CONFIG.map((reflector) => reflector.intensity)).toEqual([
       78, 62.4, 90,
