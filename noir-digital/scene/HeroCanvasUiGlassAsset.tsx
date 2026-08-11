@@ -69,6 +69,13 @@ export function HeroCanvasUiGlassAsset({ reducedMotion, sceneScale }: HeroCanvas
 
   return (
     <>
+      <mesh
+        geometry={geometry}
+        onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
+        renderOrder={-1}
+      >
+        <meshBasicMaterial colorWrite={false} depthTest depthWrite />
+      </mesh>
       <mesh geometry={geometry} onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}>
         <MeshTransmissionMaterial
           anisotropicBlur={glassConfig.anisotropicBlur}
