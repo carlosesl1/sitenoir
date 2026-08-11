@@ -28,8 +28,9 @@ describe("Canvas UI neutral glass rim", () => {
     expect(existsSync(shaderPath)).toBe(true);
     if (!existsSync(shaderPath)) return;
 
-    const { HERO_CANVAS_UI_RIM_FRAGMENT_SHADER, HERO_CANVAS_UI_RIM_VERTEX_SHADER } =
-      await import(shaderModulePath);
+    const { HERO_CANVAS_UI_RIM_FRAGMENT_SHADER, HERO_CANVAS_UI_RIM_VERTEX_SHADER } = await import(
+      shaderModulePath
+    );
 
     expect(HERO_CANVAS_UI_RIM_VERTEX_SHADER).toContain("vViewNormal");
     expect(HERO_CANVAS_UI_RIM_VERTEX_SHADER).toContain("vViewDirection");

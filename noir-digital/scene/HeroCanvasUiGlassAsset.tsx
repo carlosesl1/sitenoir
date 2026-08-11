@@ -3,16 +3,21 @@
 import { MeshTransmissionMaterial } from "@react-three/drei/core/MeshTransmissionMaterial";
 import { useLoader, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useMemo } from "react";
-import type { WebGLRenderTarget } from "three";
+import { Color, FrontSide, NormalBlending, type WebGLRenderTarget } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
 import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";
 import {
-  HERO_CANVAS_UI_GLASS_CONFIG as config,
+  HERO_CANVAS_UI_GLASS_CONFIG as glassConfig,
   resolveHeroCanvasUiThickness,
 } from "@/scene/hero-canvas-ui-glass-config";
+import { HERO_CANVAS_UI_RIM_CONFIG as rimConfig } from "@/scene/hero-canvas-ui-rim-config";
+import {
+  HERO_CANVAS_UI_RIM_FRAGMENT_SHADER,
+  HERO_CANVAS_UI_RIM_VERTEX_SHADER,
+} from "@/scene/hero-canvas-ui-rim-shaders";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
 
@@ -27,28 +32,62 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
   const { texture } = useHeroRefraction();
   const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
   const environment = useMemo<WebGLRenderTarget>(() => createHeroCanvasUiEnvironment(gl), [gl]);
+  const rimUniforms = useMemo(
+    () => ({
+      uColor: { value: new Color(rimConfig.color) },
+      uCoreEnd: { value: rimConfig.coreEnd },
+      uCoreOpacity: { value: rimConfig.coreOpacity },
+      uCoreStart: { value: rimConfig.coreStart },
+      uHaloEnd: { value: rimConfig.haloEnd },
+      uHaloOpacity: { value: rimConfig.haloOpacity },
+      uHaloStart: { value: rimConfig.haloStart },
+    }),
+    [],
+  );
 
   useLayoutEffect(() => () => geometry.dispose(), [geometry]);
   useLayoutEffect(() => () => environment.dispose(), [environment]);
 
   return (
-    <mesh geometry={geometry} onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}>
-      <MeshTransmissionMaterial
-        anisotropicBlur={config.anisotropicBlur}
-        backside={config.backside}
-        buffer={texture}
-        chromaticAberration={config.chromaticAberration}
-        clearcoat={config.clearcoat}
-        clearcoatRoughness={config.clearcoatRoughness}
-        color="#ffffff"
-        envMap={environment.texture}
-        envMapIntensity={config.environmentIntensity}
-        ior={config.ior}
-        roughness={config.roughness}
-        samples={config.samples}
-        thickness={resolveHeroCanvasUiThickness(sceneScale)}
-        transmission={config.transmission}
-      />
-    </mesh>
+    <>
+      <mesh geometry={geometry} onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}>
+        <MeshTransmissionMaterial
+          anisotropicBlur={glassConfig.anisotropicBlur}
+          backside={glassConfig.backside}
+          buffer={texture}
+          chromaticAberration={glassConfig.chromaticAberration}
+          clearcoat={glassConfig.clearcoat}
+          clearcoatRoughness={glassConfig.clearcoatRoughness}
+          color="#ffffff"
+          envMap={environment.texture}
+          envMapIntensity={glassConfig.environmentIntensity}
+          ior={glassConfig.ior}
+          roughness={glassConfig.roughness}
+          samples={glassConfig.samples}
+          thickness={resolveHeroCanvasUiThickness(sceneScale)}
+          transmission={glassConfig.transmission}
+        />
+      </mesh>
+      <mesh
+        geometry={geometry}
+        onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
+        renderOrder={1}
+      >
+        <shaderMaterial
+          blending={NormalBlending}
+          depthTest
+          depthWrite={false}
+          fragmentShader={HERO_CANVAS_UI_RIM_FRAGMENT_SHADER}
+          polygonOffset
+          polygonOffsetFactor={rimConfig.polygonOffsetFactor}
+          polygonOffsetUnits={rimConfig.polygonOffsetUnits}
+          side={FrontSide}
+          toneMapped={false}
+          transparent
+          uniforms={rimUniforms}
+          vertexShader={HERO_CANVAS_UI_RIM_VERTEX_SHADER}
+        />
+      </mesh>
+    </>
   );
 }
