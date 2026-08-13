@@ -71,7 +71,6 @@ describe("Canvas UI spectral source", () => {
 
     const { HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER } = await import(shaderModulePath);
 
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("dispersedSpectrum");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("spectralPalette");
     for (const color of [
       "vec3(0.823529, 0.188235, 0.070588)",
@@ -85,32 +84,24 @@ describe("Canvas UI spectral source", () => {
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain(
       "color / max(max(color.r, color.g), color.b)",
     );
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("(0.72 - transversePosition) / 1.44");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain(
-      "(1.15 - transversePosition) / 2.3",
-    );
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("float whiteCore");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("mix(paletteColor, vec3(1.0)");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("return paletteColor * 2.2");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("streakWidth");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("asymmetricEnvelope");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("curvedCenterline");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("breakupMask");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("widthStart");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("widthMid");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("widthEnd");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain(
-      "exp(-pow(abs(point.y) / width, 2.0))",
-    );
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("spectralFragment");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER.match(/spectralFragment\(/g)).toHaveLength(11);
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("lensMask");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("wedgeMask");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("glintMask");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("colorStart");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("colorEnd");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("spectralBeam");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("streakWidth");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("asymmetricEnvelope");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("float red = exp");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("hsvToRgb");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("fract(value)");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("spectralBeam");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER.match(/spectralBeam\(/g)).toHaveLength(5);
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("uniform float uIntensity");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain(
-      "0.58, 0.15, 0.018, 0.0396, 0.024, 0.012, 0.12, 1.0, 0.0)",
+      "vec2(0.16, 0.63), vec2(0.105, 0.038), 0.58, 0.0, 0.9, 0.7, 0.12, 0.0, 0.0, 1.0)",
     );
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("whiteCore");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("uTime");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("uPointer");
   });
