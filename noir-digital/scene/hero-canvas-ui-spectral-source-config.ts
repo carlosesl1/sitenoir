@@ -22,7 +22,7 @@ export const HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG = {
       phase: 0,
       strength: 1,
       widthEnd: 0.024,
-      widthMid: 0.044,
+      widthMid: 0.0396,
       widthStart: 0.018,
     },
     {
@@ -34,7 +34,7 @@ export const HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG = {
       phase: 0.08,
       strength: 0.88,
       widthEnd: 0.018,
-      widthMid: 0.05,
+      widthMid: 0.045,
       widthStart: 0.02,
     },
     {
@@ -46,7 +46,7 @@ export const HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG = {
       phase: 0.16,
       strength: 0.78,
       widthEnd: 0.021,
-      widthMid: 0.038,
+      widthMid: 0.0342,
       widthStart: 0.014,
     },
     {
@@ -58,7 +58,7 @@ export const HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG = {
       phase: 0.22,
       strength: 0.62,
       widthEnd: 0.016,
-      widthMid: 0.034,
+      widthMid: 0.0306,
       widthStart: 0.012,
     },
   ] satisfies readonly HeroCanvasUiSpectralBeam[],

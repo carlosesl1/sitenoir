@@ -30,7 +30,7 @@ describe("Canvas UI spectral source", () => {
         curve: 0.012,
         length: 0.15,
         widthEnd: 0.024,
-        widthMid: 0.044,
+        widthMid: 0.0396,
         widthStart: 0.018,
       },
       {
@@ -40,7 +40,7 @@ describe("Canvas UI spectral source", () => {
         curve: -0.01,
         length: 0.18,
         widthEnd: 0.018,
-        widthMid: 0.05,
+        widthMid: 0.045,
         widthStart: 0.02,
       },
       {
@@ -50,7 +50,7 @@ describe("Canvas UI spectral source", () => {
         curve: 0.009,
         length: 0.13,
         widthEnd: 0.021,
-        widthMid: 0.038,
+        widthMid: 0.0342,
         widthStart: 0.014,
       },
       {
@@ -60,7 +60,7 @@ describe("Canvas UI spectral source", () => {
         curve: -0.008,
         length: 0.14,
         widthEnd: 0.016,
-        widthMid: 0.034,
+        widthMid: 0.0306,
         widthStart: 0.012,
       },
     ]);
@@ -129,7 +129,7 @@ describe("Canvas UI spectral source", () => {
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER.match(/spectralBeam\(/g)).toHaveLength(5);
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("uniform float uIntensity");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain(
-      "0.15, 0.018, 0.044, 0.024, 0.012, 0.12, 1.0, 0.0)",
+      "0.15, 0.018, 0.0396, 0.024, 0.012, 0.12, 1.0, 0.0)",
     );
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("uTime");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("uPointer");
