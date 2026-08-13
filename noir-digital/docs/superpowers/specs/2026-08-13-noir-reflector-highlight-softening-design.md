@@ -1,4 +1,4 @@
-# NOIR reflector highlight softening design
+# NOIR environment highlight softening design
 
 ## Goal
 
@@ -6,17 +6,15 @@ Reduce the blown-out fixed white reflection on the Canvas UI NOIR glass by 35% w
 
 ## Scope
 
-The change is limited to the three fixed optical reflector intensities in `scene/hero-canvas-ui-glass-config.ts`:
+The change is limited to the effective environment-map intensity in `scene/hero-canvas-ui-glass-config.ts`:
 
-- `78` becomes `50.7`.
-- `62.4` becomes `40.6`.
-- `90` becomes `58.5`.
+- `environmentIntensity: 0.72` becomes `environmentIntensity: 0.47`.
 
-The rounded values retain exactly the requested visual reduction to practical one-decimal configuration values.
+The value applies the requested 35% reduction at the material control that actually drives the visible reflection. The internal reflector-card values remain unchanged because their HDR output is already saturated inside the generated PMREM map and reducing them by 35% did not visibly alter the final material.
 
 ## Preserved behavior
 
-- Keep `environmentIntensity`, `environmentBlur`, clearcoat, roughness, transmission, and chromatic aberration unchanged.
+- Keep the internal reflector cards, `environmentBlur`, clearcoat, roughness, transmission, and chromatic aberration unchanged.
 - Keep the neutral Fresnel rim unchanged.
 - Keep the fixed RGB spectral beams and their palette unchanged.
 - Do not restore any pointer-bound light.
@@ -24,7 +22,7 @@ The rounded values retain exactly the requested visual reduction to practical on
 
 ## Verification
 
-- Update the environment configuration test to require the reduced reflector values.
+- Update the glass configuration test to require `environmentIntensity: 0.47` and the original reflector values.
 - Run the focused Canvas UI environment and glass tests.
 - Run Biome, TypeScript, and the production build.
 - Inspect the production Canvas UI variant in the browser and confirm that the white highlight retains visible surface detail without weakening the RGB spectrum.

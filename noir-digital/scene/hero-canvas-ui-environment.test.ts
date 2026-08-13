@@ -33,7 +33,7 @@ describe("Canvas UI optical environment", () => {
     }
     expect(new Set(reflectors.map((mesh) => mesh.rotation.toArray().join(","))).size).toBe(3);
     expect(HERO_CANVAS_UI_REFLECTOR_CONFIG.map(({ intensity }) => intensity)).toEqual([
-      50.7, 40.6, 58.5,
+      78, 62.4, 90,
     ]);
 
     room.dispose();

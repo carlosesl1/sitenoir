@@ -5,7 +5,7 @@ export const HERO_CANVAS_UI_GLASS_CONFIG = {
   clearcoat: 1,
   clearcoatRoughness: 0.02,
   environmentBlur: 0.18,
-  environmentIntensity: 0.72,
+  environmentIntensity: 0.47,
   highlight: "#ffffff",
   ior: 1.58,
   roughness: 0.05,
@@ -17,21 +17,21 @@ export const HERO_CANVAS_UI_GLASS_CONFIG = {
 export const HERO_CANVAS_UI_REFLECTOR_CONFIG = [
   {
     color: "#ffffff",
-    intensity: 50.7,
+    intensity: 78,
     position: [-14, 10, 5],
     rotation: [0, -0.35, 0.2],
     scale: [0.08, 5.5, 1.2],
   },
   {
     color: "#ffffff",
-    intensity: 40.6,
+    intensity: 62.4,
     position: [14, 8, -3],
     rotation: [0, 0.45, -0.25],
     scale: [0.08, 4.2, 1],
   },
   {
     color: "#ffffff",
-    intensity: 58.5,
+    intensity: 90,
     position: [0, 16, -10],
     rotation: [0.45, 0, 0.1],
     scale: [5, 0.08, 1.1],
