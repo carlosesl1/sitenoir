@@ -11,10 +11,12 @@ export interface HeroCanvasUiSpectralBeam {
   readonly widthStart: number;
 }
 
+export const HERO_CANVAS_UI_SPECTRAL_STREAK_ANGLE = 0.58;
+
 export const HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG = {
   beams: [
     {
-      angle: -0.65,
+      angle: HERO_CANVAS_UI_SPECTRAL_STREAK_ANGLE,
       breakup: 0.12,
       center: [0.24, 0.64],
       curve: 0.012,
@@ -26,7 +28,7 @@ export const HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG = {
       widthStart: 0.018,
     },
     {
-      angle: 0.48,
+      angle: HERO_CANVAS_UI_SPECTRAL_STREAK_ANGLE,
       breakup: 0.16,
       center: [0.44, 0.46],
       curve: -0.01,
@@ -38,7 +40,7 @@ export const HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG = {
       widthStart: 0.02,
     },
     {
-      angle: -0.42,
+      angle: HERO_CANVAS_UI_SPECTRAL_STREAK_ANGLE,
       breakup: 0.2,
       center: [0.63, 0.65],
       curve: 0.009,
@@ -50,7 +52,7 @@ export const HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG = {
       widthStart: 0.014,
     },
     {
-      angle: 0.62,
+      angle: HERO_CANVAS_UI_SPECTRAL_STREAK_ANGLE,
       breakup: 0.22,
       center: [0.78, 0.53],
       curve: -0.008,

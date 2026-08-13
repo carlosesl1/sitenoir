@@ -15,16 +15,27 @@ describe("Canvas UI spectral source", () => {
     expect(existsSync(configPath)).toBe(true);
     if (!existsSync(configPath)) return;
 
-    const { HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG, resolveHeroCanvasUiSpectralIntensity } =
-      await import(configModulePath);
+    const {
+      HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG,
+      HERO_CANVAS_UI_SPECTRAL_STREAK_ANGLE,
+      resolveHeroCanvasUiSpectralIntensity,
+    } = await import(configModulePath);
 
     expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.beams).toHaveLength(4);
     expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.desktopIntensity).toBe(0.52);
     expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.mobileIntensity).toBe(0.4);
     expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.mobileBreakpoint).toBe(768);
+    expect(HERO_CANVAS_UI_SPECTRAL_STREAK_ANGLE).toBe(0.58);
+    expect(
+      new Set(
+        HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.beams.map(
+          ({ angle }: { readonly angle: number }) => angle,
+        ),
+      ),
+    ).toEqual(new Set([HERO_CANVAS_UI_SPECTRAL_STREAK_ANGLE]));
     expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.beams).toMatchObject([
       {
-        angle: -0.65,
+        angle: 0.58,
         breakup: 0.12,
         center: [0.24, 0.64],
         curve: 0.012,
@@ -34,7 +45,7 @@ describe("Canvas UI spectral source", () => {
         widthStart: 0.018,
       },
       {
-        angle: 0.48,
+        angle: 0.58,
         breakup: 0.16,
         center: [0.44, 0.46],
         curve: -0.01,
@@ -44,7 +55,7 @@ describe("Canvas UI spectral source", () => {
         widthStart: 0.02,
       },
       {
-        angle: -0.42,
+        angle: 0.58,
         breakup: 0.2,
         center: [0.63, 0.65],
         curve: 0.009,
@@ -54,7 +65,7 @@ describe("Canvas UI spectral source", () => {
         widthStart: 0.014,
       },
       {
-        angle: 0.62,
+        angle: 0.58,
         breakup: 0.22,
         center: [0.78, 0.53],
         curve: -0.008,
@@ -129,7 +140,7 @@ describe("Canvas UI spectral source", () => {
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER.match(/spectralBeam\(/g)).toHaveLength(5);
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("uniform float uIntensity");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain(
-      "0.15, 0.018, 0.0396, 0.024, 0.012, 0.12, 1.0, 0.0)",
+      "0.58, 0.15, 0.018, 0.0396, 0.024, 0.012, 0.12, 1.0, 0.0)",
     );
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("uTime");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("uPointer");
