@@ -33,7 +33,6 @@ export function HeroModel({
   scrollProgress,
 }: HeroModelProps) {
   const groupRef = useRef<Group>(null);
-  const GlassAsset = heroGlassVariant === "canvas-ui" ? HeroCanvasUiGlassAsset : HeroGlassAsset;
   useFrame((_state, delta) => {
     const frameDelta = resolveSceneFrameDelta(delta);
     const group = groupRef.current;
@@ -74,7 +73,11 @@ export function HeroModel({
       ]}
       scale={layout.scale}
     >
-      <GlassAsset reducedMotion={reducedMotion} sceneScale={layout.scale} />
+      {heroGlassVariant === "canvas-ui" ? (
+        <HeroCanvasUiGlassAsset sceneScale={layout.scale} />
+      ) : (
+        <HeroGlassAsset />
+      )}
     </group>
   );
 }

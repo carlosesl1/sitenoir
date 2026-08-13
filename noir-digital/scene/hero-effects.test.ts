@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  computeHeroLightTarget,
   HERO_BACKGROUND_CONFIG,
   HERO_BACKGROUND_PASS_ORDER,
   pointerSnapshotToUv,
@@ -38,15 +37,5 @@ describe("hero effects source contract", () => {
     // Then the shader receives the same source coordinate convention
     expect(pointerSnapshotToUv({ normalizedX: 1, normalizedY: 1 })).toEqual({ x: 1, y: 1 });
     expect(pointerSnapshotToUv({ normalizedX: -1, normalizedY: -1 })).toEqual({ x: 0, y: 0 });
-  });
-
-  it("keeps the source light radius while rotating toward the pointer", () => {
-    // Given the pointer at the center-right of the viewport
-    // When the target light position is resolved
-    // Then the source orbit radius is preserved
-    const target = computeHeroLightTarget({ x: 1, y: 0.5 });
-    expect(Math.hypot(target.x, target.y)).toBeCloseTo(Math.hypot(4, 9), 8);
-    expect(target.x).toBeLessThan(0);
-    expect(Math.abs(target.y)).toBeLessThan(0.000_001);
   });
 });

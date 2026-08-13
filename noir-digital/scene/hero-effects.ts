@@ -49,21 +49,3 @@ export function pointerSnapshotToUv(pointer: NormalizedPointer): HeroPointerUv {
     y: Math.min(1, Math.max(0, (pointer.normalizedY + 1) / 2)),
   };
 }
-
-const HERO_LIGHT_BASE_X = 4;
-const HERO_LIGHT_BASE_Y = 9;
-const HERO_LIGHT_RADIUS = Math.hypot(HERO_LIGHT_BASE_X, HERO_LIGHT_BASE_Y);
-
-export function computeHeroLightTarget(pointer: HeroPointerUv): HeroPointerUv {
-  const worldX = 2 * pointer.x - 1;
-  const worldY = 2 * pointer.y - 1;
-  if (worldX * worldX + worldY * worldY < Number.EPSILON) {
-    return { x: HERO_LIGHT_BASE_X, y: HERO_LIGHT_BASE_Y };
-  }
-
-  const angle = Math.atan2(-worldY, -worldX);
-  return {
-    x: HERO_LIGHT_RADIUS * Math.cos(angle),
-    y: HERO_LIGHT_RADIUS * Math.sin(angle),
-  };
-}

@@ -22,13 +22,9 @@ describe("Canvas UI neutral glass rim", () => {
     expect(HERO_CANVAS_UI_RIM_CONFIG.coreOpacity).toBeLessThanOrEqual(0.92);
     expect(HERO_CANVAS_UI_RIM_CONFIG.haloOpacity).toBeGreaterThanOrEqual(0.12);
     expect(HERO_CANVAS_UI_RIM_CONFIG.haloOpacity).toBeLessThanOrEqual(0.2);
-    expect(HERO_CANVAS_UI_RIM_CONFIG.pointerLightOpacity).toBeGreaterThanOrEqual(0.1);
-    expect(HERO_CANVAS_UI_RIM_CONFIG.pointerLightOpacity).toBeLessThanOrEqual(0.14);
-    expect(HERO_CANVAS_UI_RIM_CONFIG.pointerLightRadius).toBeGreaterThanOrEqual(0.36);
-    expect(HERO_CANVAS_UI_RIM_CONFIG.pointerLightRadius).toBeLessThanOrEqual(0.48);
   });
 
-  it("adds a broad neutral pointer light without spectral color", async () => {
+  it("keeps the neutral Fresnel rim without pointer-bound illumination", async () => {
     expect(existsSync(shaderPath)).toBe(true);
     if (!existsSync(shaderPath)) return;
 
@@ -38,12 +34,12 @@ describe("Canvas UI neutral glass rim", () => {
 
     expect(HERO_CANVAS_UI_RIM_VERTEX_SHADER).toContain("vViewNormal");
     expect(HERO_CANVAS_UI_RIM_VERTEX_SHADER).toContain("vViewDirection");
-    expect(HERO_CANVAS_UI_RIM_VERTEX_SHADER).toContain("vScreenUv");
+    expect(HERO_CANVAS_UI_RIM_VERTEX_SHADER).not.toContain("vScreenUv");
     expect(HERO_CANVAS_UI_RIM_FRAGMENT_SHADER).toContain("1.0 - abs(dot");
     expect(HERO_CANVAS_UI_RIM_FRAGMENT_SHADER).toContain("float core = smoothstep");
     expect(HERO_CANVAS_UI_RIM_FRAGMENT_SHADER).toContain("float halo = smoothstep");
-    expect(HERO_CANVAS_UI_RIM_FRAGMENT_SHADER).toContain("uniform vec2 uPointerLightPosition");
-    expect(HERO_CANVAS_UI_RIM_FRAGMENT_SHADER).toContain("float pointerLight = 1.0 - smoothstep");
+    expect(HERO_CANVAS_UI_RIM_FRAGMENT_SHADER).not.toContain("uPointerLight");
+    expect(HERO_CANVAS_UI_RIM_FRAGMENT_SHADER).not.toContain("pointerLight");
     expect(HERO_CANVAS_UI_RIM_FRAGMENT_SHADER).not.toContain("spectralPalette");
     expect(HERO_CANVAS_UI_RIM_FRAGMENT_SHADER).not.toContain("uTime");
   });

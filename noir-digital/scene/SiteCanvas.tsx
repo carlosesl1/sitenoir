@@ -12,7 +12,6 @@ import { HeroFluidProvider } from "@/scene/HeroFluidProvider";
 import { HeroLensFlare } from "@/scene/HeroLensFlare";
 import { HeroModel } from "@/scene/HeroModel";
 import { HeroOpticalBackground } from "@/scene/HeroOpticalBackground";
-import { HeroPointerLight } from "@/scene/HeroPointerLight";
 import { HeroRefractionBuffer } from "@/scene/HeroRefractionBuffer";
 import type { HeroGlassVariant } from "@/scene/hero-glass-variant";
 import { PersistentSiteGrid } from "@/scene/PersistentSiteGrid";
@@ -236,7 +235,6 @@ export function SiteCanvas({
             <AmbientSceneReadyMarker />
           ) : (
             <>
-              <HeroPointerLight reducedMotion={deterministicMotion} />
               <HeroRefractionBuffer
                 active={!principleScene.active}
                 resolutionScale={qualityConfig.refractionResolutionScale}

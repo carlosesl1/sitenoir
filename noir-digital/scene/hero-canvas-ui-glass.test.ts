@@ -25,7 +25,9 @@ describe("Canvas UI hero glass integration", () => {
       'import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";',
     );
     expect(source).toContain("const { texture } = useHeroRefraction();");
-    expect(source).toContain('import { pointerStore } from "@/features/pointer/pointer-store";');
+    expect(source).not.toContain(
+      'import { pointerStore } from "@/features/pointer/pointer-store";',
+    );
     expect(source).toContain("createHeroCanvasUiEnvironment(gl)");
     expect(source).toContain("resolveHeroCanvasUiSamples(width)");
     expect(source).toContain("buffer={texture}");
@@ -36,10 +38,7 @@ describe("Canvas UI hero glass integration", () => {
     expect(source).toContain("HERO_CANVAS_UI_RIM_CONFIG as rimConfig");
     expect(source).toContain("HERO_CANVAS_UI_RIM_FRAGMENT_SHADER");
     expect(source).toContain("HERO_CANVAS_UI_RIM_VERTEX_SHADER");
-    expect(source).toContain("uPointerLightPosition: { value: new Vector2(0.5, 0.5) }");
-    expect(source).toContain(
-      "rimUniforms.uPointerLightPosition.value.lerp(pointerLightTarget, smoothing)",
-    );
+    expect(source).not.toContain("uPointerLight");
     expect(source).toContain("renderOrder={1}");
     expect(source).toMatch(/<MeshTransmissionMaterial[\s\S]*?depthWrite[\s\S]*?transparent/);
     expect(source).toContain("depthWrite={false}");
