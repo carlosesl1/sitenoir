@@ -23,10 +23,46 @@ describe("Canvas UI spectral source", () => {
     expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.mobileIntensity).toBe(0.4);
     expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.mobileBreakpoint).toBe(768);
     expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.beams).toMatchObject([
-      { angle: -0.65, center: [0.24, 0.64], length: 0.15, width: 0.04 },
-      { angle: 0.48, center: [0.44, 0.46], length: 0.18, width: 0.048 },
-      { angle: -0.42, center: [0.63, 0.65], length: 0.13, width: 0.035 },
-      { angle: 0.62, center: [0.78, 0.53], length: 0.14, width: 0.032 },
+      {
+        angle: -0.65,
+        breakup: 0.12,
+        center: [0.24, 0.64],
+        curve: 0.012,
+        length: 0.15,
+        widthEnd: 0.024,
+        widthMid: 0.044,
+        widthStart: 0.018,
+      },
+      {
+        angle: 0.48,
+        breakup: 0.16,
+        center: [0.44, 0.46],
+        curve: -0.01,
+        length: 0.18,
+        widthEnd: 0.018,
+        widthMid: 0.05,
+        widthStart: 0.02,
+      },
+      {
+        angle: -0.42,
+        breakup: 0.2,
+        center: [0.63, 0.65],
+        curve: 0.009,
+        length: 0.13,
+        widthEnd: 0.021,
+        widthMid: 0.038,
+        widthStart: 0.014,
+      },
+      {
+        angle: 0.62,
+        breakup: 0.22,
+        center: [0.78, 0.53],
+        curve: -0.008,
+        length: 0.14,
+        widthEnd: 0.016,
+        widthMid: 0.034,
+        widthStart: 0.012,
+      },
     ]);
     expect(resolveHeroCanvasUiSpectralIntensity(1440)).toBe(0.52);
     expect(resolveHeroCanvasUiSpectralIntensity(767)).toBe(0.4);
@@ -36,9 +72,14 @@ describe("Canvas UI spectral source", () => {
       expect(beam.center[0]).toBeLessThanOrEqual(1);
       expect(beam.center[1]).toBeGreaterThanOrEqual(0);
       expect(beam.center[1]).toBeLessThanOrEqual(1);
-      expect(beam.width).toBeGreaterThan(0);
-      expect(beam.width).toBeLessThan(0.1);
-      expect(beam.length).toBeGreaterThan(beam.width);
+      expect(beam.widthStart).toBeGreaterThan(0);
+      expect(beam.widthMid).toBeGreaterThan(beam.widthStart);
+      expect(beam.widthMid).toBeGreaterThan(beam.widthEnd);
+      expect(beam.widthMid).toBeLessThan(0.08);
+      expect(beam.length).toBeGreaterThan(beam.widthMid);
+      expect(Math.abs(beam.curve)).toBeLessThanOrEqual(0.015);
+      expect(beam.breakup).toBeGreaterThanOrEqual(0);
+      expect(beam.breakup).toBeLessThanOrEqual(0.25);
       expect(beam.strength).toBeGreaterThan(0);
       expect(beam.strength).toBeLessThanOrEqual(1);
     }

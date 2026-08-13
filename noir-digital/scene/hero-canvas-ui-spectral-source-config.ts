@@ -1,18 +1,66 @@
 export interface HeroCanvasUiSpectralBeam {
   readonly angle: number;
+  readonly breakup: number;
   readonly center: readonly [number, number];
+  readonly curve: number;
   readonly length: number;
   readonly phase: number;
   readonly strength: number;
-  readonly width: number;
+  readonly widthEnd: number;
+  readonly widthMid: number;
+  readonly widthStart: number;
 }
 
 export const HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG = {
   beams: [
-    { angle: -0.65, center: [0.24, 0.64], length: 0.15, phase: 0, strength: 1, width: 0.04 },
-    { angle: 0.48, center: [0.44, 0.46], length: 0.18, phase: 0.08, strength: 0.88, width: 0.048 },
-    { angle: -0.42, center: [0.63, 0.65], length: 0.13, phase: 0.16, strength: 0.78, width: 0.035 },
-    { angle: 0.62, center: [0.78, 0.53], length: 0.14, phase: 0.22, strength: 0.62, width: 0.032 },
+    {
+      angle: -0.65,
+      breakup: 0.12,
+      center: [0.24, 0.64],
+      curve: 0.012,
+      length: 0.15,
+      phase: 0,
+      strength: 1,
+      widthEnd: 0.024,
+      widthMid: 0.044,
+      widthStart: 0.018,
+    },
+    {
+      angle: 0.48,
+      breakup: 0.16,
+      center: [0.44, 0.46],
+      curve: -0.01,
+      length: 0.18,
+      phase: 0.08,
+      strength: 0.88,
+      widthEnd: 0.018,
+      widthMid: 0.05,
+      widthStart: 0.02,
+    },
+    {
+      angle: -0.42,
+      breakup: 0.2,
+      center: [0.63, 0.65],
+      curve: 0.009,
+      length: 0.13,
+      phase: 0.16,
+      strength: 0.78,
+      widthEnd: 0.021,
+      widthMid: 0.038,
+      widthStart: 0.014,
+    },
+    {
+      angle: 0.62,
+      breakup: 0.22,
+      center: [0.78, 0.53],
+      curve: -0.008,
+      length: 0.14,
+      phase: 0.22,
+      strength: 0.62,
+      widthEnd: 0.016,
+      widthMid: 0.034,
+      widthStart: 0.012,
+    },
   ] satisfies readonly HeroCanvasUiSpectralBeam[],
   desktopIntensity: 0.52,
   mobileBreakpoint: 768,
