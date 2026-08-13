@@ -1,7 +1,7 @@
 # NOIR Home Hero Fast Entry — Design
 
 **Date:** 2026-08-13
-**Status:** Approved in conversation
+**Status:** Revised after browser review
 **Surface:** Initial home-page entry and hero readiness
 
 ## Objective
@@ -12,11 +12,11 @@ The measured production build paints at 188 ms and settles the hero WebGL scene 
 
 ## Approaches considered
 
-### 1. Compress the existing entry and decouple it from WebGL readiness — selected
+### 1. Keep the readable entry and decouple it from WebGL readiness — selected
 
-Keep every visual beat and the dotted reveal, but shorten the choreography and allow the page to reveal once the document, fonts, symbol, and reveal shader are ready. The hero canvas continues loading independently and appears in its reserved fixed layer when ready.
+Keep every visual beat at its original readable speed and allow the page to reveal as soon as the document, fonts, symbol, and reveal shader are ready. The hero canvas continues loading independently and appears in its reserved fixed layer when ready.
 
-This provides the largest perceived improvement with the smallest visual change. A slow or unsupported GPU no longer holds the whole page behind an ornamental loader.
+This preserves the approved brand animation while ensuring that no post-animation hold or slow GPU keeps the page covered.
 
 ### 2. Remove the entry preloader
 
@@ -28,17 +28,17 @@ This can reduce GPU startup work further, but risks changing the approved dotted
 
 ## Selected behavior
 
-- Compress the NOIR symbol sequence from 2,600 ms to **1,400 ms** while preserving pulse, flight, draw, ignition, fill, and settle beats.
-- Reduce the post-gate reveal delay from 250 ms to **80 ms**.
+- Keep the NOIR symbol sequence at its readable **2,600 ms** duration, preserving pulse, flight, draw, ignition, fill, and settle beats.
+- Remove the post-gate reveal delay so the page starts opening immediately when the symbol completes.
 - Reduce the dotted reveal duration from 800 ms to **520 ms**.
-- Start hero text **360 ms before** the reveal completes, so it begins 160 ms after the reveal starts.
+- Start hero text at the same moment as the dotted reveal.
 - Do not require `sceneReady` to uncover the HTML hero.
 - Keep the canvas mounted immediately during entry so WebGL initialization continues in parallel.
 - Keep the existing stable canvas layer and no-layout-shift behavior. If WebGL is late, the typography and background appear first; the NOIR model appears when its current readiness marker completes.
 - Keep route-transition and reduced-motion shortcuts unchanged.
 - Keep the existing progressive loading of stickers and contact models after the entry and headline settle.
 
-Expected local timing is approximately 1.6 seconds for hero text and 2.0 seconds for full preloader removal, instead of 3.4 and 3.9 seconds respectively. Browser measurement, not the estimate, decides whether the batch is retained.
+The browser-reviewed target is a readable symbol followed by immediate site reveal, with full preloader removal 520 ms later. Browser measurement, not a timing estimate, decides whether the batch is retained.
 
 ## Architecture
 

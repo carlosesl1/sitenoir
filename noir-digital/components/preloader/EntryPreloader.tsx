@@ -9,9 +9,7 @@ import { NoirSymbolPreloaderMark } from "@/components/preloader/NoirSymbolPreloa
 
 import styles from "./EntryPreloader.module.css";
 
-const REVEAL_DELAY_MS = 80;
 const REVEAL_DURATION_MS = 520;
-const TEXT_REVEAL_LEAD_MS = 360;
 
 export function EntryPreloader() {
   const reducedMotion = useReducedMotion() ?? false;
@@ -84,19 +82,15 @@ export function EntryPreloader() {
       return;
     }
 
-    const revealTimer = window.setTimeout(() => setPhase("revealing"), REVEAL_DELAY_MS);
-    return () => window.clearTimeout(revealTimer);
+    setPhase("revealing");
   }, [entryCanReveal, phase, reducedMotion]);
 
   useEffect(() => {
     if (phase !== "revealing") return;
 
-    const textRevealTimer = window.setTimeout(() => {
-      document.documentElement.dataset["entryTextReady"] = "true";
-    }, REVEAL_DURATION_MS - TEXT_REVEAL_LEAD_MS);
+    document.documentElement.dataset["entryTextReady"] = "true";
     const doneTimer = window.setTimeout(() => setPhase("done"), REVEAL_DURATION_MS);
     return () => {
-      window.clearTimeout(textRevealTimer);
       window.clearTimeout(doneTimer);
     };
   }, [phase]);

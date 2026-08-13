@@ -39,23 +39,19 @@ describe("EntryPreloader", () => {
     delete document.documentElement.dataset["sceneReady"];
   });
 
-  it("starts the hero text 360ms before the faster opening reveal finishes", async () => {
+  it("starts opening the site as soon as the readable symbol sequence finishes", async () => {
     render(<EntryPreloader />);
     act(() => symbolControl.complete?.());
     window.dispatchEvent(new Event("load"));
 
     await act(async () => vi.advanceTimersByTimeAsync(20));
-    await act(async () => vi.advanceTimersByTimeAsync(80));
-    await act(async () => vi.advanceTimersByTimeAsync(159));
-
-    expect(document.documentElement.dataset["entryTextReady"]).toBeUndefined();
-    expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
-
-    await act(async () => vi.advanceTimersByTimeAsync(1));
     expect(document.documentElement.dataset["entryTextReady"]).toBe("true");
     expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
 
-    await act(async () => vi.advanceTimersByTimeAsync(360));
+    await act(async () => vi.advanceTimersByTimeAsync(519));
+    expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
+
+    await act(async () => vi.advanceTimersByTimeAsync(1));
     expect(document.documentElement.dataset["entryReady"]).toBe("true");
   });
 
@@ -67,7 +63,6 @@ describe("EntryPreloader", () => {
     expect(document.documentElement.dataset["entryLoading"]).toBe("true");
 
     await act(async () => vi.advanceTimersByTimeAsync(20));
-    await act(async () => vi.advanceTimersByTimeAsync(80));
     await act(async () => vi.advanceTimersByTimeAsync(520));
 
     expect(view.container.firstChild).toBeNull();
@@ -81,7 +76,6 @@ describe("EntryPreloader", () => {
     window.dispatchEvent(new Event("load"));
 
     await act(async () => vi.advanceTimersByTimeAsync(20));
-    await act(async () => vi.advanceTimersByTimeAsync(80));
     await act(async () => vi.advanceTimersByTimeAsync(520));
 
     expect(view.container.firstChild).toBeNull();
@@ -98,7 +92,6 @@ describe("EntryPreloader", () => {
     expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
 
     act(() => symbolControl.complete?.());
-    await act(async () => vi.advanceTimersByTimeAsync(80));
     await act(async () => vi.advanceTimersByTimeAsync(520));
 
     expect(view.container.firstChild).toBeNull();
@@ -123,7 +116,6 @@ describe("EntryPreloader", () => {
     expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
 
     act(() => idleCallback?.({ didTimeout: false, timeRemaining: () => 10 }));
-    await act(async () => vi.advanceTimersByTimeAsync(80));
     await act(async () => vi.advanceTimersByTimeAsync(520));
 
     expect(view.container.firstChild).toBeNull();
