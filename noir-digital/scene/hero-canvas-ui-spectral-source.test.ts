@@ -45,15 +45,31 @@ describe("Canvas UI spectral source", () => {
     expect(resolveHeroCanvasUiSpectralIntensity(1440)).toBe(0.52);
     expect(resolveHeroCanvasUiSpectralIntensity(767)).toBe(0.4);
 
+    const fragmentCenters = HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.fragments.map(
+      ({ center }: { readonly center: readonly [number, number] }) => center,
+    );
+    expect(fragmentCenters).toEqual([
+      [0.205, 0.61],
+      [0.275, 0.725],
+      [0.345, 0.56],
+      [0.395, 0.54],
+      [0.505, 0.72],
+      [0.54, 0.52],
+      [0.585, 0.715],
+      [0.595, 0.565],
+      [0.655, 0.59],
+      [0.745, 0.635],
+    ]);
+
     for (const fragment of HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.fragments) {
-      expect(fragment.center[0]).toBeGreaterThanOrEqual(0);
-      expect(fragment.center[0]).toBeLessThanOrEqual(1);
-      expect(fragment.center[1]).toBeGreaterThanOrEqual(0);
-      expect(fragment.center[1]).toBeLessThanOrEqual(1);
+      expect(fragment.center[0]).toBeGreaterThanOrEqual(0.19);
+      expect(fragment.center[0]).toBeLessThanOrEqual(0.78);
+      expect(fragment.center[1]).toBeGreaterThanOrEqual(0.48);
+      expect(fragment.center[1]).toBeLessThanOrEqual(0.74);
       expect(fragment.size[0]).toBeGreaterThan(0);
-      expect(fragment.size[0]).toBeLessThanOrEqual(0.13);
+      expect(fragment.size[0]).toBeLessThanOrEqual(0.078);
       expect(fragment.size[1]).toBeGreaterThan(0);
-      expect(fragment.size[1]).toBeLessThanOrEqual(0.05);
+      expect(fragment.size[1]).toBeLessThanOrEqual(0.035);
       expect(fragment.strength).toBeGreaterThan(0);
       expect(fragment.strength).toBeLessThanOrEqual(1);
       expect(fragment.softness).toBeGreaterThanOrEqual(0.55);
@@ -99,7 +115,7 @@ describe("Canvas UI spectral source", () => {
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("fract(value)");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("uniform float uIntensity");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain(
-      "vec2(0.16, 0.63), vec2(0.105, 0.038), 0.58, 0.0, 0.9, 0.7, 0.12, 0.0, 0.0, 1.0)",
+      "vec2(0.205, 0.61), vec2(0.066, 0.032), 0.58, 0.0, 0.82, 0.74, 0.1, 0.0, 0.0, 1.0)",
     );
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("whiteCore");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("uTime");
