@@ -112,16 +112,27 @@ describe("Canvas UI spectral source", () => {
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("float whiteCore");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("mix(paletteColor, vec3(1.0)");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("return paletteColor * 2.2");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("smoothstep(0.18, 0.72, transverse)");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("streakWidth");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("asymmetricEnvelope");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("curvedCenterline");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("breakupMask");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("widthStart");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("widthMid");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("widthEnd");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain(
+      "exp(-pow(abs(point.y) / width, 2.0))",
+    );
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("float red = exp");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("hsvToRgb");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("fract(value)");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("spectralBeam");
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER.match(/spectralBeam\(/g)).toHaveLength(5);
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("uniform float uIntensity");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain("0.15, 1.0, 0.0)");
-    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("0.15, 1, 0)");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).toContain(
+      "0.15, 0.018, 0.044, 0.024, 0.012, 0.12, 1.0, 0.0)",
+    );
     expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("uTime");
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_SHADER).not.toContain("uPointer");
   });
 
   it("uses a transparent additive material that cannot write depth", async () => {
