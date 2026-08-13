@@ -27,7 +27,7 @@ describe("Canvas UI hero glass configuration", () => {
     });
     expect(HERO_CANVAS_UI_REFLECTOR_CONFIG).toHaveLength(3);
     expect(HERO_CANVAS_UI_REFLECTOR_CONFIG.map((reflector) => reflector.intensity)).toEqual([
-      78, 62.4, 90,
+      50.7, 40.6, 58.5,
     ]);
     expect(
       HERO_CANVAS_UI_REFLECTOR_CONFIG.every((reflector) => reflector.color === "#ffffff"),

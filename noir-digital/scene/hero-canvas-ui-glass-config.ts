@@ -17,21 +17,21 @@ export const HERO_CANVAS_UI_GLASS_CONFIG = {
 export const HERO_CANVAS_UI_REFLECTOR_CONFIG = [
   {
     color: "#ffffff",
-    intensity: 78,
+    intensity: 50.7,
     position: [-14, 10, 5],
     rotation: [0, -0.35, 0.2],
     scale: [0.08, 5.5, 1.2],
   },
   {
     color: "#ffffff",
-    intensity: 62.4,
+    intensity: 40.6,
     position: [14, 8, -3],
     rotation: [0, 0.45, -0.25],
     scale: [0.08, 4.2, 1],
   },
   {
     color: "#ffffff",
-    intensity: 90,
+    intensity: 58.5,
     position: [0, 16, -10],
     rotation: [0.45, 0, 0.1],
     scale: [5, 0.08, 1.1],
