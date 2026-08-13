@@ -5,6 +5,7 @@ import { createContext, type ReactNode, useContext, useEffect, useMemo } from "r
 import { HalfFloatType, LinearFilter, type Texture, Vector2, WebGLRenderTarget } from "three";
 
 import { CONTACT_FLARE_LAYER } from "@/scene/contact-flare-layer";
+import { resolveHeroCanvasUiRefractionScale } from "@/scene/hero-canvas-ui-glass-config";
 import { createHeroCanvasUiSpectralSource } from "@/scene/hero-canvas-ui-spectral-source";
 import { resolveHeroCanvasUiSpectralIntensity } from "@/scene/hero-canvas-ui-spectral-source-config";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
@@ -65,15 +66,26 @@ export function HeroRefractionBuffer({
   useEffect(() => {
     const pixelRatio = gl.getPixelRatio();
     const maximumTextureSize = gl.capabilities.maxTextureSize;
+    const effectiveResolutionScale = spectralSourceActive
+      ? resolveHeroCanvasUiRefractionScale(resolutionScale, size.width)
+      : resolutionScale;
     screenResolution.set(
       Math.min(maximumTextureSize, size.width * pixelRatio),
       Math.min(maximumTextureSize, size.height * pixelRatio),
     );
     target.setSize(
-      Math.max(1, Math.floor(screenResolution.x * resolutionScale)),
-      Math.max(1, Math.floor(screenResolution.y * resolutionScale)),
+      Math.max(1, Math.floor(screenResolution.x * effectiveResolutionScale)),
+      Math.max(1, Math.floor(screenResolution.y * effectiveResolutionScale)),
     );
-  }, [gl, resolutionScale, screenResolution, size.height, size.width, target]);
+  }, [
+    gl,
+    resolutionScale,
+    screenResolution,
+    size.height,
+    size.width,
+    spectralSourceActive,
+    target,
+  ]);
 
   useEffect(() => () => target.dispose(), [target]);
   useEffect(() => () => spectralSource?.dispose(), [spectralSource]);

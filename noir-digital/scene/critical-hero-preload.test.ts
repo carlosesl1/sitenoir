@@ -35,8 +35,27 @@ describe("critical hero preloads", () => {
   it("ships the optimized reference model as a valid compact GLB", () => {
     const assetPath = join(process.cwd(), "public", HERO_MODEL_SOURCE.slice(1));
     const bytes = readFileSync(assetPath);
+    const jsonChunkLength = bytes.readUInt32LE(12);
+    const document = JSON.parse(bytes.subarray(20, 20 + jsonChunkLength).toString("utf8")) as {
+      accessors?: { count?: number }[];
+      meshes?: { primitives?: { indices?: number }[] }[];
+    };
+    const triangleCount = (document.meshes ?? []).reduce(
+      (total, mesh) =>
+        total +
+        (mesh.primitives ?? []).reduce((meshTotal, primitive) => {
+          const indexCount =
+            primitive.indices === undefined
+              ? 0
+              : (document.accessors?.[primitive.indices]?.count ?? 0);
+          return meshTotal + indexCount / 3;
+        }, 0),
+      0,
+    );
 
     expect(bytes.subarray(0, 4).toString("ascii")).toBe("glTF");
-    expect(statSync(assetPath).size).toBeLessThan(800_000);
+    expect(statSync(assetPath).size).toBeLessThan(150_000);
+    expect(triangleCount).toBeGreaterThanOrEqual(8_000);
+    expect(triangleCount).toBeLessThanOrEqual(12_000);
   });
 });

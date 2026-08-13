@@ -27,6 +27,7 @@ describe("Canvas UI hero glass integration", () => {
     expect(source).toContain("const { texture } = useHeroRefraction();");
     expect(source).toContain('import { pointerStore } from "@/features/pointer/pointer-store";');
     expect(source).toContain("createHeroCanvasUiEnvironment(gl)");
+    expect(source).toContain("resolveHeroCanvasUiSamples(width)");
     expect(source).toContain("buffer={texture}");
     expect(source.match(/<mesh\b/g)).toHaveLength(2);
     expect(source.match(/geometry=\{geometry\}/g)).toHaveLength(2);
@@ -49,6 +50,16 @@ describe("Canvas UI hero glass integration", () => {
     expect(source).not.toContain("createHeroCanvasUiSpectrum");
     expect(source).not.toContain("new RoomEnvironment");
     expect(configSource).not.toContain("dispersion:");
+  });
+
+  it("uses the responsive Canvas UI refraction scale in the capture buffer", () => {
+    const bufferSource = readFileSync(
+      join(process.cwd(), "scene/HeroRefractionBuffer.tsx"),
+      "utf8",
+    );
+
+    expect(bufferSource).toContain("resolveHeroCanvasUiRefractionScale(");
+    expect(bufferSource).toContain("resolutionScale, size.width");
   });
 
   it("declares the compatible Drei version as a runtime dependency", () => {

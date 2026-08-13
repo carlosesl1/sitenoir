@@ -12,6 +12,7 @@ import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
 import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";
 import {
   HERO_CANVAS_UI_GLASS_CONFIG as glassConfig,
+  resolveHeroCanvasUiSamples,
   resolveHeroCanvasUiThickness,
 } from "@/scene/hero-canvas-ui-glass-config";
 import { HERO_CANVAS_UI_RIM_CONFIG as rimConfig } from "@/scene/hero-canvas-ui-rim-config";
@@ -33,6 +34,7 @@ interface HeroCanvasUiGlassAssetProps {
 export function HeroCanvasUiGlassAsset({ reducedMotion, sceneScale }: HeroCanvasUiGlassAssetProps) {
   const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
   const gl = useThree((state) => state.gl);
+  const width = useThree((state) => state.size.width);
   const { texture } = useHeroRefraction();
   const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
   const environment = useMemo<WebGLRenderTarget>(() => createHeroCanvasUiEnvironment(gl), [gl]);
@@ -87,7 +89,7 @@ export function HeroCanvasUiGlassAsset({ reducedMotion, sceneScale }: HeroCanvas
           envMapIntensity={glassConfig.environmentIntensity}
           ior={glassConfig.ior}
           roughness={glassConfig.roughness}
-          samples={glassConfig.samples}
+          samples={resolveHeroCanvasUiSamples(width)}
           thickness={resolveHeroCanvasUiThickness(sceneScale)}
           transmission={glassConfig.transmission}
           transparent

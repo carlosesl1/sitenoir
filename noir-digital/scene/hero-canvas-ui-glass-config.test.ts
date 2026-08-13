@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   HERO_CANVAS_UI_GLASS_CONFIG,
   HERO_CANVAS_UI_REFLECTOR_CONFIG,
+  resolveHeroCanvasUiRefractionScale,
+  resolveHeroCanvasUiSamples,
   resolveHeroCanvasUiThickness,
 } from "@/scene/hero-canvas-ui-glass-config";
 
@@ -47,5 +49,23 @@ describe("Canvas UI hero glass configuration", () => {
     expect(resolveHeroCanvasUiThickness(0.5)).toBe(8);
     expect(resolveHeroCanvasUiThickness(-2)).toBe(2);
     expect(resolveHeroCanvasUiThickness(0)).toBe(40_000);
+  });
+
+  it("reduces transmission samples on narrower viewports", () => {
+    expect(resolveHeroCanvasUiSamples(1440)).toBe(6);
+    expect(resolveHeroCanvasUiSamples(1024)).toBe(6);
+    expect(resolveHeroCanvasUiSamples(1023)).toBe(3);
+    expect(resolveHeroCanvasUiSamples(768)).toBe(3);
+    expect(resolveHeroCanvasUiSamples(767)).toBe(2);
+    expect(resolveHeroCanvasUiSamples(390)).toBe(2);
+  });
+
+  it("reduces the refraction buffer only on narrower viewports", () => {
+    expect(resolveHeroCanvasUiRefractionScale(0.5, 1440)).toBe(0.5);
+    expect(resolveHeroCanvasUiRefractionScale(0.5, 1024)).toBe(0.5);
+    expect(resolveHeroCanvasUiRefractionScale(0.5, 1023)).toBe(0.4375);
+    expect(resolveHeroCanvasUiRefractionScale(0.5, 768)).toBe(0.4375);
+    expect(resolveHeroCanvasUiRefractionScale(0.5, 767)).toBe(0.375);
+    expect(resolveHeroCanvasUiRefractionScale(0.375, 390)).toBe(0.375);
   });
 });

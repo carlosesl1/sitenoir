@@ -38,6 +38,21 @@ export const HERO_CANVAS_UI_REFLECTOR_CONFIG = [
   },
 ] as const;
 
+export function resolveHeroCanvasUiSamples(viewportWidth: number): number {
+  if (viewportWidth < 768) return 2;
+  if (viewportWidth < 1024) return 3;
+  return HERO_CANVAS_UI_GLASS_CONFIG.samples;
+}
+
+export function resolveHeroCanvasUiRefractionScale(
+  resolutionScale: number,
+  viewportWidth: number,
+): number {
+  if (viewportWidth < 768) return Math.min(resolutionScale, 0.375);
+  if (viewportWidth < 1024) return Math.min(resolutionScale, 0.4375);
+  return resolutionScale;
+}
+
 export function resolveHeroCanvasUiThickness(sceneScale: number): number {
   return HERO_CANVAS_UI_GLASS_CONFIG.thickness / Math.max(Math.abs(sceneScale), 0.0001);
 }
