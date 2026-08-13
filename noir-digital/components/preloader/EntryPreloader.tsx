@@ -6,20 +6,18 @@ import { useCallback, useEffect, useState } from "react";
 import { EntryRevealCanvas } from "@/components/preloader/EntryRevealCanvas";
 import { canRevealEntry } from "@/components/preloader/entry-preloader-state";
 import { NoirSymbolPreloaderMark } from "@/components/preloader/NoirSymbolPreloaderMark";
-import { NOIR_SCENE_SETTLED_EVENT } from "@/scene/scene-readiness";
 
 import styles from "./EntryPreloader.module.css";
 
-const REVEAL_DELAY_MS = 250;
-const REVEAL_DURATION_MS = 800;
-const TEXT_REVEAL_LEAD_MS = 500;
+const REVEAL_DELAY_MS = 80;
+const REVEAL_DURATION_MS = 520;
+const TEXT_REVEAL_LEAD_MS = 360;
 
 export function EntryPreloader() {
   const reducedMotion = useReducedMotion() ?? false;
   const [documentReady, setDocumentReady] = useState(false);
   const [fontsReady, setFontsReady] = useState(false);
   const [revealReady, setRevealReady] = useState(false);
-  const [sceneReady, setSceneReady] = useState(false);
   const [symbolReady, setSymbolReady] = useState(reducedMotion);
   const [phase, setPhase] = useState<"loading" | "revealing" | "done">("loading");
   const markRevealReady = useCallback(() => setRevealReady(true), []);
@@ -32,20 +30,10 @@ export function EntryPreloader() {
   const entryCanReveal = canRevealEntry({
     documentReady,
     fontsReady,
-    sceneReady,
     symbolReady,
     revealReady,
     reducedMotion,
   });
-
-  useEffect(() => {
-    if (document.documentElement.dataset["routeTransition"] === "true") return;
-
-    const synchronizeSceneReadiness = () => setSceneReady(window.__NOIR_READY__ === true);
-    synchronizeSceneReadiness();
-    window.addEventListener(NOIR_SCENE_SETTLED_EVENT, synchronizeSceneReadiness);
-    return () => window.removeEventListener(NOIR_SCENE_SETTLED_EVENT, synchronizeSceneReadiness);
-  }, []);
 
   useEffect(() => {
     if (document.documentElement.dataset["routeTransition"] === "true") {

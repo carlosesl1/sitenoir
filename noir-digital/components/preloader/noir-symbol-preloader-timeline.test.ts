@@ -18,14 +18,14 @@ describe("NOIR symbol preloader timeline", () => {
     ]);
   });
 
-  it("completes the accelerated sequence at exactly 2600ms", () => {
-    expect(NOIR_SYMBOL_DURATION_MS).toBe(2_600);
+  it("completes the accelerated sequence at exactly 1400ms", () => {
+    expect(NOIR_SYMBOL_DURATION_MS).toBe(1_400);
     expect(resolveNoirSymbolFrame(0).phase).toBe("void");
-    expect(resolveNoirSymbolFrame(300).phase).toBe("pulse");
-    expect(resolveNoirSymbolFrame(760).phase).toBe("flight");
-    expect(resolveNoirSymbolFrame(1_400).phase).toBe("draw");
-    expect(resolveNoirSymbolFrame(2_080).phase).toBe("ignite");
-    expect(resolveNoirSymbolFrame(2_600)).toMatchObject({
+    expect(resolveNoirSymbolFrame(160).phase).toBe("pulse");
+    expect(resolveNoirSymbolFrame(420).phase).toBe("flight");
+    expect(resolveNoirSymbolFrame(760).phase).toBe("draw");
+    expect(resolveNoirSymbolFrame(1_140).phase).toBe("ignite");
+    expect(resolveNoirSymbolFrame(1_400)).toMatchObject({
       phase: "complete",
       complete: true,
       drawProgress: 1,
@@ -38,7 +38,7 @@ describe("NOIR symbol preloader timeline", () => {
 
     expect(sample).toEqual(resolveNoirSymbolFrame(1_640));
     expect(resolveNoirSymbolFrame(-500)).toEqual(resolveNoirSymbolFrame(0));
-    expect(resolveNoirSymbolFrame(9_000)).toEqual(resolveNoirSymbolFrame(2_600));
+    expect(resolveNoirSymbolFrame(9_000)).toEqual(resolveNoirSymbolFrame(1_400));
     expect(
       [
         sample.heartOpacity,

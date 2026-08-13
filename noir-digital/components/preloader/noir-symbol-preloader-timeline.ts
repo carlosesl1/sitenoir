@@ -1,4 +1,4 @@
-export const NOIR_SYMBOL_DURATION_MS = 2_600;
+export const NOIR_SYMBOL_DURATION_MS = 1_400;
 
 export const NOIR_SYMBOL_FRONTS = [
   { name: "upper-right", contour: 0, seed: 0, end: 0.1344, x: 141.536, y: 58.991 },
@@ -28,17 +28,17 @@ export interface NoirSymbolFrame {
   readonly fillOpacity: number;
 }
 
-const PULSE_START_MS = 100;
-const PULSE_END_MS = 500;
-const FLIGHT_START_MS = 500;
-const FLIGHT_STAGGER_MS = 32;
-const FLIGHT_DURATION_MS = 420;
-const DRAW_START_MS = 1_080;
-const DRAW_END_MS = 1_960;
-const IGNITION_START_MS = 1_960;
-const IGNITION_END_MS = 2_300;
-const FILL_START_MS = 2_140;
-const FILL_END_MS = 2_480;
+const PULSE_START_MS = 50;
+const PULSE_END_MS = 270;
+const FLIGHT_START_MS = 270;
+const FLIGHT_STAGGER_MS = 18;
+const FLIGHT_DURATION_MS = 225;
+const DRAW_START_MS = 580;
+const DRAW_END_MS = 1_055;
+const IGNITION_START_MS = 1_055;
+const IGNITION_END_MS = 1_240;
+const FILL_START_MS = 1_150;
+const FILL_END_MS = 1_340;
 
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));

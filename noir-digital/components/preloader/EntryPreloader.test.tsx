@@ -2,7 +2,6 @@ import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { EntryPreloader } from "@/components/preloader/EntryPreloader";
-import { signalSceneSettled } from "@/scene/scene-readiness";
 
 const motionPreference = vi.hoisted(() => ({ reduced: false }));
 const symbolControl = vi.hoisted(() => ({ complete: null as (() => void) | null }));
@@ -40,14 +39,14 @@ describe("EntryPreloader", () => {
     delete document.documentElement.dataset["sceneReady"];
   });
 
-  it("starts the hero text 500ms before the opening reveal finishes", async () => {
+  it("starts the hero text 360ms before the faster opening reveal finishes", async () => {
     render(<EntryPreloader />);
     act(() => symbolControl.complete?.());
     window.dispatchEvent(new Event("load"));
 
     await act(async () => vi.advanceTimersByTimeAsync(20));
-    await act(async () => vi.advanceTimersByTimeAsync(250));
-    await act(async () => vi.advanceTimersByTimeAsync(299));
+    await act(async () => vi.advanceTimersByTimeAsync(80));
+    await act(async () => vi.advanceTimersByTimeAsync(159));
 
     expect(document.documentElement.dataset["entryTextReady"]).toBeUndefined();
     expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
@@ -56,7 +55,7 @@ describe("EntryPreloader", () => {
     expect(document.documentElement.dataset["entryTextReady"]).toBe("true");
     expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
 
-    await act(async () => vi.advanceTimersByTimeAsync(500));
+    await act(async () => vi.advanceTimersByTimeAsync(360));
     expect(document.documentElement.dataset["entryReady"]).toBe("true");
   });
 
@@ -68,37 +67,28 @@ describe("EntryPreloader", () => {
     expect(document.documentElement.dataset["entryLoading"]).toBe("true");
 
     await act(async () => vi.advanceTimersByTimeAsync(20));
-    await act(async () => vi.advanceTimersByTimeAsync(250));
-    await act(async () => vi.advanceTimersByTimeAsync(800));
+    await act(async () => vi.advanceTimersByTimeAsync(80));
+    await act(async () => vi.advanceTimersByTimeAsync(520));
 
     expect(view.container.firstChild).toBeNull();
     expect(document.documentElement.dataset["entryLoading"]).toBeUndefined();
   });
 
-  it("keeps the site covered until the scene has compiled and rendered", async () => {
+  it("does not keep usable HTML covered while the WebGL scene is pending", async () => {
     window.__NOIR_READY__ = false;
     const view = render(<EntryPreloader />);
     act(() => symbolControl.complete?.());
     window.dispatchEvent(new Event("load"));
 
     await act(async () => vi.advanceTimersByTimeAsync(20));
-    await act(async () => vi.advanceTimersByTimeAsync(2_000));
-
-    expect(view.container.firstChild).not.toBeNull();
-    expect(document.documentElement.dataset["entryLoading"]).toBe("true");
-    expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
-
-    act(() => signalSceneSettled("ready"));
-    await act(async () => vi.advanceTimersByTimeAsync(249));
-    expect(view.container.firstChild).not.toBeNull();
-    await act(async () => vi.advanceTimersByTimeAsync(1));
-    await act(async () => vi.advanceTimersByTimeAsync(800));
+    await act(async () => vi.advanceTimersByTimeAsync(80));
+    await act(async () => vi.advanceTimersByTimeAsync(520));
 
     expect(view.container.firstChild).toBeNull();
     expect(document.documentElement.dataset["entryLoading"]).toBeUndefined();
   });
 
-  it("keeps the site covered when the scene is ready but the symbol is not", async () => {
+  it("keeps the site covered until the symbol is ready", async () => {
     const view = render(<EntryPreloader />);
 
     await act(async () => vi.advanceTimersByTimeAsync(4_000));
@@ -108,29 +98,8 @@ describe("EntryPreloader", () => {
     expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
 
     act(() => symbolControl.complete?.());
-    await act(async () => vi.advanceTimersByTimeAsync(250));
-    await act(async () => vi.advanceTimersByTimeAsync(800));
-
-    expect(view.container.firstChild).toBeNull();
-  });
-
-  it("keeps the site covered when the symbol is ready but the scene is not", async () => {
-    window.__NOIR_READY__ = false;
-    const view = render(<EntryPreloader />);
-    act(() => symbolControl.complete?.());
-
-    await act(async () => vi.advanceTimersByTimeAsync(4_000));
-
-    expect(view.container.firstChild).not.toBeNull();
-    expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
-
-    act(() => signalSceneSettled("ready"));
-    await act(async () => vi.advanceTimersByTimeAsync(249));
-
-    expect(view.container.firstChild).not.toBeNull();
-
-    await act(async () => vi.advanceTimersByTimeAsync(1));
-    await act(async () => vi.advanceTimersByTimeAsync(800));
+    await act(async () => vi.advanceTimersByTimeAsync(80));
+    await act(async () => vi.advanceTimersByTimeAsync(520));
 
     expect(view.container.firstChild).toBeNull();
   });
@@ -154,24 +123,20 @@ describe("EntryPreloader", () => {
     expect(document.documentElement.dataset["entryReady"]).toBeUndefined();
 
     act(() => idleCallback?.({ didTimeout: false, timeRemaining: () => 10 }));
-    await act(async () => vi.advanceTimersByTimeAsync(250));
-    await act(async () => vi.advanceTimersByTimeAsync(800));
+    await act(async () => vi.advanceTimersByTimeAsync(80));
+    await act(async () => vi.advanceTimersByTimeAsync(520));
 
     expect(view.container.firstChild).toBeNull();
     expect(document.documentElement.dataset["entryReady"]).toBe("true");
   });
 
-  it("waits for the scene but skips the reveal animation with reduced motion", async () => {
+  it("does not wait for the scene and skips the reveal animation with reduced motion", async () => {
     motionPreference.reduced = true;
     window.__NOIR_READY__ = false;
     const setTimeout = vi.spyOn(window, "setTimeout");
 
     const view = render(<EntryPreloader />);
 
-    expect(view.container.firstChild).not.toBeNull();
-    expect(document.documentElement.dataset["entryLoading"]).toBe("true");
-
-    act(() => signalSceneSettled("ready"));
     await act(async () => Promise.resolve());
 
     expect(view.container.firstChild).toBeNull();
