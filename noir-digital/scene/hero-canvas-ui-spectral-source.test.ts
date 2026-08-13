@@ -11,88 +11,57 @@ const shaderModulePath = "@/scene/" + "hero-canvas-ui-spectral-source-shaders";
 const sourceModulePath = "@/scene/" + "hero-canvas-ui-spectral-source";
 
 describe("Canvas UI spectral source", () => {
-  it("defines four bounded beams and responsive intensities", async () => {
+  it("defines ten varied bounded fragments and responsive intensities", async () => {
     expect(existsSync(configPath)).toBe(true);
     if (!existsSync(configPath)) return;
 
     const {
+      HERO_CANVAS_UI_SPECTRAL_FRAGMENT_ANGLE,
       HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG,
-      HERO_CANVAS_UI_SPECTRAL_STREAK_ANGLE,
       resolveHeroCanvasUiSpectralIntensity,
     } = await import(configModulePath);
 
-    expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.beams).toHaveLength(4);
     expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.desktopIntensity).toBe(0.52);
     expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.mobileIntensity).toBe(0.4);
     expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.mobileBreakpoint).toBe(768);
-    expect(HERO_CANVAS_UI_SPECTRAL_STREAK_ANGLE).toBe(0.58);
+    expect(HERO_CANVAS_UI_SPECTRAL_FRAGMENT_ANGLE).toBe(0.58);
+    expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG).not.toHaveProperty("beams");
+    expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.fragments).toHaveLength(10);
     expect(
       new Set(
-        HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.beams.map(
-          ({ angle }: { readonly angle: number }) => angle,
+        HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.fragments.map(
+          ({ kind }: { readonly kind: string }) => kind,
         ),
       ),
-    ).toEqual(new Set([HERO_CANVAS_UI_SPECTRAL_STREAK_ANGLE]));
-    expect(HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.beams).toMatchObject([
-      {
-        angle: 0.58,
-        breakup: 0.12,
-        center: [0.24, 0.64],
-        curve: 0.012,
-        length: 0.15,
-        widthEnd: 0.024,
-        widthMid: 0.0396,
-        widthStart: 0.018,
-      },
-      {
-        angle: 0.58,
-        breakup: 0.16,
-        center: [0.44, 0.46],
-        curve: -0.01,
-        length: 0.18,
-        widthEnd: 0.018,
-        widthMid: 0.045,
-        widthStart: 0.02,
-      },
-      {
-        angle: 0.58,
-        breakup: 0.2,
-        center: [0.63, 0.65],
-        curve: 0.009,
-        length: 0.13,
-        widthEnd: 0.021,
-        widthMid: 0.0342,
-        widthStart: 0.014,
-      },
-      {
-        angle: 0.58,
-        breakup: 0.22,
-        center: [0.78, 0.53],
-        curve: -0.008,
-        length: 0.14,
-        widthEnd: 0.016,
-        widthMid: 0.0306,
-        widthStart: 0.012,
-      },
-    ]);
+    ).toEqual(new Set(["lens", "wedge", "glint"]));
+
+    const colorWindows = new Set(
+      HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.fragments.map(
+        ({ colorEnd, colorStart }: { readonly colorEnd: number; readonly colorStart: number }) =>
+          `${colorStart}:${colorEnd}`,
+      ),
+    );
+    expect(colorWindows.size).toBeGreaterThanOrEqual(3);
     expect(resolveHeroCanvasUiSpectralIntensity(1440)).toBe(0.52);
     expect(resolveHeroCanvasUiSpectralIntensity(767)).toBe(0.4);
 
-    for (const beam of HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.beams) {
-      expect(beam.center[0]).toBeGreaterThanOrEqual(0);
-      expect(beam.center[0]).toBeLessThanOrEqual(1);
-      expect(beam.center[1]).toBeGreaterThanOrEqual(0);
-      expect(beam.center[1]).toBeLessThanOrEqual(1);
-      expect(beam.widthStart).toBeGreaterThan(0);
-      expect(beam.widthMid).toBeGreaterThan(beam.widthStart);
-      expect(beam.widthMid).toBeGreaterThan(beam.widthEnd);
-      expect(beam.widthMid).toBeLessThan(0.08);
-      expect(beam.length).toBeGreaterThan(beam.widthMid);
-      expect(Math.abs(beam.curve)).toBeLessThanOrEqual(0.015);
-      expect(beam.breakup).toBeGreaterThanOrEqual(0);
-      expect(beam.breakup).toBeLessThanOrEqual(0.25);
-      expect(beam.strength).toBeGreaterThan(0);
-      expect(beam.strength).toBeLessThanOrEqual(1);
+    for (const fragment of HERO_CANVAS_UI_SPECTRAL_SOURCE_CONFIG.fragments) {
+      expect(fragment.center[0]).toBeGreaterThanOrEqual(0);
+      expect(fragment.center[0]).toBeLessThanOrEqual(1);
+      expect(fragment.center[1]).toBeGreaterThanOrEqual(0);
+      expect(fragment.center[1]).toBeLessThanOrEqual(1);
+      expect(fragment.size[0]).toBeGreaterThan(0);
+      expect(fragment.size[0]).toBeLessThanOrEqual(0.13);
+      expect(fragment.size[1]).toBeGreaterThan(0);
+      expect(fragment.size[1]).toBeLessThanOrEqual(0.05);
+      expect(fragment.strength).toBeGreaterThan(0);
+      expect(fragment.strength).toBeLessThanOrEqual(1);
+      expect(fragment.softness).toBeGreaterThanOrEqual(0.55);
+      expect(fragment.softness).toBeLessThanOrEqual(0.9);
+      expect(Math.abs(fragment.skew)).toBeLessThanOrEqual(0.25);
+      expect(fragment.colorStart).toBeGreaterThanOrEqual(0);
+      expect(fragment.colorEnd).toBeLessThanOrEqual(1);
+      expect(fragment.colorEnd).toBeGreaterThan(fragment.colorStart);
     }
   });
 
