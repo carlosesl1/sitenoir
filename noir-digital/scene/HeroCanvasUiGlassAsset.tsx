@@ -72,11 +72,8 @@ export function HeroCanvasUiGlassAsset({ reducedMotion, sceneScale }: HeroCanvas
       <mesh
         geometry={geometry}
         onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
-        renderOrder={-1}
+        renderOrder={1}
       >
-        <meshBasicMaterial colorWrite={false} depthTest depthWrite />
-      </mesh>
-      <mesh geometry={geometry} onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}>
         <MeshTransmissionMaterial
           anisotropicBlur={glassConfig.anisotropicBlur}
           backside={glassConfig.backside}
@@ -85,6 +82,7 @@ export function HeroCanvasUiGlassAsset({ reducedMotion, sceneScale }: HeroCanvas
           clearcoat={glassConfig.clearcoat}
           clearcoatRoughness={glassConfig.clearcoatRoughness}
           color="#ffffff"
+          depthWrite
           envMap={environment.texture}
           envMapIntensity={glassConfig.environmentIntensity}
           ior={glassConfig.ior}
@@ -92,12 +90,13 @@ export function HeroCanvasUiGlassAsset({ reducedMotion, sceneScale }: HeroCanvas
           samples={glassConfig.samples}
           thickness={resolveHeroCanvasUiThickness(sceneScale)}
           transmission={glassConfig.transmission}
+          transparent
         />
       </mesh>
       <mesh
         geometry={geometry}
         onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
-        renderOrder={1}
+        renderOrder={2}
       >
         <shaderMaterial
           blending={NormalBlending}

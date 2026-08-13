@@ -28,10 +28,9 @@ describe("Canvas UI hero glass integration", () => {
     expect(source).toContain('import { pointerStore } from "@/features/pointer/pointer-store";');
     expect(source).toContain("createHeroCanvasUiEnvironment(gl)");
     expect(source).toContain("buffer={texture}");
-    expect(source.match(/<mesh\b/g)).toHaveLength(3);
-    expect(source.match(/geometry=\{geometry\}/g)).toHaveLength(3);
+    expect(source.match(/<mesh\b/g)).toHaveLength(2);
+    expect(source.match(/geometry=\{geometry\}/g)).toHaveLength(2);
     expect(source.match(/<MeshTransmissionMaterial\b/g)).toHaveLength(1);
-    expect(source.match(/<meshBasicMaterial\b/g)).toHaveLength(1);
     expect(source.match(/<shaderMaterial\b/g)).toHaveLength(1);
     expect(source).toContain("HERO_CANVAS_UI_RIM_CONFIG as rimConfig");
     expect(source).toContain("HERO_CANVAS_UI_RIM_FRAGMENT_SHADER");
@@ -40,9 +39,10 @@ describe("Canvas UI hero glass integration", () => {
     expect(source).toContain(
       "rimUniforms.uPointerLightPosition.value.lerp(pointerLightTarget, smoothing)",
     );
+    expect(source).toContain("renderOrder={1}");
+    expect(source).toMatch(/<MeshTransmissionMaterial[\s\S]*?depthWrite[\s\S]*?transparent/);
     expect(source).toContain("depthWrite={false}");
-    expect(source).toContain("renderOrder={-1}");
-    expect(source).toContain("<meshBasicMaterial colorWrite={false} depthTest depthWrite />");
+    expect(source).toContain("renderOrder={2}");
     expect(source).toContain("toneMapped={false}");
     expect(source).toContain("polygonOffset");
     expect(source).not.toContain("EdgesGeometry");
