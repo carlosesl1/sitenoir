@@ -74,3 +74,7 @@ export function resolvePhysicalPrismSamples(viewportWidth: number): number {
 export function resolvePhysicalPrismCardResolution(viewportWidth: number): number {
   return viewportWidth < PHYSICAL_PRISM_TEST_CONFIG.mobileBreakpoint ? 384 : 512;
 }
+
+export function resolvePhysicalPrismSceneScale(viewportWidth: number): number {
+  return viewportWidth < PHYSICAL_PRISM_TEST_CONFIG.mobileBreakpoint ? 2.15 : 4.2;
+}

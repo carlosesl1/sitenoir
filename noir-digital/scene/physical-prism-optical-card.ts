@@ -21,10 +21,7 @@ export function createPhysicalPrismOpticalCard(resolution: number): CanvasTextur
     context.scale(radiusX * resolution, radiusY * resolution);
     const gradient = context.createRadialGradient(0, 0, 0, 0, 0, 1);
     gradient.addColorStop(0, `rgba(255,255,255,${region.intensity})`);
-    gradient.addColorStop(
-      region.softness,
-      `rgba(255,255,255,${region.intensity * 0.42})`,
-    );
+    gradient.addColorStop(region.softness, `rgba(255,255,255,${region.intensity * 0.42})`);
     gradient.addColorStop(1, "rgba(255,255,255,0)");
     context.fillStyle = gradient;
     context.beginPath();

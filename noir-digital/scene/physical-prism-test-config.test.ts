@@ -1,9 +1,12 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
   PHYSICAL_PRISM_TEST_CONFIG,
   resolvePhysicalPrismCardResolution,
   resolvePhysicalPrismSamples,
+  resolvePhysicalPrismSceneScale,
 } from "@/scene/physical-prism-test-config";
 
 describe("physical prism prototype configuration", () => {
@@ -33,6 +36,8 @@ describe("physical prism prototype configuration", () => {
     expect(resolvePhysicalPrismSamples(767)).toBe(2);
     expect(resolvePhysicalPrismCardResolution(1440)).toBe(512);
     expect(resolvePhysicalPrismCardResolution(767)).toBe(384);
+    expect(resolvePhysicalPrismSceneScale(1440)).toBe(4.2);
+    expect(resolvePhysicalPrismSceneScale(767)).toBe(2.15);
   });
 
   it("describes one static monochrome optical surface", () => {
@@ -40,5 +45,18 @@ describe("physical prism prototype configuration", () => {
     expect(PHYSICAL_PRISM_TEST_CONFIG.animated).toBe(false);
     expect(PHYSICAL_PRISM_TEST_CONFIG).not.toHaveProperty("spectralPalette");
     expect(PHYSICAL_PRISM_TEST_CONFIG).not.toHaveProperty("pointer");
+  });
+
+  it("keeps the prototype independent from the production spectral source", () => {
+    const assetPath = join(process.cwd(), "scene/PhysicalPrismGlassAsset.tsx");
+    expect(existsSync(assetPath)).toBe(true);
+    if (!existsSync(assetPath)) return;
+    const source = readFileSync(assetPath, "utf8");
+    expect(source).toContain("createPhysicalPrismOpticalCard");
+    expect(source).toContain("MeshTransmissionMaterial");
+    expect(source).toContain("chromaticAberration={config.chromaticAberration}");
+    expect(source).toContain("samples={resolvePhysicalPrismSamples(width)}");
+    expect(source).not.toContain("hero-canvas-ui-spectral-source");
+    expect(source).not.toContain("uPointer");
   });
 });
