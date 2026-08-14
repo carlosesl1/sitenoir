@@ -13,9 +13,9 @@ Create an isolated full-screen route that tests physically derived prismatic ref
 
 ## Optical approach
 
-- Reuse the installed Drei `MeshTransmissionMaterial` and the existing refraction-buffer architecture.
+- Reuse the installed Drei `MeshTransmissionMaterial` and its existing `buffer` input contract.
 - Do not render the current colored spectral fragments in this route.
-- Render one low-resolution monochrome optical card into the refraction buffer. The card contains five to seven soft, irregular white light regions and is hidden from the final camera render.
+- Supply one low-resolution monochrome `CanvasTexture` directly to the material buffer. The card contains five to seven soft, irregular white light regions and is never rendered as visible scene geometry.
 - Let `MeshTransmissionMaterial.chromaticAberration` split the refracted white content into RGB according to the model geometry, IOR, and thickness.
 - Keep the optical card static. The only visible variation may come from the existing subtle model movement and view-dependent refraction.
 - Preserve predominantly clear or dark glass, with white rims and localized prismatic reflections. The result must not resemble colored paint or uniform bands.
@@ -24,7 +24,7 @@ Create an isolated full-screen route that tests physically derived prismatic ref
 
 - Add no dependency.
 - Use one optical-card mesh and one small texture or canvas texture.
-- Reuse the existing refraction pass instead of adding a new post-processing composer.
+- Avoid an additional refraction or post-processing pass; the static optical card is sampled directly by the transmission material.
 - Use four transmission samples on desktop and two on mobile.
 - Cap the prototype refraction buffer at a moderate resolution suitable for visual evaluation.
 - Dispose geometry, texture, material, and render-target resources when the route unmounts.
