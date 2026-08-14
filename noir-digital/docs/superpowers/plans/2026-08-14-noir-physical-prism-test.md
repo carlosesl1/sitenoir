@@ -6,7 +6,9 @@
 
 **Architecture:** A route-only R3F canvas loads the existing optimized NOIR geometry. A prototype-specific `MeshTransmissionMaterial` samples one low-resolution grayscale `CanvasTexture` through its existing buffer interface; chromatic aberration separates the refracted white light into RGB without another render pass. The production home, `HeroRefractionBuffer`, and current spectral modules remain unchanged.
 
-**Tech Stack:** Next.js 16 App Router, React 19, React Three Fiber 9, Drei 10 `MeshTransmissionMaterial`, Three.js 0.185, Vitest, Testing Library, Biome, Playwright.
+**Tech Stack:** Next.js 16 App Router, React 19, React Three Fiber 9, Drei 10 `MeshRefractionMaterial`, Three.js 0.185, Vitest, Testing Library, Biome, Playwright.
+
+> Implementation note (2026-08-14): browser evidence showed that a flat transmission buffer produced gray bands and that native `MeshPhysicalMaterial.dispersion` had no refracted scene content on the isolated black route. The final prototype therefore uses Drei `MeshRefractionMaterial` with a static monochrome cubemap. This keeps the one-material/no-postprocess constraint while producing view-dependent RGB separation on the model edges.
 
 ---
 

@@ -1,25 +1,22 @@
 "use client";
 
-import { MeshTransmissionMaterial } from "@react-three/drei/core/MeshTransmissionMaterial";
+import { MeshRefractionMaterial } from "@react-three/drei/core/MeshRefractionMaterial";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { useReducedMotion } from "motion/react";
 import { useLayoutEffect, useMemo, useRef } from "react";
-import { Color, FrontSide, type Group, NormalBlending, type WebGLRenderTarget } from "three";
+import { Color, type CubeTexture, FrontSide, type Group, NormalBlending } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
-import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";
 import { HERO_CANVAS_UI_RIM_CONFIG as rimConfig } from "@/scene/hero-canvas-ui-rim-config";
 import {
   HERO_CANVAS_UI_RIM_FRAGMENT_SHADER,
   HERO_CANVAS_UI_RIM_VERTEX_SHADER,
 } from "@/scene/hero-canvas-ui-rim-shaders";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
-import { createPhysicalPrismOpticalCard } from "@/scene/physical-prism-optical-card";
+import { createPhysicalPrismEnvironment } from "@/scene/physical-prism-environment";
 import {
   PHYSICAL_PRISM_TEST_CONFIG as config,
-  resolvePhysicalPrismCardResolution,
-  resolvePhysicalPrismSamples,
   resolvePhysicalPrismSceneScale,
 } from "@/scene/physical-prism-test-config";
 
@@ -27,16 +24,10 @@ export function PhysicalPrismGlassAsset() {
   const groupRef = useRef<Group>(null);
   const reducedMotion = useReducedMotion() ?? false;
   const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
-  const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
   const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
-  const environment = useMemo<WebGLRenderTarget>(() => createHeroCanvasUiEnvironment(gl), [gl]);
-  const cardResolution = resolvePhysicalPrismCardResolution(width);
+  const environment = useMemo<CubeTexture>(() => createPhysicalPrismEnvironment(), []);
   const sceneScale = resolvePhysicalPrismSceneScale(width);
-  const opticalCard = useMemo(
-    () => createPhysicalPrismOpticalCard(cardResolution),
-    [cardResolution],
-  );
   const rimUniforms = useMemo(
     () => ({
       uColor: { value: new Color(rimConfig.color) },
@@ -58,29 +49,20 @@ export function PhysicalPrismGlassAsset() {
   });
 
   useLayoutEffect(() => () => geometry.dispose(), [geometry]);
-  useLayoutEffect(() => () => opticalCard.dispose(), [opticalCard]);
   useLayoutEffect(() => () => environment.dispose(), [environment]);
 
   return (
     <group ref={groupRef} rotation={[-0.025, 0, 0]} scale={sceneScale}>
       <mesh geometry={geometry} renderOrder={1}>
-        <MeshTransmissionMaterial
-          anisotropicBlur={config.anisotropicBlur}
-          backside={false}
-          buffer={opticalCard}
-          chromaticAberration={config.chromaticAberration}
-          clearcoat={config.clearcoat}
-          clearcoatRoughness={config.clearcoatRoughness}
+        <MeshRefractionMaterial
+          aberrationStrength={config.aberrationStrength}
+          bounces={config.bounces}
           color="#ffffff"
-          depthWrite
-          envMap={environment.texture}
-          envMapIntensity={config.environmentIntensity}
+          envMap={environment}
+          fastChroma={false}
+          fresnel={config.fresnel}
           ior={config.ior}
-          roughness={config.roughness}
-          samples={resolvePhysicalPrismSamples(width)}
-          thickness={config.thickness / sceneScale}
-          transmission={config.transmission}
-          transparent
+          toneMapped={false}
         />
       </mesh>
       <mesh geometry={geometry} renderOrder={2}>
