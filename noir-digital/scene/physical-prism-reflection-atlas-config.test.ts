@@ -16,7 +16,7 @@ describe("physical prism reflection atlas", () => {
     );
 
     expect(PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG.assetUrl).toBe(
-      "/assets/v1/textures/noir-prism-reflections-atlas-v1.webp",
+      "/assets/v1/textures/noir-prism-reflections-mapped-v3.webp",
     );
     expect(existsSync(asset)).toBe(true);
     expect(statSync(asset).size).toBeLessThan(100_000);

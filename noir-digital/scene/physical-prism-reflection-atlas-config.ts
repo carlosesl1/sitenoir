@@ -1,5 +1,5 @@
 export const PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG = {
-  assetUrl: "/assets/v1/textures/noir-prism-reflections-atlas-v1.webp",
+  assetUrl: "/assets/v1/textures/noir-prism-reflections-mapped-v3.webp",
   desktopOpacity: 0.76,
   luminanceEnd: 0.22,
   luminanceStart: 0.045,
