@@ -49,4 +49,18 @@ describe("physical prism caustic art direction", () => {
     expect(source).not.toContain("uPointer");
     expect(source).not.toContain("WebGLRenderTarget");
   });
+
+  it("mounts a single reduced-motion-aware overlay", () => {
+    const source = readFileSync(
+      join(process.cwd(), "scene/PhysicalPrismCausticsOverlay.tsx"),
+      "utf8",
+    );
+
+    expect(source).toContain("useReducedMotion");
+    expect(source).toContain("useFrame");
+    expect(source).toContain("depthWrite={false}");
+    expect(source).toContain("renderOrder={2}");
+    expect(source).not.toContain("useHeroRefraction");
+    expect(source).not.toContain("uPointer");
+  });
 });
