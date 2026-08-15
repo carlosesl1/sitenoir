@@ -33,6 +33,9 @@ function createReflectionAtlasUniforms(geometry: BufferGeometry, texture: Textur
   }
 
   return {
+    uLeftAnchorFadeStart: { value: config.leftAnchorFadeStart },
+    uLeftAnchorShift: { value: config.leftAnchorShift },
+    uLeftAnchorWindowEnd: { value: config.leftAnchorWindowEnd },
     uLuminanceEnd: { value: config.luminanceEnd },
     uLuminanceStart: { value: config.luminanceStart },
     uOpacity: { value: Number(config.desktopOpacity) },
@@ -44,6 +47,9 @@ function createReflectionAtlasUniforms(geometry: BufferGeometry, texture: Textur
       ),
     },
     uReflectionMap: { value: texture },
+    uRightAnchorFadeEnd: { value: config.rightAnchorFadeEnd },
+    uRightAnchorShift: { value: config.rightAnchorShift },
+    uRightAnchorWindowStart: { value: config.rightAnchorWindowStart },
     uSaturationEnd: { value: config.saturationEnd },
     uSaturationStart: { value: config.saturationStart },
   };

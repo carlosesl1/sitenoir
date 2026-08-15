@@ -23,6 +23,8 @@ describe("physical prism reflection atlas", () => {
   });
 
   it("keeps saturated reflections visible and softer on mobile", () => {
+    expect(PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG.leftAnchorShift).toBe(0.026);
+    expect(PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG.rightAnchorShift).toBe(0.027);
     expect(PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG.luminanceStart).toBeLessThan(
       PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG.luminanceEnd,
     );
@@ -48,6 +50,8 @@ describe("physical prism reflection atlas", () => {
     expect(component).toContain("renderOrder={2}");
     expect(component).not.toContain("useFrame");
     expect(shader).toContain("uReflectionMap");
+    expect(shader).toContain("uLeftAnchorShift");
+    expect(shader).toContain("uRightAnchorShift");
     expect(shader).toContain("saturation");
     expect(shader).not.toContain("causticField");
     expect(shader).not.toContain("uPointer");
