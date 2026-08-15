@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -32,5 +34,19 @@ describe("physical prism caustic art direction", () => {
   it("keeps the field visible but softer on mobile", () => {
     expect(resolvePhysicalPrismCausticsIntensity(1440)).toBe(0.88);
     expect(resolvePhysicalPrismCausticsIntensity(390)).toBe(0.68);
+  });
+
+  it("keeps caustics local, bounded and independent from pointer or FBO input", () => {
+    const source = readFileSync(
+      join(process.cwd(), "scene/physical-prism-caustics-shaders.ts"),
+      "utf8",
+    );
+
+    expect(source).toContain("uPlanarMin");
+    expect(source).toContain("uPlanarSize");
+    expect(source).toContain("causticField");
+    expect(source).toContain("uTime");
+    expect(source).not.toContain("uPointer");
+    expect(source).not.toContain("WebGLRenderTarget");
   });
 });
