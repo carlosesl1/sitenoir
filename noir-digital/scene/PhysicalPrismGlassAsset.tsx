@@ -14,7 +14,7 @@ import {
   HERO_CANVAS_UI_RIM_VERTEX_SHADER,
 } from "@/scene/hero-canvas-ui-rim-shaders";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
-import { PhysicalPrismCausticsOverlay } from "@/scene/PhysicalPrismCausticsOverlay";
+import { PhysicalPrismReflectionAtlas } from "@/scene/PhysicalPrismReflectionAtlas";
 import {
   PHYSICAL_PRISM_TEST_CONFIG as config,
   resolvePhysicalPrismSceneScale,
@@ -70,7 +70,7 @@ export function PhysicalPrismGlassAsset() {
           transparent
         />
       </mesh>
-      <PhysicalPrismCausticsOverlay geometry={geometry} />
+      <PhysicalPrismReflectionAtlas geometry={geometry} />
       <mesh geometry={geometry} renderOrder={3}>
         <shaderMaterial
           blending={NormalBlending}

@@ -23,7 +23,7 @@ describe("physical prism prototype configuration", () => {
     expect(resolvePhysicalPrismSceneScale(767)).toBe(3.4);
   });
 
-  it("describes only the base, caustics and rim layers", () => {
+  it("describes only the base, reflection atlas and rim layers", () => {
     expect(PHYSICAL_PRISM_TEST_CONFIG.surfaceCount).toBe(3);
     expect(PHYSICAL_PRISM_TEST_CONFIG.animated).toBe(true);
     expect(PHYSICAL_PRISM_TEST_CONFIG).not.toHaveProperty("spectralPalette");
@@ -36,8 +36,9 @@ describe("physical prism prototype configuration", () => {
     if (!existsSync(assetPath)) return;
     const source = readFileSync(assetPath, "utf8");
     expect(source).toContain("meshPhysicalMaterial");
-    expect(source).toContain("PhysicalPrismCausticsOverlay");
+    expect(source).toContain("PhysicalPrismReflectionAtlas");
     expect(source).toContain("createHeroCanvasUiEnvironment");
+    expect(source).not.toContain("PhysicalPrismCausticsOverlay");
     expect(source).not.toContain("MeshRefractionMaterial");
     expect(source).not.toContain("createPhysicalPrismEnvironment");
     expect(source).not.toContain("createPhysicalPrismOpticalCard");
