@@ -1,4 +1,4 @@
-import { existsSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -31,5 +31,26 @@ describe("physical prism reflection atlas", () => {
     );
     expect(resolvePhysicalPrismReflectionAtlasOpacity(1440)).toBe(0.76);
     expect(resolvePhysicalPrismReflectionAtlasOpacity(390)).toBe(0.6);
+  });
+
+  it("uses one local texture overlay without procedural lobes or pointer input", () => {
+    const component = readFileSync(
+      join(process.cwd(), "scene/PhysicalPrismReflectionAtlas.tsx"),
+      "utf8",
+    );
+    const shader = readFileSync(
+      join(process.cwd(), "scene/physical-prism-reflection-atlas-shaders.ts"),
+      "utf8",
+    );
+
+    expect(component).toContain("TextureLoader");
+    expect(component).toContain("depthWrite={false}");
+    expect(component).toContain("renderOrder={2}");
+    expect(component).not.toContain("useFrame");
+    expect(shader).toContain("uReflectionMap");
+    expect(shader).toContain("saturation");
+    expect(shader).not.toContain("causticField");
+    expect(shader).not.toContain("uPointer");
+    expect(shader).not.toContain("WebGLRenderTarget");
   });
 });
