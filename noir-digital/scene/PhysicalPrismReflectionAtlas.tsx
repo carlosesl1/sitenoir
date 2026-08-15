@@ -13,6 +13,8 @@ import {
 
 import {
   PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG as config,
+  PHYSICAL_PRISM_REFLECTION_LAYERS,
+  type PhysicalPrismReflectionLayerConfig,
   resolvePhysicalPrismReflectionAtlasOpacity,
 } from "@/scene/physical-prism-reflection-atlas-config";
 import {
@@ -24,7 +26,17 @@ interface PhysicalPrismReflectionAtlasProps {
   readonly geometry: BufferGeometry;
 }
 
-function createReflectionAtlasUniforms(geometry: BufferGeometry, texture: Texture) {
+interface PhysicalPrismReflectionLayerProps {
+  readonly geometry: BufferGeometry;
+  readonly layer: PhysicalPrismReflectionLayerConfig;
+  readonly texture: Texture;
+}
+
+function createReflectionLayerUniforms(
+  geometry: BufferGeometry,
+  layer: PhysicalPrismReflectionLayerConfig,
+  texture: Texture,
+) {
   geometry.computeBoundingBox();
   const bounds = geometry.boundingBox;
 
@@ -33,9 +45,6 @@ function createReflectionAtlasUniforms(geometry: BufferGeometry, texture: Textur
   }
 
   return {
-    uLeftAnchorFadeStart: { value: config.leftAnchorFadeStart },
-    uLeftAnchorShift: { value: config.leftAnchorShift },
-    uLeftAnchorWindowEnd: { value: config.leftAnchorWindowEnd },
     uLuminanceEnd: { value: config.luminanceEnd },
     uLuminanceStart: { value: config.luminanceStart },
     uOpacity: { value: Number(config.desktopOpacity) },
@@ -47,21 +56,28 @@ function createReflectionAtlasUniforms(geometry: BufferGeometry, texture: Textur
       ),
     },
     uReflectionMap: { value: texture },
-    uRightAnchorFadeEnd: { value: config.rightAnchorFadeEnd },
-    uRightAnchorShift: { value: config.rightAnchorShift },
-    uRightAnchorWindowStart: { value: config.rightAnchorWindowStart },
+    uRegionMin: { value: new Vector2(...layer.planarMin) },
+    uRegionSize: {
+      value: new Vector2(
+        Math.max(layer.planarMax[0] - layer.planarMin[0], 0.0001),
+        Math.max(layer.planarMax[1] - layer.planarMin[1], 0.0001),
+      ),
+    },
     uSaturationEnd: { value: config.saturationEnd },
     uSaturationStart: { value: config.saturationStart },
   };
 }
 
-export function PhysicalPrismReflectionAtlas({ geometry }: PhysicalPrismReflectionAtlasProps) {
+function PhysicalPrismReflectionLayer({
+  geometry,
+  layer,
+  texture,
+}: PhysicalPrismReflectionLayerProps) {
   const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
-  const texture = useLoader(TextureLoader, config.assetUrl);
   const uniforms = useMemo(
-    () => createReflectionAtlasUniforms(geometry, texture),
-    [geometry, texture],
+    () => createReflectionLayerUniforms(geometry, layer, texture),
+    [geometry, layer, texture],
   );
 
   useLayoutEffect(() => {
@@ -93,4 +109,27 @@ export function PhysicalPrismReflectionAtlas({ geometry }: PhysicalPrismReflecti
       />
     </mesh>
   );
+}
+
+export function PhysicalPrismReflectionAtlas({ geometry }: PhysicalPrismReflectionAtlasProps) {
+  const textures = useLoader(
+    TextureLoader,
+    PHYSICAL_PRISM_REFLECTION_LAYERS.map((layer) => layer.assetUrl),
+  );
+
+  return PHYSICAL_PRISM_REFLECTION_LAYERS.map((layer, index) => {
+    const texture = textures[index];
+    if (!texture) {
+      throw new Error(`Missing physical prism reflection texture for ${layer.id}`);
+    }
+
+    return (
+      <PhysicalPrismReflectionLayer
+        geometry={geometry}
+        key={layer.id}
+        layer={layer}
+        texture={texture}
+      />
+    );
+  });
 }
