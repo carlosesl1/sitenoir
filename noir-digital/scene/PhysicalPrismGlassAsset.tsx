@@ -1,20 +1,20 @@
 "use client";
 
-import { MeshRefractionMaterial } from "@react-three/drei/core/MeshRefractionMaterial";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import { useReducedMotion } from "motion/react";
 import { useLayoutEffect, useMemo, useRef } from "react";
-import { Color, type CubeTexture, FrontSide, type Group, NormalBlending } from "three";
+import { Color, FrontSide, type Group, NormalBlending, type WebGLRenderTarget } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
+import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";
 import { HERO_CANVAS_UI_RIM_CONFIG as rimConfig } from "@/scene/hero-canvas-ui-rim-config";
 import {
   HERO_CANVAS_UI_RIM_FRAGMENT_SHADER,
   HERO_CANVAS_UI_RIM_VERTEX_SHADER,
 } from "@/scene/hero-canvas-ui-rim-shaders";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
-import { createPhysicalPrismEnvironment } from "@/scene/physical-prism-environment";
+import { PhysicalPrismCausticsOverlay } from "@/scene/PhysicalPrismCausticsOverlay";
 import {
   PHYSICAL_PRISM_TEST_CONFIG as config,
   resolvePhysicalPrismSceneScale,
@@ -24,9 +24,10 @@ export function PhysicalPrismGlassAsset() {
   const groupRef = useRef<Group>(null);
   const reducedMotion = useReducedMotion() ?? false;
   const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
+  const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
   const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
-  const environment = useMemo<CubeTexture>(() => createPhysicalPrismEnvironment(), []);
+  const environment = useMemo<WebGLRenderTarget>(() => createHeroCanvasUiEnvironment(gl), [gl]);
   const sceneScale = resolvePhysicalPrismSceneScale(width);
   const rimUniforms = useMemo(
     () => ({
@@ -54,18 +55,23 @@ export function PhysicalPrismGlassAsset() {
   return (
     <group ref={groupRef} rotation={[-0.025, 0, 0]} scale={sceneScale}>
       <mesh geometry={geometry} renderOrder={1}>
-        <MeshRefractionMaterial
-          aberrationStrength={config.aberrationStrength}
-          bounces={config.bounces}
-          color="#ffffff"
-          envMap={environment}
-          fastChroma={false}
-          fresnel={config.fresnel}
+        <meshPhysicalMaterial
+          clearcoat={config.clearcoat}
+          clearcoatRoughness={config.clearcoatRoughness}
+          color={config.glassColor}
+          envMap={environment.texture}
+          envMapIntensity={config.environmentIntensity}
           ior={config.ior}
-          toneMapped={false}
+          metalness={0}
+          opacity={1}
+          roughness={config.roughness}
+          thickness={config.thickness / Math.max(sceneScale, 0.0001)}
+          transmission={config.transmission}
+          transparent
         />
       </mesh>
-      <mesh geometry={geometry} renderOrder={2}>
+      <PhysicalPrismCausticsOverlay geometry={geometry} />
+      <mesh geometry={geometry} renderOrder={3}>
         <shaderMaterial
           blending={NormalBlending}
           depthTest

@@ -1,12 +1,16 @@
 export const PHYSICAL_PRISM_TEST_CONFIG = {
-  aberrationStrength: 0.08,
-  animated: false,
+  animated: true,
   backgroundColor: "#000000",
-  bounces: 2,
-  fresnel: 0.2,
-  ior: 1.5,
+  clearcoat: 1,
+  clearcoatRoughness: 0.035,
+  environmentIntensity: 0.42,
+  glassColor: "#0a0c10",
+  ior: 1.58,
   mobileBreakpoint: 768,
-  surfaceCount: 1,
+  roughness: 0.075,
+  surfaceCount: 3,
+  thickness: 3.6,
+  transmission: 0.82,
 } as const;
 
 export function resolvePhysicalPrismSceneScale(viewportWidth: number): number {
