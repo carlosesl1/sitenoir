@@ -54,6 +54,8 @@ function createReflectionLayerUniforms(
     uOpticalBloom: { value: config.opticalBloom },
     uOpticalDispersion: { value: config.opticalDispersion },
     uOpticalDispersionMix: { value: config.opticalDispersionMix },
+    uOpticalSoftness: { value: config.opticalSoftness },
+    uOpticalSoftnessRadius: { value: config.opticalSoftnessRadius },
     uPlanarMin: { value: new Vector2(bounds.min.x, bounds.min.y) },
     uPlanarSize: {
       value: new Vector2(

@@ -26,6 +26,8 @@ export const PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG = {
   mobileBreakpoint: 768,
   mobileOpacity: 0.6,
   opticalBloom: 0.12,
+  opticalSoftness: 0.24,
+  opticalSoftnessRadius: 0.0024,
   opticalDispersion: 0.0015,
   opticalDispersionMix: 0.18,
   saturationEnd: 0.16,

@@ -67,6 +67,8 @@ describe("physical prism reflection atlas", () => {
     );
     expect(PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG.opticalDispersion).toBeGreaterThan(0);
     expect(PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG.opticalBloom).toBeGreaterThan(0);
+    expect(PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG.opticalSoftness).toBeGreaterThan(0);
+    expect(PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG.opticalSoftnessRadius).toBeGreaterThan(0);
     expect(resolvePhysicalPrismReflectionAtlasOpacity(1440)).toBe(0.76);
     expect(resolvePhysicalPrismReflectionAtlasOpacity(390)).toBe(0.6);
   });
@@ -92,6 +94,8 @@ describe("physical prism reflection atlas", () => {
     expect(shader).toContain("saturation");
     expect(shader).toContain("uOpticalDispersion");
     expect(shader).toContain("dispersedColor");
+    expect(shader).toContain("uOpticalSoftness");
+    expect(shader).toContain("softenedSample");
     expect(shader).not.toContain("uLeftAnchorShift");
     expect(shader).not.toContain("uRightAnchorShift");
     expect(shader).not.toContain("causticField");
