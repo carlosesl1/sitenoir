@@ -5,8 +5,13 @@ import { Suspense } from "react";
 import { ACESFilmicToneMapping, SRGBColorSpace } from "three";
 
 import { PhysicalPrismGlassAsset } from "@/scene/PhysicalPrismGlassAsset";
+import type { PhysicalPrismReflectionLayerAdjustments } from "@/scene/physical-prism-reflection-atlas-config";
 
-export function PhysicalPrismTestScene() {
+interface PhysicalPrismTestSceneProps {
+  readonly reflectionAdjustments?: Partial<PhysicalPrismReflectionLayerAdjustments> | undefined;
+}
+
+export function PhysicalPrismTestScene({ reflectionAdjustments }: PhysicalPrismTestSceneProps) {
   return (
     <Canvas
       camera={{ position: [0, 0, 8], fov: 38, near: 0.1, far: 40 }}
@@ -21,7 +26,7 @@ export function PhysicalPrismTestScene() {
       <color attach="background" args={["#000000"]} />
       <ambientLight intensity={0.18} />
       <Suspense fallback={null}>
-        <PhysicalPrismGlassAsset />
+        <PhysicalPrismGlassAsset reflectionAdjustments={reflectionAdjustments} />
       </Suspense>
     </Canvas>
   );

@@ -14,8 +14,10 @@ import {
 import {
   PHYSICAL_PRISM_REFLECTION_ATLAS_CONFIG as config,
   PHYSICAL_PRISM_REFLECTION_LAYERS,
+  type PhysicalPrismReflectionLayerAdjustments,
   type PhysicalPrismReflectionLayerConfig,
   resolvePhysicalPrismReflectionAtlasOpacity,
+  resolvePhysicalPrismReflectionLayerRegion,
 } from "@/scene/physical-prism-reflection-atlas-config";
 import {
   PHYSICAL_PRISM_REFLECTION_ATLAS_FRAGMENT_SHADER,
@@ -23,6 +25,7 @@ import {
 } from "@/scene/physical-prism-reflection-atlas-shaders";
 
 interface PhysicalPrismReflectionAtlasProps {
+  readonly adjustments?: Partial<PhysicalPrismReflectionLayerAdjustments> | undefined;
   readonly geometry: BufferGeometry;
 }
 
@@ -48,6 +51,9 @@ function createReflectionLayerUniforms(
     uLuminanceEnd: { value: config.luminanceEnd },
     uLuminanceStart: { value: config.luminanceStart },
     uOpacity: { value: Number(config.desktopOpacity) },
+    uOpticalBloom: { value: config.opticalBloom },
+    uOpticalDispersion: { value: config.opticalDispersion },
+    uOpticalDispersionMix: { value: config.opticalDispersionMix },
     uPlanarMin: { value: new Vector2(bounds.min.x, bounds.min.y) },
     uPlanarSize: {
       value: new Vector2(
@@ -111,13 +117,20 @@ function PhysicalPrismReflectionLayer({
   );
 }
 
-export function PhysicalPrismReflectionAtlas({ geometry }: PhysicalPrismReflectionAtlasProps) {
+export function PhysicalPrismReflectionAtlas({
+  adjustments,
+  geometry,
+}: PhysicalPrismReflectionAtlasProps) {
   const textures = useLoader(
     TextureLoader,
     PHYSICAL_PRISM_REFLECTION_LAYERS.map((layer) => layer.assetUrl),
   );
 
   return PHYSICAL_PRISM_REFLECTION_LAYERS.map((layer, index) => {
+    const resolvedLayer: PhysicalPrismReflectionLayerConfig = {
+      ...layer,
+      ...resolvePhysicalPrismReflectionLayerRegion(layer, adjustments?.[layer.id]),
+    };
     const texture = textures[index];
     if (!texture) {
       throw new Error(`Missing physical prism reflection texture for ${layer.id}`);
@@ -127,7 +140,7 @@ export function PhysicalPrismReflectionAtlas({ geometry }: PhysicalPrismReflecti
       <PhysicalPrismReflectionLayer
         geometry={geometry}
         key={layer.id}
-        layer={layer}
+        layer={resolvedLayer}
         texture={texture}
       />
     );

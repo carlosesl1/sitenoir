@@ -20,6 +20,9 @@ uniform sampler2D uReflectionMap;
 uniform float uLuminanceEnd;
 uniform float uLuminanceStart;
 uniform float uOpacity;
+uniform float uOpticalBloom;
+uniform float uOpticalDispersion;
+uniform float uOpticalDispersionMix;
 uniform vec2 uRegionMin;
 uniform vec2 uRegionSize;
 uniform float uSaturationEnd;
@@ -36,19 +39,27 @@ void main() {
     localUv.y < 0.0 || localUv.y > 1.0
   ) discard;
 
+  float viewFacing = max(dot(normalize(vViewNormal), normalize(vViewDirection)), 0.0);
+  float facing = smoothstep(0.16, 0.88, viewFacing);
+  vec2 dispersionDirection = normalize(vViewNormal.xy + vec2(0.21, -0.13));
+  float dispersion = uOpticalDispersion * mix(0.58, 1.0, 1.0 - viewFacing);
+  vec2 spectralOffset = dispersionDirection * dispersion;
+
   vec4 sampled = texture2D(uReflectionMap, localUv);
+  vec4 redSample = texture2D(uReflectionMap, localUv + spectralOffset);
+  vec4 blueSample = texture2D(uReflectionMap, localUv - spectralOffset);
+  vec3 dispersedColor = vec3(redSample.r, sampled.g, blueSample.b);
   float luminance = dot(sampled.rgb, vec3(0.2126, 0.7152, 0.0722));
   float saturation = max(max(sampled.r, sampled.g), sampled.b) - min(min(sampled.r, sampled.g), sampled.b);
   float coloredLight = smoothstep(uLuminanceStart, uLuminanceEnd, luminance);
   float chroma = smoothstep(uSaturationStart, uSaturationEnd, saturation);
-  float facing = smoothstep(
-    0.16,
-    0.88,
-    max(dot(normalize(vViewNormal), normalize(vViewDirection)), 0.0)
-  );
-  float alpha = sampled.a * coloredLight * chroma * facing * uOpacity;
+  float brightLight = smoothstep(0.38, 0.85, luminance);
+  vec3 opticalColor = mix(sampled.rgb, dispersedColor, uOpticalDispersionMix);
+  opticalColor += dispersedColor * brightLight * uOpticalBloom;
+  float opticalAlpha = max(sampled.a, max(redSample.a, blueSample.a) * 0.18);
+  float alpha = opticalAlpha * coloredLight * chroma * facing * uOpacity;
 
   if (alpha < 0.003) discard;
-  gl_FragColor = vec4(clamp(sampled.rgb, 0.0, 1.0), alpha);
+  gl_FragColor = vec4(clamp(opticalColor, 0.0, 1.0), alpha);
 }
 `;

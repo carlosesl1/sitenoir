@@ -25,3 +25,173 @@
   font: 600 11px / 1 var(--font-mono);
   letter-spacing: 0.08em;
 }
+
+.tuner {
+  position: absolute;
+  z-index: 3;
+  right: 20px;
+  bottom: 18px;
+  width: min(292px, calc(100vw - 40px));
+  max-height: min(430px, calc(100svh - 36px));
+  overflow: auto;
+  box-sizing: border-box;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 2px;
+  padding: 14px;
+  background: rgb(8 8 8 / 84%);
+  box-shadow: 0 16px 42px rgb(0 0 0 / 38%);
+  backdrop-filter: blur(14px);
+}
+
+.tunerHeader,
+.tunerControlHeading,
+.tunerInputs {
+  display: flex;
+  align-items: center;
+}
+
+.tunerHeader {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tunerEyebrow,
+.tunerTitle,
+.tunerDescription {
+  margin: 0;
+}
+
+.tunerEyebrow {
+  color: rgb(255 255 255 / 55%);
+  font: 600 9px / 1 var(--font-mono);
+  letter-spacing: 0.1em;
+}
+
+.tunerTitle {
+  margin-top: 5px;
+  font: 600 14px / 1 var(--font-sans);
+  letter-spacing: -0.02em;
+}
+
+.resetButton {
+  appearance: none;
+  border: 1px solid rgb(255 255 255 / 38%);
+  border-radius: 1px;
+  padding: 6px 8px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font: 600 9px / 1 var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+.resetButton:hover,
+.resetButton:focus-visible {
+  border-color: #fff;
+  background: #fff;
+  color: #000;
+}
+
+.tunerDescription {
+  margin-top: 9px;
+  color: rgb(255 255 255 / 68%);
+  font: 500 9px / 1.35 var(--font-mono);
+}
+
+.tunerTabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-top: 11px;
+}
+
+.tunerTab {
+  appearance: none;
+  border: 1px solid rgb(255 255 255 / 18%);
+  padding: 6px 5px;
+  background: transparent;
+  color: rgb(255 255 255 / 58%);
+  cursor: pointer;
+  font: 700 10px / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+.tunerTab[aria-selected="true"] {
+  border-color: #fff;
+  background: rgb(255 255 255 / 12%);
+  color: #fff;
+}
+
+.tunerTab:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 2px;
+}
+
+.tunerLayer {
+  min-width: 0;
+  margin: 10px 0 0;
+  border: 0;
+  border-top: 1px solid rgb(255 255 255 / 14%);
+  padding: 10px 0 0;
+}
+
+.tunerLayer legend {
+  padding: 0 7px 0 0;
+  color: #fff;
+  font: 700 11px / 1 var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+.tunerControl + .tunerControl {
+  margin-top: 7px;
+}
+
+.tunerControlHeading {
+  justify-content: space-between;
+  gap: 10px;
+  color: rgb(255 255 255 / 75%);
+  font: 500 10px / 1 var(--font-mono);
+}
+
+.tunerControlHeading output {
+  min-width: 45px;
+  color: #fff;
+  text-align: right;
+}
+
+.tunerInputs {
+  gap: 9px;
+  margin-top: 3px;
+}
+
+.tunerInputs input[type="range"] {
+  width: 100%;
+  min-width: 0;
+  accent-color: #fff;
+}
+
+.tunerInputs input[type="number"] {
+  width: 56px;
+  box-sizing: border-box;
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 1px;
+  padding: 4px 5px;
+  background: rgb(255 255 255 / 6%);
+  color: #fff;
+  font: 500 10px / 1 var(--font-mono);
+}
+
+.tunerInputs input[type="number"]:focus-visible {
+  outline: 1px solid #fff;
+  outline-offset: 1px;
+}
+
+@media (max-width: 767px) {
+  .tuner {
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    width: auto;
+    max-height: min(52svh, 460px);
+  }
+}

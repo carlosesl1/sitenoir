@@ -15,12 +15,17 @@ import {
 } from "@/scene/hero-canvas-ui-rim-shaders";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
 import { PhysicalPrismReflectionAtlas } from "@/scene/PhysicalPrismReflectionAtlas";
+import type { PhysicalPrismReflectionLayerAdjustments } from "@/scene/physical-prism-reflection-atlas-config";
 import {
   PHYSICAL_PRISM_TEST_CONFIG as config,
   resolvePhysicalPrismSceneScale,
 } from "@/scene/physical-prism-test-config";
 
-export function PhysicalPrismGlassAsset() {
+interface PhysicalPrismGlassAssetProps {
+  readonly reflectionAdjustments?: Partial<PhysicalPrismReflectionLayerAdjustments> | undefined;
+}
+
+export function PhysicalPrismGlassAsset({ reflectionAdjustments }: PhysicalPrismGlassAssetProps) {
   const groupRef = useRef<Group>(null);
   const reducedMotion = useReducedMotion() ?? false;
   const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
@@ -70,7 +75,7 @@ export function PhysicalPrismGlassAsset() {
           transparent
         />
       </mesh>
-      <PhysicalPrismReflectionAtlas geometry={geometry} />
+      <PhysicalPrismReflectionAtlas adjustments={reflectionAdjustments} geometry={geometry} />
       <mesh geometry={geometry} renderOrder={3}>
         <shaderMaterial
           blending={NormalBlending}
