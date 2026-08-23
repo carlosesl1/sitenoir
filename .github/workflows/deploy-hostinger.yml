@@ -351,7 +351,7 @@ jobs:
             "${PRODUCTION_URL}/contato/?deploy=${GITHUB_SHA}" \
             --output /dev/null
 
-          hero_model_path="$(grep -oE '/assets/v1/model/hello-[a-f0-9]{12}\.glb' out/index.html | head -n 1)"
+          hero_model_path="$(grep -oE '/assets/v1/model/(hello|noir-adjusted)-[a-f0-9]{12}\.glb' out/index.html | head -n 1)"
           [[ -n "${hero_model_path}" ]]
           hero_headers="${RUNNER_TEMP}/noir-hero-model.headers"
           curl --fail --silent --show-error \
