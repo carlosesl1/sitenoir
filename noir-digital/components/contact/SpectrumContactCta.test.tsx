@@ -27,19 +27,25 @@ describe("SpectrumContactCta", () => {
     );
   });
 
-  it("loops the spectrum glow seamlessly toward the right", () => {
+  it("uses only soft red, green, and blue optical accents", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/SpectrumContactCta.module.css"),
       "utf8",
     );
 
-    expect(css).toContain("animation: spectrumShift 1.8s linear infinite;");
-    expect(css).not.toContain("infinite alternate");
-    expect(css).toContain("background: repeating-linear-gradient(");
-    expect(css).toContain("background-size: 200% 100%;");
-    expect(css).toContain("#ff334f 50%");
+    expect(css).toContain("animation: spectrumDrift 2.8s ease-in-out infinite alternate;");
+    expect(css).toContain("background-size: 108% 100%;");
+    expect(css).toContain("var(--color-spectral-red) 0 18%");
+    expect(css).toContain("var(--color-spectral-green) 0 16%");
+    expect(css).toContain("var(--color-spectral-blue) 0 18%");
+    expect(css).toContain("ellipse 20% 48% at 7% 112%");
+    expect(css).toContain("ellipse 24% 42% at 50% 116%");
+    expect(css).toContain("ellipse 20% 48% at 93% 112%");
+    expect(css).toContain("mask-composite: exclude;");
+    expect(css).not.toMatch(/spectral-(?:orange|yellow|cyan|violet)/);
+    expect(css).not.toMatch(/#(?:ff8a00|d9ff00|00e88f|00c8ff|5f55ff|ff2fad)/i);
     expect(css).toMatch(
-      /@keyframes spectrumShift\s*\{\s*from\s*\{[^}]*background-position:\s*100% 50%[^}]*\}\s*to\s*\{[^}]*background-position:\s*0% 50%/,
+      /@keyframes spectrumDrift\s*\{\s*from\s*\{[^}]*background-position:\s*48% 50%[^}]*\}\s*to\s*\{[^}]*background-position:\s*52% 50%/,
     );
   });
 
@@ -50,8 +56,23 @@ describe("SpectrumContactCta", () => {
     );
 
     expect(css).toMatch(
-      /@media \(hover:\s*hover\) and \(pointer:\s*fine\)[\s\S]*\.root:hover::before\s*\{[^}]*opacity:\s*0\.72[^}]*\}[\s\S]*\.root:hover::after\s*\{[^}]*opacity:\s*0\.32[^}]*\}[\s\S]*\.root:hover \.surface\s*\{[^}]*transform:\s*translate\(8px,\s*-6px\)/,
+      /@media \(hover:\s*hover\) and \(pointer:\s*fine\)[\s\S]*\.root:hover::before\s*\{[^}]*opacity:\s*0\.46[^}]*\}[\s\S]*\.root:hover::after\s*\{[^}]*opacity:\s*0\.12[^}]*\}[\s\S]*\.root:hover \.surface\s*\{[^}]*transform:\s*translate\(4px,\s*-3px\)/,
     );
+    expect(css).toMatch(/\.root:hover \.surface::before\s*\{[^}]*opacity:\s*0\.72/);
+  });
+
+  it("keeps RGB, glow, and movement exclusive to pointer hover", () => {
+    const css = readFileSync(
+      join(process.cwd(), "components/contact/SpectrumContactCta.module.css"),
+      "utf8",
+    );
+
+    expect(css).toMatch(
+      /\.root:focus-visible\s*\{[^}]*outline:\s*2px solid rgb\(255 255 255 \/ 85%\)[^}]*outline-offset:\s*3px/,
+    );
+    expect(css).not.toMatch(/\.root:focus-visible::(?:before|after)/);
+    expect(css).not.toContain(".root:focus-visible .surface::before");
+    expect(css).not.toMatch(/\.root:focus-visible \.surface\s*\{[^}]*(?:transform|filter):/);
   });
 
   it("uses a graphite surface when the site is in the light theme", () => {
