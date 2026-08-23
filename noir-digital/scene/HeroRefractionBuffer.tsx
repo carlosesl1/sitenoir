@@ -5,9 +5,6 @@ import { createContext, type ReactNode, useContext, useEffect, useMemo } from "r
 import { HalfFloatType, LinearFilter, type Texture, Vector2, WebGLRenderTarget } from "three";
 
 import { CONTACT_FLARE_LAYER } from "@/scene/contact-flare-layer";
-import { resolveHeroCanvasUiRefractionScale } from "@/scene/hero-canvas-ui-glass-config";
-import { createHeroCanvasUiSpectralSource } from "@/scene/hero-canvas-ui-spectral-source";
-import { resolveHeroCanvasUiSpectralIntensity } from "@/scene/hero-canvas-ui-spectral-source-config";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { sceneTransitionStore } from "@/scene/scene-transition";
 
@@ -20,7 +17,6 @@ interface HeroRefractionBufferProps {
   readonly active: boolean;
   readonly children: ReactNode;
   readonly resolutionScale: number;
-  readonly spectralSourceActive?: boolean;
 }
 
 const HeroRefractionContext = createContext<HeroRefractionContextValue | null>(null);
@@ -35,7 +31,6 @@ export function HeroRefractionBuffer({
   active,
   children,
   resolutionScale,
-  spectralSourceActive = false,
 }: HeroRefractionBufferProps) {
   const camera = useThree((state) => state.camera);
   const gl = useThree((state) => state.gl);
@@ -54,11 +49,6 @@ export function HeroRefractionBuffer({
       }),
     [],
   );
-  const spectralSource = useMemo(
-    () => (spectralSourceActive ? createHeroCanvasUiSpectralSource() : null),
-    [spectralSourceActive],
-  );
-
   useEffect(() => {
     camera.layers.enable(HERO_GLASS_CONFIG.renderLayer);
   }, [camera]);
@@ -66,29 +56,17 @@ export function HeroRefractionBuffer({
   useEffect(() => {
     const pixelRatio = gl.getPixelRatio();
     const maximumTextureSize = gl.capabilities.maxTextureSize;
-    const effectiveResolutionScale = spectralSourceActive
-      ? resolveHeroCanvasUiRefractionScale(resolutionScale, size.width)
-      : resolutionScale;
     screenResolution.set(
       Math.min(maximumTextureSize, size.width * pixelRatio),
       Math.min(maximumTextureSize, size.height * pixelRatio),
     );
     target.setSize(
-      Math.max(1, Math.floor(screenResolution.x * effectiveResolutionScale)),
-      Math.max(1, Math.floor(screenResolution.y * effectiveResolutionScale)),
+      Math.max(1, Math.floor(screenResolution.x * resolutionScale)),
+      Math.max(1, Math.floor(screenResolution.y * resolutionScale)),
     );
-  }, [
-    gl,
-    resolutionScale,
-    screenResolution,
-    size.height,
-    size.width,
-    spectralSourceActive,
-    target,
-  ]);
+  }, [gl, resolutionScale, screenResolution, size.height, size.width, target]);
 
   useEffect(() => () => target.dispose(), [target]);
-  useEffect(() => () => spectralSource?.dispose(), [spectralSource]);
 
   useFrame(() => {
     const transition = sceneTransitionStore.getSnapshot();
@@ -110,12 +88,6 @@ export function HeroRefractionBuffer({
       gl.setRenderTarget(target);
       gl.clear();
       gl.render(scene, camera);
-
-      if (spectralSource) {
-        const spectralIntensity = resolveHeroCanvasUiSpectralIntensity(size.width);
-        gl.autoClear = false;
-        spectralSource.render(gl, spectralIntensity);
-      }
     } finally {
       for (const entry of hiddenContactObjects) entry.object.visible = entry.visible;
       camera.layers.mask = previousLayerMask;

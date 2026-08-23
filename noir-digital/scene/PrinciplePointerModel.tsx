@@ -5,6 +5,7 @@ import { type MutableRefObject, useEffect, useMemo, useRef } from "react";
 import {
   type BufferGeometry,
   Color,
+  DoubleSide,
   type Group,
   MathUtils,
   Mesh,
@@ -21,6 +22,7 @@ import { pointerStore } from "@/features/pointer/pointer-store";
 import type { PrincipleSectionRect } from "@/features/principles/PrincipleSceneProvider";
 import { useTheme } from "@/features/theme/ThemeProvider";
 import { POINTER_MODEL_SOURCE } from "@/scene/critical-hero-preload";
+import { HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER } from "@/scene/hero-canvas-ui-edge-flare-config";
 import {
   principleCursorFragmentShader,
   principleCursorVertexShader,
@@ -103,7 +105,7 @@ export function PrinciplePointerModel({
       uFresnelPower: { value: 6 },
       uFresnelSideDir: { value: new Vector3(-1, 0.3, 1) },
       uFresnelStrength: { value: 1 },
-      uAccentColor: { value: new Color("#009dff") },
+      uAccentColor: { value: new Color("#242a30") },
       uLight: { value: new Vector3(4, 9, 0.5) },
       uOpacity: { value: 1 },
       uProgress: { value: 0 },
@@ -111,8 +113,8 @@ export function PrinciplePointerModel({
       uScaleReveal: { value: 0 },
       uShininess: { value: 40 },
       uSpecularStrength: { value: 1.2 },
-      uStripeColorA: { value: new Color("#009dff") },
-      uStripeColorB: { value: new Color("#64c3ff") },
+      uStripeColorA: { value: new Color("#1a2026") },
+      uStripeColorB: { value: new Color("#77828c") },
     }),
     [],
   );
@@ -235,6 +237,7 @@ export function PrinciplePointerModel({
     );
     state.gl.getDrawingBufferSize(uniforms.uResolution.value);
     uniforms.uScaleReveal.value = actualReveal;
+
     const fullscreen = actualReveal >= 0.5;
     if (fullscreen !== fullscreenRef.current) {
       fullscreenRef.current = fullscreen;
@@ -248,6 +251,20 @@ export function PrinciplePointerModel({
         <group ref={spinRef}>
           <group rotation={[0, 0, -AXIS_TILT]}>
             <mesh geometry={geometry} material={material} frustumCulled={false} renderOrder={12} />
+            <mesh
+              geometry={geometry}
+              frustumCulled={false}
+              onUpdate={(mesh) => mesh.layers.set(HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER)}
+              renderOrder={13}
+            >
+              <meshBasicMaterial
+                color="#ffffff"
+                depthTest={false}
+                depthWrite={false}
+                side={DoubleSide}
+                toneMapped={false}
+              />
+            </mesh>
           </group>
         </group>
       </group>

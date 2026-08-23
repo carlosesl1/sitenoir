@@ -19,6 +19,10 @@ import {
 import { useTheme } from "@/features/theme/ThemeProvider";
 import { resolveFlareSourceLayer } from "@/scene/contact-flare-layer";
 import { useHeroFluid } from "@/scene/HeroFluidProvider";
+import {
+  HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER,
+  HERO_CANVAS_UI_EDGE_FLARE_LAYER,
+} from "@/scene/hero-canvas-ui-edge-flare-config";
 import { HERO_FLUID_CONFIG } from "@/scene/hero-fluid";
 import { HERO_EFFECT_COMPOSITE_FRAGMENT_SHADER } from "@/scene/hero-fluid-display-shader";
 import {
@@ -35,9 +39,15 @@ interface HeroLensFlareProps {
 
 const CONTACT_STREAK_MULTIPLIER = 0.38;
 
-function resolveStreakScale(width: number): number {
+function resolveStreakScale(width: number, tuningMultiplier = 1): number {
   const compactViewportMultiplier = width < 768 ? 2 : 1;
-  return 8 * (Math.max(1, width) / 1920) * compactViewportMultiplier * CONTACT_STREAK_MULTIPLIER;
+  return (
+    8 *
+    (Math.max(1, width) / 1920) *
+    compactViewportMultiplier *
+    CONTACT_STREAK_MULTIPLIER *
+    tuningMultiplier
+  );
 }
 
 function createTarget(): WebGLRenderTarget {
@@ -75,6 +85,8 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
   const frame = useRef(0);
   const baseTarget = useMemo(createTarget, []);
   const contactFlareSourceTarget = useMemo(createFlareSourceTarget, []);
+  const cursorNoFlareSourceTarget = useMemo(createFlareSourceTarget, []);
+  const edgeFlareSourceTarget = useMemo(createFlareSourceTarget, []);
   const flareTarget = useMemo(() => {
     const target = createTarget();
     target.texture.colorSpace = LinearSRGBColorSpace;
@@ -103,11 +115,15 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
         toneMapped: false,
         uniforms: {
           tDiffuse: { value: baseTarget.texture },
+          tEdgeSource: { value: edgeFlareSourceTarget.texture },
+          tNoFlareMask: { value: cursorNoFlareSourceTarget.texture },
           uEnabled: { value: 1 },
+          uEdgeSourceEnabled: { value: 0 },
           uGate: { value: 0.88 },
           uHotspotPower: { value: 32 },
           uIntensity: { value: 0.7 },
           uResolution: { value: resolution },
+          uStreakJitter: { value: 1 },
           uStarRays: { value: 6 },
           uStreakScale: { value: 8 },
           uSpectrumMix: { value: 0 },
@@ -116,7 +132,13 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
         },
         vertexShader: HERO_POST_VERTEX_SHADER,
       }),
-    [baseTarget.texture, resolution, tailColor],
+    [
+      baseTarget.texture,
+      cursorNoFlareSourceTarget.texture,
+      edgeFlareSourceTarget.texture,
+      resolution,
+      tailColor,
+    ],
   );
   const compositeMaterial = useMemo(
     () =>
@@ -172,6 +194,8 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
     resolution.set(width, height);
     baseTarget.setSize(width, height);
     contactFlareSourceTarget.setSize(width, height);
+    cursorNoFlareSourceTarget.setSize(width, height);
+    edgeFlareSourceTarget.setSize(width, height);
     flareTarget.setSize(
       Math.max(1, Math.floor(width * 0.5)),
       Math.max(1, Math.floor(height * 0.5)),
@@ -184,6 +208,8 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
   }, [
     baseTarget,
     contactFlareSourceTarget,
+    cursorNoFlareSourceTarget,
+    edgeFlareSourceTarget,
     flareMaterial,
     flareTarget,
     gl,
@@ -197,9 +223,17 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
     () => () => {
       baseTarget.dispose();
       contactFlareSourceTarget.dispose();
+      cursorNoFlareSourceTarget.dispose();
+      edgeFlareSourceTarget.dispose();
       flareTarget.dispose();
     },
-    [baseTarget, contactFlareSourceTarget, flareTarget],
+    [
+      baseTarget,
+      contactFlareSourceTarget,
+      cursorNoFlareSourceTarget,
+      edgeFlareSourceTarget,
+      flareTarget,
+    ],
   );
   useEffect(() => () => compositeMaterial.dispose(), [compositeMaterial]);
   useEffect(() => () => flareMaterial.dispose(), [flareMaterial]);
@@ -209,6 +243,7 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
     const transition = sceneTransitionStore.getSnapshot();
     const flareEnabled =
       active && transition.sourceVisible && (!transition.solid || transition.contactVisible);
+    const edgeSourceEnabled = flareEnabled && !transition.contactVisible;
     const tuning = resolveLensFlareTuning(transition.contactVisible);
     const enabledUniform = flareMaterial.uniforms["uEnabled"];
     if (enabledUniform) enabledUniform.value = flareEnabled ? 1 : 0;
@@ -219,12 +254,16 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
     const intensityUniform = flareMaterial.uniforms["uIntensity"];
     if (intensityUniform) intensityUniform.value = tuning.intensity;
     const spectrumUniform = flareMaterial.uniforms["uSpectrumMix"];
-    if (spectrumUniform) spectrumUniform.value = 1;
+    if (spectrumUniform) spectrumUniform.value = tuning.spectrumMix;
+    const streakJitterUniform = flareMaterial.uniforms["uStreakJitter"];
+    if (streakJitterUniform) streakJitterUniform.value = tuning.streakJitter;
+    const edgeSourceEnabledUniform = flareMaterial.uniforms["uEdgeSourceEnabled"];
+    if (edgeSourceEnabledUniform) edgeSourceEnabledUniform.value = edgeSourceEnabled ? 1 : 0;
     const thresholdUniform = flareMaterial.uniforms["uThreshold"];
     if (thresholdUniform) thresholdUniform.value = tuning.threshold;
     const streakScaleUniform = flareMaterial.uniforms["uStreakScale"];
     if (streakScaleUniform) {
-      streakScaleUniform.value = resolveStreakScale(size.width);
+      streakScaleUniform.value = resolveStreakScale(size.width, tuning.streakScale);
     }
     const flareCompositeUniform = compositeMaterial.uniforms["uFlareEnabled"];
     if (flareCompositeUniform) flareCompositeUniform.value = flareEnabled ? 1 : 0;
@@ -244,6 +283,16 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
     if (flareEnabled && frame.current % 2 === 0) {
       const flareSourceLayer = resolveFlareSourceLayer(transition.contactVisible);
       const diffuseUniform = flareMaterial.uniforms["tDiffuse"];
+      const previousLayerMask = camera.layers.mask;
+      camera.layers.set(HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER);
+      gl.setRenderTarget(cursorNoFlareSourceTarget);
+      gl.getClearColor(previousClearColor);
+      const cursorMaskClearAlpha = gl.getClearAlpha();
+      gl.setClearColor(flareClearColor, 1);
+      gl.clear();
+      gl.render(scene, camera);
+      gl.setClearColor(previousClearColor, cursorMaskClearAlpha);
+      camera.layers.mask = previousLayerMask;
       if (flareSourceLayer !== null) {
         const previousLayerMask = camera.layers.mask;
         camera.layers.set(flareSourceLayer);
@@ -256,8 +305,20 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
         gl.setClearColor(previousClearColor, previousClearAlpha);
         camera.layers.mask = previousLayerMask;
         if (diffuseUniform) diffuseUniform.value = contactFlareSourceTarget.texture;
-      } else if (diffuseUniform) {
-        diffuseUniform.value = baseTarget.texture;
+      } else {
+        if (diffuseUniform) diffuseUniform.value = baseTarget.texture;
+        if (edgeSourceEnabled) {
+          const previousLayerMask = camera.layers.mask;
+          camera.layers.set(HERO_CANVAS_UI_EDGE_FLARE_LAYER);
+          gl.setRenderTarget(edgeFlareSourceTarget);
+          gl.getClearColor(previousClearColor);
+          const previousClearAlpha = gl.getClearAlpha();
+          gl.setClearColor(flareClearColor, 1);
+          gl.clear();
+          gl.render(scene, camera);
+          gl.setClearColor(previousClearColor, previousClearAlpha);
+          camera.layers.mask = previousLayerMask;
+        }
       }
       quad.material = flareMaterial;
       gl.setRenderTarget(flareTarget);

@@ -8,11 +8,15 @@ void main() {
 
 export const HERO_LENS_FLARE_FRAGMENT_SHADER = `
 uniform sampler2D tDiffuse;
+uniform sampler2D tEdgeSource;
+uniform sampler2D tNoFlareMask;
 uniform vec2 uResolution;
 uniform float uEnabled;
+uniform float uEdgeSourceEnabled;
 uniform float uIntensity;
 uniform float uThreshold;
 uniform float uStreakScale;
+uniform float uStreakJitter;
 uniform float uHotspotPower;
 uniform float uGate;
 uniform float uStarRays;
@@ -35,7 +39,11 @@ float brightMask(float luminance) {
 }
 
 vec3 sampleBright(vec2 uv) {
+  float noFlareMask = texture2D(tNoFlareMask, uv).r;
+  if (noFlareMask > 0.001) return vec3(0.0);
   vec3 color = texture2D(tDiffuse, uv).rgb;
+  vec3 edgeSource = texture2D(tEdgeSource, uv).rgb * uEdgeSourceEnabled;
+  color = max(color, edgeSource);
   return color * brightMask(luma(color));
 }
 
@@ -57,7 +65,7 @@ vec3 streak(vec2 direction) {
   vec3 accumulated = vec3(0.0);
   vec2 pixel = floor(vUv * uResolution);
   float hash = fract(52.9829189 * fract(dot(pixel, vec2(0.06711056, 0.00583715))));
-  float phase = step(0.5, hash) * 0.5;
+  float phase = step(0.5, hash) * 0.5 * clamp(uStreakJitter, 0.0, 1.0);
   for (int index = 1; index <= 8; index++) {
     float distanceFromCore = float(index) * 1.5 + phase;
     float weight = 1.0 / (1.0 + distanceFromCore * 0.22);

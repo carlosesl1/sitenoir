@@ -85,7 +85,9 @@ vec3 sampleHyperspace(vec2 fragCoord) {
   hsv.x = fract(hsv.x + hueStripe + hueAnimation);
   hsv.y = clamp(hsv.y * mix(0.96, 1.06, idHash2), 0.0, 1.0);
   hsv.z = clamp(hsv.z * mix(0.97, 1.05, idHash), 0.0, 1.0);
-  vec3 sparkColor = hsv2rgb(hsv);
+  vec3 spectralColor = hsv2rgb(hsv);
+  float paletteMix = dot(spectralColor, vec3(0.299, 0.587, 0.114));
+  vec3 sparkColor = mix(uStripeColorA, uStripeColorB, smoothstep(0.12, 0.88, paletteMix));
   sparkColor *= mix(0.78, 1.0, smoothstep(0.14, 0.5, channelMix));
   return intensity * radialBoost * sparkColor * star;
 }

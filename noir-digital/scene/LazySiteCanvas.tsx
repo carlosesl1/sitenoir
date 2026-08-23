@@ -41,7 +41,7 @@ export function LazySiteCanvas({
 }) {
   const [quality, setQuality] = useState<SceneQuality | null>(null);
   const [canvasEnabled, setCanvasEnabled] = useState(false);
-  const [heroGlassVariant, setHeroGlassVariant] = useState<HeroGlassVariant>("current");
+  const [heroGlassVariant, setHeroGlassVariant] = useState<HeroGlassVariant>("canvas-ui");
 
   if (preloadDuringEntry && typeof window !== "undefined") {
     void preloadSiteCanvasModule();

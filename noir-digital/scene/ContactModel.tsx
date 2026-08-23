@@ -5,14 +5,18 @@ import { useRef } from "react";
 import { type Group, MathUtils, Vector3 } from "three";
 
 import { pointerStore } from "@/features/pointer/pointer-store";
-import { ContactRefractiveAsset } from "@/scene/ContactRefractiveAsset";
+import { ContactCanvasUiGlassAsset } from "@/scene/ContactCanvasUiGlassAsset";
 import { BEFORE_ROTATION_X, resolveContactModelMotion } from "@/scene/contact-model-motion";
-import { CONTACT_ASSET_PATH, resolveContactAssetScale } from "@/scene/contact-model-scale";
+import {
+  CONTACT_ASSET_PATH,
+  resolveContactCanvasUiAssetScale,
+  resolveContactCanvasUiDepthScale,
+} from "@/scene/contact-model-scale";
 import { resolveSceneFrameDelta } from "@/scene/scene-frame";
 import type { ModelTransform } from "@/scene/scene-layout";
 
-const CONTACT_ASSET_SCALE = resolveContactAssetScale();
-const CONTACT_DEPTH_SCALE = 3.98001451217401;
+const CONTACT_ASSET_SCALE = resolveContactCanvasUiAssetScale();
+const CONTACT_DEPTH_SCALE = resolveContactCanvasUiDepthScale();
 const POINTER_ROTATION_X = MathUtils.degToRad(16);
 const POINTER_ROTATION_Y = MathUtils.degToRad(24);
 const POINTER_RESPONSE = 16;
@@ -99,10 +103,10 @@ export function ContactModel({ layout, reducedMotion, scrollProgress }: ContactM
       visible={false}
     >
       <group scale={[CONTACT_ASSET_SCALE, CONTACT_ASSET_SCALE, CONTACT_ASSET_SCALE]}>
-        <ContactRefractiveAsset
+        <ContactCanvasUiGlassAsset
           depthScale={CONTACT_DEPTH_SCALE}
           path={CONTACT_ASSET_PATH}
-          reducedMotion={reducedMotion}
+          sceneScale={layout.scale}
         />
       </group>
     </group>

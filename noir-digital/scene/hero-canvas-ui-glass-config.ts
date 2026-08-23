@@ -1,16 +1,16 @@
 export const HERO_CANVAS_UI_GLASS_CONFIG = {
-  anisotropicBlur: 0.03,
+  anisotropicBlur: 0.02,
   backside: false,
-  chromaticAberration: 0.07,
+  chromaticAberration: 0,
   clearcoat: 1,
-  clearcoatRoughness: 0.02,
+  clearcoatRoughness: 0.035,
   environmentBlur: 0.18,
-  environmentIntensity: 0.47,
+  environmentIntensity: 0.42,
   highlight: "#ffffff",
   ior: 1.58,
-  roughness: 0.05,
-  samples: 6,
-  thickness: 4,
+  roughness: 0.075,
+  samples: 3,
+  thickness: 3.6,
   transmission: 1,
 } as const;
 
@@ -42,15 +42,6 @@ export function resolveHeroCanvasUiSamples(viewportWidth: number): number {
   if (viewportWidth < 768) return 2;
   if (viewportWidth < 1024) return 3;
   return HERO_CANVAS_UI_GLASS_CONFIG.samples;
-}
-
-export function resolveHeroCanvasUiRefractionScale(
-  resolutionScale: number,
-  viewportWidth: number,
-): number {
-  if (viewportWidth < 768) return Math.min(resolutionScale, 0.375);
-  if (viewportWidth < 1024) return Math.min(resolutionScale, 0.4375);
-  return resolutionScale;
 }
 
 export function resolveHeroCanvasUiThickness(sceneScale: number): number {

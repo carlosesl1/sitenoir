@@ -3,19 +3,18 @@
 import { MeshTransmissionMaterial } from "@react-three/drei/core/MeshTransmissionMaterial";
 import { useLoader, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useMemo } from "react";
-import { Color, FrontSide, NormalBlending, type WebGLRenderTarget } from "three";
+import {
+  type BufferGeometry,
+  Color,
+  FrontSide,
+  NormalBlending,
+  type WebGLRenderTarget,
+} from "three";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
+import { POINTER_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
-import {
-  HERO_CANVAS_UI_EDGE_FLARE_CONFIG as edgeFlareConfig,
-  HERO_CANVAS_UI_EDGE_FLARE_LAYER,
-} from "@/scene/hero-canvas-ui-edge-flare-config";
-import {
-  HERO_CANVAS_UI_EDGE_FLARE_FRAGMENT_SHADER,
-  HERO_CANVAS_UI_EDGE_FLARE_VERTEX_SHADER,
-} from "@/scene/hero-canvas-ui-edge-flare-shaders";
 import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";
 import {
   HERO_CANVAS_UI_GLASS_CONFIG as glassConfig,
@@ -30,16 +29,35 @@ import {
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
 
-interface HeroCanvasUiGlassAssetProps {
+interface HeroCanvasUiPointerAssetProps {
   readonly sceneScale: number;
 }
 
-export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetProps) {
-  const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
+interface HeroCanvasUiPointerMeshProps {
+  readonly geometry: BufferGeometry;
+  readonly renderOrder?: number;
+  readonly sceneScale: number;
+}
+
+export function HeroCanvasUiPointerAsset({ sceneScale }: HeroCanvasUiPointerAssetProps) {
+  const source = useLoader(GLTFLoader, POINTER_MODEL_SOURCE, (loader) => {
+    loader.setMeshoptDecoder(MeshoptDecoder);
+  });
+  const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
+
+  useLayoutEffect(() => () => geometry.dispose(), [geometry]);
+
+  return <HeroCanvasUiPointerMesh geometry={geometry} sceneScale={sceneScale} />;
+}
+
+export function HeroCanvasUiPointerMesh({
+  geometry,
+  renderOrder = 1,
+  sceneScale,
+}: HeroCanvasUiPointerMeshProps) {
   const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
   const { texture } = useHeroRefraction();
-  const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
   const environment = useMemo<WebGLRenderTarget>(() => createHeroCanvasUiEnvironment(gl), [gl]);
   const rimUniforms = useMemo(
     () => ({
@@ -53,27 +71,7 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
     }),
     [],
   );
-  const edgeFlareUniforms = useMemo(
-    () => ({
-      uEdgeFeather: { value: edgeFlareConfig.edgeFeather },
-      uFresnelEnd: { value: edgeFlareConfig.fresnelEnd },
-      uFresnelStart: { value: edgeFlareConfig.fresnelStart },
-      uIPatchXEnd: { value: edgeFlareConfig.iPatchXEnd },
-      uIPatchXStart: { value: edgeFlareConfig.iPatchXStart },
-      uIPatchYEnd: { value: edgeFlareConfig.iPatchYEnd },
-      uIPatchYStart: { value: edgeFlareConfig.iPatchYStart },
-      uRContourEnd: { value: edgeFlareConfig.rContourEnd },
-      uRContourFeather: { value: edgeFlareConfig.rContourFeather },
-      uRContourIntercept: { value: edgeFlareConfig.rContourIntercept },
-      uRContourSlope: { value: edgeFlareConfig.rContourSlope },
-      uRContourStart: { value: edgeFlareConfig.rContourStart },
-      uRContourWidth: { value: edgeFlareConfig.rContourWidth },
-      uRSourceLuminance: { value: edgeFlareConfig.rSourceLuminance },
-    }),
-    [],
-  );
 
-  useLayoutEffect(() => () => geometry.dispose(), [geometry]);
   useLayoutEffect(() => () => environment.dispose(), [environment]);
 
   return (
@@ -81,7 +79,7 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
       <mesh
         geometry={geometry}
         onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
-        renderOrder={1}
+        renderOrder={renderOrder}
       >
         <MeshTransmissionMaterial
           anisotropicBlur={glassConfig.anisotropicBlur}
@@ -97,7 +95,7 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
           ior={glassConfig.ior}
           roughness={glassConfig.roughness}
           samples={resolveHeroCanvasUiSamples(width)}
-          thickness={resolveHeroCanvasUiThickness(sceneScale)}
+          thickness={resolveHeroCanvasUiThickness(sceneScale) * 0.1}
           transmission={glassConfig.transmission}
           transparent
         />
@@ -105,7 +103,7 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
       <mesh
         geometry={geometry}
         onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
-        renderOrder={2}
+        renderOrder={renderOrder + 1}
       >
         <shaderMaterial
           blending={NormalBlending}
@@ -120,20 +118,6 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
           transparent
           uniforms={rimUniforms}
           vertexShader={HERO_CANVAS_UI_RIM_VERTEX_SHADER}
-        />
-      </mesh>
-      <mesh
-        geometry={geometry}
-        onUpdate={(mesh) => mesh.layers.set(HERO_CANVAS_UI_EDGE_FLARE_LAYER)}
-        renderOrder={3}
-      >
-        <shaderMaterial
-          depthTest
-          depthWrite
-          fragmentShader={HERO_CANVAS_UI_EDGE_FLARE_FRAGMENT_SHADER}
-          toneMapped={false}
-          uniforms={edgeFlareUniforms}
-          vertexShader={HERO_CANVAS_UI_EDGE_FLARE_VERTEX_SHADER}
         />
       </mesh>
     </>

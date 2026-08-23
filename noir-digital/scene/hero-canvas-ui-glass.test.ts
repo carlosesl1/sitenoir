@@ -13,52 +13,91 @@ const rejectedOverlayPaths = [
 ];
 
 describe("Canvas UI hero glass integration", () => {
-  it("uses one transmission material with the existing refraction buffer", () => {
+  it("uses the existing scene refraction for neutral edge reflections", () => {
     const source = readFileSync(componentPath, "utf8");
     const configSource = readFileSync(configPath, "utf8");
 
     expect(source).toContain(
       'import { MeshTransmissionMaterial } from "@react-three/drei/core/MeshTransmissionMaterial";',
     );
-    expect(source).toContain('import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";');
     expect(source).toContain(
       'import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";',
     );
+    expect(source).toContain('import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";');
     expect(source).toContain("const { texture } = useHeroRefraction();");
+    expect(source).not.toContain("createHeroCanvasUiNeutralBuffer");
     expect(source).not.toContain(
       'import { pointerStore } from "@/features/pointer/pointer-store";',
     );
     expect(source).toContain("createHeroCanvasUiEnvironment(gl)");
     expect(source).toContain("resolveHeroCanvasUiSamples(width)");
     expect(source).toContain("buffer={texture}");
-    expect(source.match(/<mesh\b/g)).toHaveLength(2);
-    expect(source.match(/geometry=\{geometry\}/g)).toHaveLength(2);
+    expect(source).not.toContain("createPhysicalPrismSpectrumBuffer");
+    expect(source.match(/<mesh\b/g)).toHaveLength(3);
+    expect(source.match(/geometry=\{geometry\}/g)).toHaveLength(3);
+    expect(source.match(/<meshBasicMaterial\b/g) ?? []).toHaveLength(0);
     expect(source.match(/<MeshTransmissionMaterial\b/g)).toHaveLength(1);
-    expect(source.match(/<shaderMaterial\b/g)).toHaveLength(1);
+    expect(source.match(/<shaderMaterial\b/g)).toHaveLength(2);
     expect(source).toContain("HERO_CANVAS_UI_RIM_CONFIG as rimConfig");
     expect(source).toContain("HERO_CANVAS_UI_RIM_FRAGMENT_SHADER");
     expect(source).toContain("HERO_CANVAS_UI_RIM_VERTEX_SHADER");
+    expect(source).toContain("HERO_CANVAS_UI_EDGE_FLARE_LAYER");
+    expect(source).toContain("HERO_CANVAS_UI_EDGE_FLARE_FRAGMENT_SHADER");
     expect(source).not.toContain("uPointerLight");
     expect(source).toContain("renderOrder={1}");
-    expect(source).toMatch(/<MeshTransmissionMaterial[\s\S]*?depthWrite[\s\S]*?transparent/);
+    const transmissionMaterial = source.match(/<MeshTransmissionMaterial[\s\S]*?\/>/)?.[0] ?? "";
+    expect(transmissionMaterial).toContain("depthWrite");
+    expect(transmissionMaterial).toContain("transparent");
     expect(source).toContain("depthWrite={false}");
     expect(source).toContain("renderOrder={2}");
+    expect(source).toContain("renderOrder={3}");
     expect(source).toContain("toneMapped={false}");
     expect(source).toContain("polygonOffset");
     expect(source).not.toContain("EdgesGeometry");
     expect(source).not.toContain("createHeroCanvasUiSpectrum");
+    expect(source).not.toContain("PhysicalPrismReflectionAtlas");
+    expect(source).not.toContain("iridescenceThicknessRange");
     expect(source).not.toContain("new RoomEnvironment");
     expect(configSource).not.toContain("dispersion:");
   });
 
-  it("uses the responsive Canvas UI refraction scale in the capture buffer", () => {
+  it("keeps the retired caustic source out of the production capture buffer", () => {
     const bufferSource = readFileSync(
       join(process.cwd(), "scene/HeroRefractionBuffer.tsx"),
       "utf8",
     );
 
-    expect(bufferSource).toContain("resolveHeroCanvasUiRefractionScale(");
-    expect(bufferSource).toContain("resolutionScale, size.width");
+    expect(bufferSource).not.toContain("PrismaticCaustics");
+    expect(bufferSource).not.toContain("prismaticCaustics");
+  });
+
+  it("keeps the previous live caustics out of the Canvas UI route", () => {
+    const siteCanvasSource = readFileSync(join(process.cwd(), "scene/SiteCanvas.tsx"), "utf8");
+
+    expect(siteCanvasSource).not.toContain("prismaticCaustics");
+  });
+
+  it("keeps the lower cursor out of the post-process flare extraction", () => {
+    const principlePointerSource = readFileSync(
+      join(process.cwd(), "scene/PrinciplePointerModel.tsx"),
+      "utf8",
+    );
+    const heroPointerSource = readFileSync(
+      join(process.cwd(), "scene/HeroCanvasUiPointerAsset.tsx"),
+      "utf8",
+    );
+    const flareSource = readFileSync(join(process.cwd(), "scene/HeroLensFlare.tsx"), "utf8");
+    const flareShaderSource = readFileSync(
+      join(process.cwd(), "scene/hero-lens-flare-shaders.ts"),
+      "utf8",
+    );
+
+    expect(principlePointerSource).toContain("HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER");
+    expect(heroPointerSource).not.toContain("HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER");
+    expect(flareSource).toContain("cursorNoFlareSourceTarget");
+    expect(flareSource).toContain("camera.layers.set(HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER)");
+    expect(flareShaderSource).toContain("uniform sampler2D tNoFlareMask");
+    expect(flareShaderSource).toContain("if (noFlareMask > 0.001) return vec3(0.0)");
   });
 
   it("declares the compatible Drei version as a runtime dependency", () => {

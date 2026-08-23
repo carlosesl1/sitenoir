@@ -52,11 +52,10 @@ describe("LazySiteCanvas", () => {
     expect(window.__NOIR_SCENE_STATUS__).toBe("disabled");
   });
 
-  it("passes the opt-in Canvas UI variant to the deferred scene", async () => {
+  it("passes the clean Canvas UI variant to the deferred scene by default", async () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
       getExtension: vi.fn(),
     } as unknown as WebGLRenderingContext);
-    window.history.replaceState({}, "", "/?glass=canvas-ui");
 
     const view = render(<LazySiteCanvas preloadDuringEntry />);
 
