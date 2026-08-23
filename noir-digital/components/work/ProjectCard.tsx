@@ -61,6 +61,7 @@ type CanvasRenderState = {
 export function ProjectCard({ featured, project }: ProjectCardProps) {
   const reducedMotion = useReducedMotion() ?? false;
   const motionAllowed = useWorkCardMotionSupport();
+  const [imagesEnabled, setImagesEnabled] = useState(false);
   const [webglOwned, setWebglOwned] = useState(false);
   const { registerCard, requestFrame } = useWorkCardAnimation();
   const frameRef = useRef<HTMLSpanElement>(null);
@@ -75,6 +76,28 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
   const lastCanvasRenderRef = useRef<CanvasRenderState | null>(null);
   const primaryImageCacheRef = useRef<PreparedWorkCardImage | null>(null);
   const hoverImageCacheRef = useRef<PreparedWorkCardImage | null>(null);
+
+  useEffect(() => {
+    if (imagesEnabled) return;
+    const frame = frameRef.current;
+    if (!frame || typeof IntersectionObserver === "undefined") {
+      setImagesEnabled(true);
+      return;
+    }
+
+    const preloadDistance = Math.max(600, window.innerHeight);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        observer.disconnect();
+        setImagesEnabled(true);
+      },
+      { rootMargin: `${preloadDistance}px 0px` },
+    );
+    observer.observe(frame);
+
+    return () => observer.disconnect();
+  }, [imagesEnabled]);
 
   const renderFrame = useCallback(
     ({ scrollSpeed }: WorkCardAnimationFrame) => {
@@ -336,8 +359,8 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
               ref={primaryImageRef}
               className={styles["primaryImage"]}
               data-image-role="primary"
-              src={project.image}
-              srcSet={resolveWorkImageSrcSet(project.image, featured)}
+              src={imagesEnabled ? project.image : undefined}
+              srcSet={imagesEnabled ? resolveWorkImageSrcSet(project.image, featured) : undefined}
               alt={project.imageAlt}
               sizes={sizes}
               width={featured ? 2400 : 1200}
@@ -351,8 +374,10 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
               ref={hoverImageRef}
               className={styles["hoverImage"]}
               data-image-role="hover"
-              src={project.hoverImage}
-              srcSet={resolveWorkImageSrcSet(project.hoverImage, featured)}
+              src={imagesEnabled ? project.hoverImage : undefined}
+              srcSet={
+                imagesEnabled ? resolveWorkImageSrcSet(project.hoverImage, featured) : undefined
+              }
               alt=""
               aria-hidden="true"
               sizes={sizes}

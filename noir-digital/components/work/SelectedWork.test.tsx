@@ -136,6 +136,78 @@ describe("TrustStrip", () => {
 });
 
 describe("SelectedWork", () => {
+  it("withholds work image URLs until each card approaches the viewport", () => {
+    const observers: Array<{
+      callback: IntersectionObserverCallback;
+      observed: Element[];
+      rootMargin: string;
+    }> = [];
+
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        readonly observed: Element[] = [];
+        readonly record: (typeof observers)[number];
+
+        constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+          this.record = {
+            callback,
+            observed: this.observed,
+            rootMargin: options?.rootMargin ?? "0px",
+          };
+          observers.push(this.record);
+        }
+
+        observe = (target: Element) => this.observed.push(target);
+        disconnect() {}
+        unobserve() {}
+      },
+    );
+
+    render(<SelectedWork />);
+
+    const project = projects[0];
+    if (!project) throw new Error("Missing project fixture");
+    const card = screen.getByTestId(`project-${project.slug}`);
+    const frame = card.querySelector<HTMLElement>(`[data-work-card="${project.slug}"]`);
+    const primary = within(card).getByRole("img", { name: project.imageAlt });
+    const hover = card.querySelector<HTMLImageElement>('[data-image-role="hover"]');
+    const preloadMargin = `${Math.max(600, window.innerHeight)}px 0px`;
+    expect(frame).not.toBeNull();
+    if (!frame) throw new Error("Missing project image frame");
+    const imageObserver = observers.find(
+      ({ observed, rootMargin }) => rootMargin === preloadMargin && observed.includes(frame),
+    );
+
+    expect(imageObserver).toBeDefined();
+    expect(primary).not.toHaveAttribute("src");
+    expect(primary).not.toHaveAttribute("srcset");
+    expect(hover).not.toHaveAttribute("src");
+    expect(hover).not.toHaveAttribute("srcset");
+
+    act(() => {
+      imageObserver?.callback(
+        [
+          {
+            boundingClientRect: frame.getBoundingClientRect(),
+            intersectionRatio: 1,
+            intersectionRect: frame.getBoundingClientRect(),
+            isIntersecting: true,
+            rootBounds: null,
+            target: frame,
+            time: 0,
+          },
+        ],
+        {} as IntersectionObserver,
+      );
+    });
+
+    expect(primary).toHaveAttribute("src", project.image);
+    expect(primary.getAttribute("srcset")).toContain("-960.webp 960w");
+    expect(hover).toHaveAttribute("src", project.hoverImage);
+    expect(hover?.getAttribute("srcset")).toContain("-960.webp 960w");
+  });
+
   it("renders a desktop service index in project-group order", () => {
     render(<SelectedWork />);
     const index = screen.getByLabelText("Índice de serviços");
