@@ -27,7 +27,7 @@ describe("SpectrumContactCta", () => {
     );
   });
 
-  it("uses only a moving one-pixel RGB line beneath the shifted surface", () => {
+  it("maps the moving one-pixel RGB line around the displaced contour", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/SpectrumContactCta.module.css"),
       "utf8",
@@ -36,6 +36,10 @@ describe("SpectrumContactCta", () => {
     expect(css).toContain("@keyframes opticalContourFlow");
     expect(css).toContain("animation: opticalContourFlow 1.8s linear infinite;");
     expect(css).toMatch(/\.root::before\s*\{[^}]*padding:\s*1px/);
+    expect(css).toContain("@property --optical-angle");
+    expect(css).toContain("background-image: conic-gradient(");
+    expect(css).toContain("from var(--optical-angle)");
+    expect(css).toContain("--optical-angle: 1turn;");
     expect(css).toContain("var(--color-spectral-red)");
     expect(css).toContain("var(--color-spectral-green)");
     expect(css).toContain("var(--color-spectral-blue)");
@@ -46,19 +50,20 @@ describe("SpectrumContactCta", () => {
     expect(css).not.toContain("surfaceSheenPass");
     expect(css).not.toContain(".surface::before");
     expect(css).not.toContain(".surface::after");
+    expect(css).not.toContain("background-size: 200% 100%");
     expect(css).toMatch(/\.root::before\s*\{[\s\S]*?opacity:\s*0/);
     expect(css).not.toMatch(/spectral-(?:orange|yellow|cyan|violet)/);
     expect(css).not.toMatch(/#(?:ff8a00|d9ff00|00e88f|00c8ff|5f55ff|ff2fad)/i);
   });
 
-  it("restores the earlier displacement without adding hover glow", () => {
+  it("separates the one-pixel line from the surface without adding hover glow", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/SpectrumContactCta.module.css"),
       "utf8",
     );
 
     expect(css).toMatch(
-      /@media \(hover:\s*hover\) and \(pointer:\s*fine\)[\s\S]*\.root:hover \.surface\s*\{[^}]*transform:\s*translate\(4px,\s*-3px\)/,
+      /@media \(hover:\s*hover\) and \(pointer:\s*fine\)[\s\S]*\.root:hover \.surface\s*\{[^}]*transform:\s*translate\(7px,\s*-6px\)/,
     );
     expect(css).toMatch(/\.root:hover::before\s*\{[^}]*opticalContourFlow/);
     expect(css).not.toMatch(/\.root:hover::after/);
@@ -72,7 +77,7 @@ describe("SpectrumContactCta", () => {
     );
 
     expect(css).toMatch(
-      /@media \(prefers-reduced-motion:\s*reduce\) and \(hover:\s*hover\) and \(pointer:\s*fine\)[\s\S]*\.root:hover::before\s*\{[^}]*animation:\s*none[^}]*background-position:\s*50% 50%[^}]*opacity:\s*0\.78/,
+      /@media \(prefers-reduced-motion:\s*reduce\) and \(hover:\s*hover\) and \(pointer:\s*fine\)[\s\S]*\.root:hover::before\s*\{[^}]*animation:\s*none[^}]*--optical-angle:\s*0\.18turn[^}]*opacity:\s*1/,
     );
   });
 
