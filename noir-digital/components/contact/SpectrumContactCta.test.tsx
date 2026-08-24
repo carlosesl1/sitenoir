@@ -27,38 +27,53 @@ describe("SpectrumContactCta", () => {
     );
   });
 
-  it("uses only soft red, green, and blue optical accents", () => {
+  it("uses only a moving one-pixel RGB line beneath the shifted surface", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/SpectrumContactCta.module.css"),
       "utf8",
     );
 
-    expect(css).toContain("animation: spectrumDrift 2.8s ease-in-out infinite alternate;");
-    expect(css).toContain("background-size: 108% 100%;");
-    expect(css).toContain("var(--color-spectral-red) 0 18%");
-    expect(css).toContain("var(--color-spectral-green) 0 16%");
-    expect(css).toContain("var(--color-spectral-blue) 0 18%");
-    expect(css).toContain("ellipse 20% 48% at 7% 112%");
-    expect(css).toContain("ellipse 24% 42% at 50% 116%");
-    expect(css).toContain("ellipse 20% 48% at 93% 112%");
+    expect(css).toContain("@keyframes opticalContourFlow");
+    expect(css).toContain("animation: opticalContourFlow 1.8s linear infinite;");
+    expect(css).toMatch(/\.root::before\s*\{[^}]*padding:\s*1px/);
+    expect(css).toContain("var(--color-spectral-red)");
+    expect(css).toContain("var(--color-spectral-green)");
+    expect(css).toContain("var(--color-spectral-blue)");
     expect(css).toContain("mask-composite: exclude;");
+    expect(css).not.toContain("--corner-refraction");
+    expect(css).not.toContain("alternate");
+    expect(css).not.toContain("repeating-linear-gradient");
+    expect(css).not.toContain("surfaceSheenPass");
+    expect(css).not.toContain(".surface::before");
+    expect(css).not.toContain(".surface::after");
+    expect(css).toMatch(/\.root::before\s*\{[\s\S]*?opacity:\s*0/);
     expect(css).not.toMatch(/spectral-(?:orange|yellow|cyan|violet)/);
     expect(css).not.toMatch(/#(?:ff8a00|d9ff00|00e88f|00c8ff|5f55ff|ff2fad)/i);
-    expect(css).toMatch(
-      /@keyframes spectrumDrift\s*\{\s*from\s*\{[^}]*background-position:\s*48% 50%[^}]*\}\s*to\s*\{[^}]*background-position:\s*52% 50%/,
-    );
   });
 
-  it("uses a restrained lift and glow on hover", () => {
+  it("restores the earlier displacement without adding hover glow", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/SpectrumContactCta.module.css"),
       "utf8",
     );
 
     expect(css).toMatch(
-      /@media \(hover:\s*hover\) and \(pointer:\s*fine\)[\s\S]*\.root:hover::before\s*\{[^}]*opacity:\s*0\.46[^}]*\}[\s\S]*\.root:hover::after\s*\{[^}]*opacity:\s*0\.12[^}]*\}[\s\S]*\.root:hover \.surface\s*\{[^}]*transform:\s*translate\(4px,\s*-3px\)/,
+      /@media \(hover:\s*hover\) and \(pointer:\s*fine\)[\s\S]*\.root:hover \.surface\s*\{[^}]*transform:\s*translate\(4px,\s*-3px\)/,
     );
-    expect(css).toMatch(/\.root:hover \.surface::before\s*\{[^}]*opacity:\s*0\.72/);
+    expect(css).toMatch(/\.root:hover::before\s*\{[^}]*opticalContourFlow/);
+    expect(css).not.toMatch(/\.root:hover::after/);
+    expect(css).not.toMatch(/\.root:hover \.surface\s*\{[^}]*box-shadow:/);
+  });
+
+  it("keeps the underlay line visible without motion for reduced-motion users", () => {
+    const css = readFileSync(
+      join(process.cwd(), "components/contact/SpectrumContactCta.module.css"),
+      "utf8",
+    );
+
+    expect(css).toMatch(
+      /@media \(prefers-reduced-motion:\s*reduce\) and \(hover:\s*hover\) and \(pointer:\s*fine\)[\s\S]*\.root:hover::before\s*\{[^}]*animation:\s*none[^}]*background-position:\s*50% 50%[^}]*opacity:\s*0\.78/,
+    );
   });
 
   it("keeps RGB, glow, and movement exclusive to pointer hover", () => {
