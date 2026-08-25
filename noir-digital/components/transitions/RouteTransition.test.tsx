@@ -93,4 +93,22 @@ describe("RouteTransition", () => {
     expect(navigationMocks.push).not.toHaveBeenCalled();
     expect(screen.queryByTestId("transition-canvas")).not.toBeInTheDocument();
   });
+
+  it("does not cover a trailing-slash page when its current route link is clicked", () => {
+    navigationMocks.pathname = "/contato";
+    window.history.replaceState(null, "", "/contato/");
+
+    render(
+      <>
+        <RouteTransition />
+        <a href="/contato">Contato</a>
+      </>,
+    );
+
+    fireEvent.click(screen.getByRole("link", { name: "Contato" }));
+
+    expect(navigationMocks.prefetch).not.toHaveBeenCalled();
+    expect(navigationMocks.push).not.toHaveBeenCalled();
+    expect(screen.queryByTestId("transition-canvas")).not.toBeInTheDocument();
+  });
 });

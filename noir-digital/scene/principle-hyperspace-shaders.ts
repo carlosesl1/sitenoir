@@ -19,6 +19,7 @@ uniform float uProgress;
 uniform float uScaleReveal;
 uniform vec2 uResolution;
 uniform vec3 uAccentColor;
+uniform float uBaseDarkening;
 uniform vec3 uStripeColorA;
 uniform vec3 uStripeColorB;
 uniform float uOpacity;
@@ -118,7 +119,8 @@ void main() {
   float reveal = clamp(uScaleReveal, 0.0, 1.0);
   float stripeLuma = dot(stripes, vec3(0.299, 0.587, 0.114));
   float darken = smoothstep(0.0, 0.88, reveal);
-  vec3 darkBase = mix(uAccentColor, vec3(0.0), darken);
+  float appliedDarkening = clamp(darken * uBaseDarkening, 0.0, 1.0);
+  vec3 darkBase = mix(uAccentColor, vec3(0.0), appliedDarkening);
   float gapMask = (1.0 - smoothstep(0.035, 0.12, stripeLuma)) * reveal;
   float crackGuard = 1.0 - smoothstep(0.68, 0.94, reveal);
   vec3 color = darkBase + stripes * reveal + uAccentColor * gapMask * 0.07 * crackGuard;

@@ -33,6 +33,7 @@ import {
   resolvePrinciplePointerRotation,
 } from "@/scene/principle-pointer-motion";
 import { resolveSceneFrameDelta } from "@/scene/scene-frame";
+import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
 
 const REST_SCALE = 0.1;
 const AXIS_TILT = MathUtils.degToRad(45);
@@ -106,6 +107,7 @@ export function PrinciplePointerModel({
       uFresnelSideDir: { value: new Vector3(-1, 0.3, 1) },
       uFresnelStrength: { value: 1 },
       uAccentColor: { value: new Color("#242a30") },
+      uBaseDarkening: { value: 1 },
       uLight: { value: new Vector3(4, 9, 0.5) },
       uOpacity: { value: 1 },
       uProgress: { value: 0 },
@@ -134,11 +136,21 @@ export function PrinciplePointerModel({
 
   useEffect(() => {
     const dark = resolvedTheme === "dark";
+    const baseColor = resolveThreeDimensionalColor(resolvedTheme, "#242a30");
     uniforms.uDiffuseness.value = dark ? 0.05 : 0.1;
     uniforms.uShininess.value = dark ? 100 : 120;
     uniforms.uFresnelPower.value = dark ? 3 : 1;
     uniforms.uFresnelStrength.value = dark ? 0.72 : 0.24;
     uniforms.uFresnelSideDir.value.set(-1, 1, -1);
+    uniforms.uAccentColor.value.set(baseColor);
+    uniforms.uBaseDarkening.value = dark ? 1 : 0.18;
+    if (dark) {
+      uniforms.uStripeColorA.value.set("#1a2026");
+      uniforms.uStripeColorB.value.set("#77828c");
+    } else {
+      uniforms.uStripeColorA.value.set(baseColor).multiplyScalar(0.52);
+      uniforms.uStripeColorB.value.set(baseColor).lerp(new Color("#ffffff"), 0.28);
+    }
   }, [resolvedTheme, uniforms]);
 
   useEffect(

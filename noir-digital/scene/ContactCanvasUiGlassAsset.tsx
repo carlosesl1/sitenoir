@@ -18,6 +18,7 @@ import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.j
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { mergeGeometries, toCreasedNormals } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
+import { useTheme } from "@/features/theme/ThemeProvider";
 import { CONTACT_FLARE_LAYER } from "@/scene/contact-flare-layer";
 import { resolveContactCanvasUiGeometryScale } from "@/scene/contact-model-scale";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
@@ -33,6 +34,7 @@ import {
   HERO_CANVAS_UI_RIM_VERTEX_SHADER,
 } from "@/scene/hero-canvas-ui-rim-shaders";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
+import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
 
 interface ContactCanvasUiGlassAssetProps {
   readonly depthScale: number;
@@ -105,12 +107,14 @@ export function ContactCanvasUiGlassAsset({
   path,
   sceneScale,
 }: ContactCanvasUiGlassAssetProps) {
+  const { resolvedTheme } = useTheme();
   const source = useLoader(GLTFLoader, path, (loader) => {
     loader.setMeshoptDecoder(MeshoptDecoder);
   });
   const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
   const { texture } = useHeroRefraction();
+  const materialColor = resolveThreeDimensionalColor(resolvedTheme, CONTACT_CURSOR_DARK);
   const geometry = useMemo(() => {
     const scaledGeometry = createContactCanvasUiGeometry(source.scene);
     const geometryScale = resolveContactCanvasUiGeometryScale();
@@ -146,13 +150,14 @@ export function ContactCanvasUiGlassAsset({
         renderOrder={1}
       >
         <MeshTransmissionMaterial
+          key={resolvedTheme}
           anisotropicBlur={CONTACT_GLASS_CONFIG.anisotropicBlur}
           backside={glassConfig.backside}
           buffer={texture}
           chromaticAberration={glassConfig.chromaticAberration}
           clearcoat={CONTACT_GLASS_CONFIG.clearcoat}
           clearcoatRoughness={CONTACT_GLASS_CONFIG.clearcoatRoughness}
-          color={CONTACT_CURSOR_DARK}
+          color={materialColor}
           depthWrite
           envMap={environment.texture}
           envMapIntensity={CONTACT_GLASS_CONFIG.environmentIntensity}

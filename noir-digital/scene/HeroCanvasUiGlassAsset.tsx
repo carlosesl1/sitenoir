@@ -6,6 +6,7 @@ import { useLayoutEffect, useMemo } from "react";
 import { Color, FrontSide, NormalBlending, type WebGLRenderTarget } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
+import { useTheme } from "@/features/theme/ThemeProvider";
 import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
 import {
@@ -29,17 +30,20 @@ import {
 } from "@/scene/hero-canvas-ui-rim-shaders";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
+import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
 
 interface HeroCanvasUiGlassAssetProps {
   readonly sceneScale: number;
 }
 
 export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetProps) {
+  const { resolvedTheme } = useTheme();
   const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
   const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
   const { texture } = useHeroRefraction();
   const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
+  const materialColor = resolveThreeDimensionalColor(resolvedTheme, "#ffffff");
   const environment = useMemo<WebGLRenderTarget>(() => createHeroCanvasUiEnvironment(gl), [gl]);
   const rimUniforms = useMemo(
     () => ({
@@ -84,13 +88,14 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
         renderOrder={1}
       >
         <MeshTransmissionMaterial
+          key={resolvedTheme}
           anisotropicBlur={glassConfig.anisotropicBlur}
           backside={glassConfig.backside}
           buffer={texture}
           chromaticAberration={glassConfig.chromaticAberration}
           clearcoat={glassConfig.clearcoat}
           clearcoatRoughness={glassConfig.clearcoatRoughness}
-          color="#ffffff"
+          color={materialColor}
           depthWrite
           envMap={environment.texture}
           envMapIntensity={glassConfig.environmentIntensity}

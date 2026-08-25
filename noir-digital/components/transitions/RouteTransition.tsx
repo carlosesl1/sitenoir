@@ -12,12 +12,19 @@ const TRANSITION_DURATION_MS = 800;
 
 type TransitionPhase = "covering" | "idle" | "revealing";
 
+function normalizePathname(pathname: string): string {
+  return pathname === "/" ? pathname : pathname.replace(/\/+$/, "");
+}
+
 function resolveInternalDestination(anchor: HTMLAnchorElement): string | null {
   if (anchor.hasAttribute("download") || (anchor.target && anchor.target !== "_self")) return null;
   const current = new URL(window.location.href);
   const destination = new URL(anchor.href, current);
   if (destination.origin !== current.origin) return null;
-  if (destination.pathname === current.pathname && destination.search === current.search)
+  if (
+    normalizePathname(destination.pathname) === normalizePathname(current.pathname) &&
+    destination.search === current.search
+  )
     return null;
   return `${destination.pathname}${destination.search}${destination.hash}`;
 }
