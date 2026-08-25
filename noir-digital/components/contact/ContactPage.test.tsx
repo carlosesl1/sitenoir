@@ -118,6 +118,24 @@ describe("ContactPage", () => {
     );
   });
 
+  it("presents the WhatsApp mark as a standalone balanced icon", () => {
+    const css = readFileSync(
+      join(process.cwd(), "components/contact/ContactPage.module.css"),
+      "utf8",
+    );
+
+    expect(css).toMatch(
+      /\.whatsAppPanel\s*\{[^}]*--whatsapp-mark-size:\s*clamp\(54px, 14cqi, 68px\)/,
+    );
+    expect(css).toMatch(
+      /\.whatsAppMark\s*\{[^}]*top:\s*54%[^}]*right:\s*clamp\(44px, 10cqi, 72px\)[^}]*border:\s*0[^}]*border-radius:\s*0[^}]*background:\s*none[^}]*box-shadow:\s*none[^}]*transform:\s*translateY\(-50%\)/,
+    );
+    expect(css).toMatch(/\.whatsAppMark svg\s*\{[^}]*width:\s*100%[^}]*height:\s*100%/);
+    expect(css).toMatch(
+      /@media \(max-width: 767px\)[\s\S]*\.whatsAppMark\s*\{[^}]*top:\s*48%[^}]*right:\s*28px/,
+    );
+  });
+
   it("uses the same brand lockup anatomy and proportions as the home footer", () => {
     const view = render(<ContactPage />);
     const brand = view.container.querySelector("[data-contact-brand-lockup]");
