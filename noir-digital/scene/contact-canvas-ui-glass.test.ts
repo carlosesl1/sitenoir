@@ -22,7 +22,10 @@ describe("Canvas UI contact glass", () => {
     expect(assetSource).toContain("const { texture } = useHeroRefraction();");
     expect(assetSource).toContain("buffer={texture}");
     expect(assetSource).toContain('const CONTACT_CURSOR_DARK = "#242a30";');
-    expect(assetSource).toContain("color={CONTACT_CURSOR_DARK}");
+    expect(assetSource).toContain(
+      "resolveThreeDimensionalColor(resolvedTheme, CONTACT_CURSOR_DARK)",
+    );
+    expect(assetSource).toContain("color={materialColor}");
     expect(assetSource).toContain("const CONTACT_GLASS_CONFIG = {");
     expect(assetSource).toContain("envMapIntensity={CONTACT_GLASS_CONFIG.environmentIntensity}");
     expect(assetSource).toContain("transmission={CONTACT_GLASS_CONFIG.transmission}");
