@@ -103,7 +103,7 @@
   }
 
   to {
-    --optical-angle: 1turn;
+    --optical-angle: -1turn;
   }
 }
 

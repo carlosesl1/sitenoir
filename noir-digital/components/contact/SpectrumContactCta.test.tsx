@@ -38,7 +38,7 @@ describe("SpectrumContactCta", () => {
     expect(css).toContain("@property --optical-angle");
     expect(css).toContain("background-image: conic-gradient(");
     expect(css).toContain("from var(--optical-angle)");
-    expect(css).toContain("--optical-angle: 1turn;");
+    expect(css).toContain("--optical-angle: -1turn;");
     expect(css).toContain("var(--color-spectral-red)");
     expect(css).toContain("var(--color-spectral-green)");
     expect(css).toContain("var(--color-spectral-blue)");
