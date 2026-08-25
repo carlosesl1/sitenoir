@@ -169,7 +169,10 @@ describe("ContactPage", () => {
     expect(css).toMatch(/\.information dd\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.internationalTag\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.internationalTag\s*\{[^}]*min-height:\s*62px/);
-    expect(css).toMatch(/\.globalIcon\s*\{[^}]*width:\s*144px[^}]*mask-image:\s*radial-gradient/);
+    expect(css).toMatch(
+      /\.globalIcon\s*\{[^}]*right:\s*6px[^}]*bottom:\s*-26px[^}]*width:\s*132px[^}]*height:\s*auto[^}]*object-fit:\s*contain[^}]*opacity:\s*0\.58/,
+    );
+    expect(css).not.toMatch(/\.globalIcon\s*\{[^}]*mask-image:\s*radial-gradient/);
     expect(css).toMatch(/\.recommended\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.whatsAppSubtitle\s*\{[^}]*font-family:\s*var\(--font-display\)/);
     expect(css).toMatch(/\.whatsAppPanel > p\s*\{[^}]*font-family:\s*var\(--font-display\)/);
@@ -228,7 +231,15 @@ describe("ContactPage", () => {
     expect(view.container.querySelectorAll('[data-spectrum-contact-cta="true"]')).toHaveLength(3);
     expect(view.container.querySelectorAll("[data-spectrum-contact-surface]")).toHaveLength(3);
     expect(view.container.querySelector("[data-contact-privacy-icon]")).toBeInTheDocument();
-    expect(view.container.querySelector("[data-contact-global-icon]")).toBeInTheDocument();
+    const globalImage = view.container.querySelector("img[data-contact-global-image]");
+    expect(globalImage).toBeInTheDocument();
+    expect(globalImage?.getAttribute("src")).toContain(
+      "%2Fassets%2Fv1%2Ftextures%2Fcontact-globe.webp",
+    );
+    expect(globalImage).toHaveAttribute("width", "181");
+    expect(globalImage).toHaveAttribute("height", "141");
+    expect(globalImage).toHaveAttribute("alt", "");
+    expect(view.container.querySelector("[data-contact-global-icon]")).not.toBeInTheDocument();
     expect(screen.queryByText("↗")).not.toBeInTheDocument();
 
     const information = screen.getByRole("region", { name: "INFORMAÇÕES" });

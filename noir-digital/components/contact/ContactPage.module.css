@@ -637,12 +637,16 @@
 }
 
 .internationalIndicator {
+  position: relative;
+  z-index: 1;
   width: 7px;
   height: 7px;
   color: #c0fe04;
 }
 
 .internationalTag p {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 1px;
   margin: 0;
@@ -650,16 +654,17 @@
 
 .globalIcon {
   position: absolute;
-  right: -5px;
-  bottom: -77px;
-  width: 144px;
-  height: 144px;
-  color: var(--text-secondary);
-  opacity: 0.34;
-  -webkit-mask-image: radial-gradient(circle, #000 0 1px, transparent 1.2px);
-  mask-image: radial-gradient(circle, #000 0 1px, transparent 1.2px);
-  -webkit-mask-size: 4px 4px;
-  mask-size: 4px 4px;
+  right: 6px;
+  bottom: -26px;
+  z-index: 0;
+  display: block;
+  width: 132px;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.58;
+  filter: brightness(0.78) contrast(0.92);
+  pointer-events: none;
+  user-select: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -784,10 +789,9 @@
   }
 
   .globalIcon {
-    right: -4px;
-    bottom: -63px;
-    width: 118px;
-    height: 118px;
+    right: 4px;
+    bottom: -20px;
+    width: 108px;
   }
 }
 

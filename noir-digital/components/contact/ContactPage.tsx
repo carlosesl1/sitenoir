@@ -4,7 +4,6 @@ import { Icon } from "@iconify/react";
 import whatsappIcon from "@iconify-icons/simple-icons/whatsapp";
 import altArrowDownLinear from "@iconify-icons/solar/alt-arrow-down-linear";
 import arrowRightUpLinear from "@iconify-icons/solar/arrow-right-up-linear";
-import earthBold from "@iconify-icons/solar/earth-bold";
 import lockKeyholeLinear from "@iconify-icons/solar/lock-keyhole-linear";
 import stopBold from "@iconify-icons/solar/stop-bold";
 import Image from "next/image";
@@ -418,11 +417,15 @@ export function ContactPage() {
                 <span>Atendemos projetos em todo o Brasil</span>
                 <span>e também internacionalmente.</span>
               </p>
-              <Icon
+              <Image
                 className={styles["globalIcon"]}
-                icon={earthBold}
+                src="/assets/v1/textures/contact-globe.webp"
+                alt=""
+                width={181}
+                height={141}
+                sizes="(max-width: 767px) 108px, 132px"
                 aria-hidden="true"
-                data-contact-global-icon
+                data-contact-global-image
               />
             </div>
           </section>

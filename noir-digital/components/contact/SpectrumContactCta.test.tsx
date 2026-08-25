@@ -42,9 +42,15 @@ describe("SpectrumContactCta", () => {
     expect(css).toContain("var(--color-spectral-red)");
     expect(css).toContain("var(--color-spectral-green)");
     expect(css).toContain("var(--color-spectral-blue)");
-    expect(css).toContain('mask-image: url("data:image/svg+xml,');
-    expect(css).toContain("M0%200H246L260%2014V64H14L0%2050Z");
-    expect(css).toContain("stroke-width='2'");
+    expect(css).toContain("--contour-cut: 14px;");
+    expect(css).toContain("--contour-width: 1px;");
+    expect(css).toContain("--optical-contour-mask:");
+    expect(css).toContain("calc(100% - var(--contour-cut)) var(--contour-width)");
+    expect(css).toContain("var(--contour-cut) var(--contour-cut) no-repeat");
+    expect(css).toContain("-webkit-mask: var(--optical-contour-mask);");
+    expect(css).toContain("mask: var(--optical-contour-mask);");
+    expect(css).not.toContain("preserveAspectRatio='none'");
+    expect(css).not.toContain('mask-image: url("data:image/svg+xml,');
     expect(css).not.toContain("content-box");
     expect(css).not.toContain("mask-composite: exclude;");
     expect(css).not.toContain("--corner-refraction");
