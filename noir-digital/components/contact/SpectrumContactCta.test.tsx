@@ -27,7 +27,7 @@ describe("SpectrumContactCta", () => {
     );
   });
 
-  it("maps the moving one-pixel RGB line around the displaced contour", () => {
+  it("maps the moving one-pixel RGB line around every clipped edge", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/SpectrumContactCta.module.css"),
       "utf8",
@@ -35,7 +35,6 @@ describe("SpectrumContactCta", () => {
 
     expect(css).toContain("@keyframes opticalContourFlow");
     expect(css).toContain("animation: opticalContourFlow 1.8s linear infinite;");
-    expect(css).toMatch(/\.root::before\s*\{[^}]*padding:\s*1px/);
     expect(css).toContain("@property --optical-angle");
     expect(css).toContain("background-image: conic-gradient(");
     expect(css).toContain("from var(--optical-angle)");
@@ -43,7 +42,11 @@ describe("SpectrumContactCta", () => {
     expect(css).toContain("var(--color-spectral-red)");
     expect(css).toContain("var(--color-spectral-green)");
     expect(css).toContain("var(--color-spectral-blue)");
-    expect(css).toContain("mask-composite: exclude;");
+    expect(css).toContain('mask-image: url("data:image/svg+xml,');
+    expect(css).toContain("M0%200H246L260%2014V64H14L0%2050Z");
+    expect(css).toContain("stroke-width='2'");
+    expect(css).not.toContain("content-box");
+    expect(css).not.toContain("mask-composite: exclude;");
     expect(css).not.toContain("--corner-refraction");
     expect(css).not.toContain("alternate");
     expect(css).not.toContain("repeating-linear-gradient");
