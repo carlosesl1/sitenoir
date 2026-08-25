@@ -488,8 +488,8 @@
 .whatsAppMark {
   position: absolute;
   z-index: 1;
-  top: 54%;
-  right: clamp(44px, 10cqi, 72px);
+  top: 35%;
+  right: clamp(52px, 12cqi, 68px);
   display: grid;
   width: var(--whatsapp-mark-size);
   aspect-ratio: 1;
@@ -769,11 +769,6 @@
   .whatsAppPanel {
     min-height: 350px;
     margin-top: 28px;
-  }
-
-  .whatsAppMark {
-    top: 48%;
-    right: 28px;
   }
 
   .information {

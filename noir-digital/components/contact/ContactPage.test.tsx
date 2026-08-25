@@ -128,12 +128,10 @@ describe("ContactPage", () => {
       /\.whatsAppPanel\s*\{[^}]*--whatsapp-mark-size:\s*clamp\(54px, 14cqi, 68px\)/,
     );
     expect(css).toMatch(
-      /\.whatsAppMark\s*\{[^}]*top:\s*54%[^}]*right:\s*clamp\(44px, 10cqi, 72px\)[^}]*border:\s*0[^}]*border-radius:\s*0[^}]*background:\s*none[^}]*box-shadow:\s*none[^}]*transform:\s*translateY\(-50%\)/,
+      /\.whatsAppMark\s*\{[^}]*top:\s*35%[^}]*right:\s*clamp\(52px, 12cqi, 68px\)[^}]*border:\s*0[^}]*border-radius:\s*0[^}]*background:\s*none[^}]*box-shadow:\s*none[^}]*transform:\s*translateY\(-50%\)/,
     );
     expect(css).toMatch(/\.whatsAppMark svg\s*\{[^}]*width:\s*100%[^}]*height:\s*100%/);
-    expect(css).toMatch(
-      /@media \(max-width: 767px\)[\s\S]*\.whatsAppMark\s*\{[^}]*top:\s*48%[^}]*right:\s*28px/,
-    );
+    expect(css).not.toMatch(/@media \(max-width: 767px\)[\s\S]*\.whatsAppMark\s*\{/);
   });
 
   it("uses the same brand lockup anatomy and proportions as the home footer", () => {
