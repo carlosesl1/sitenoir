@@ -3,17 +3,19 @@ import { setDataFlag } from "@/scene/work-card-dom";
 export { resolveWorkCardCurl } from "@/scene/work-card-framing";
 
 export function shouldRenderWorkCardCanvas({
+  curlStrength,
   imageReady,
   motionAllowed,
   visible,
   webglReady,
 }: {
+  curlStrength: number;
   imageReady: boolean;
   motionAllowed: boolean;
   visible: boolean;
   webglReady: boolean;
 }): boolean {
-  return imageReady && motionAllowed && visible && !webglReady;
+  return curlStrength > 0 && imageReady && motionAllowed && visible && !webglReady;
 }
 
 export function resetWorkCardCanvas(frame: HTMLElement, canvas: HTMLCanvasElement): void {

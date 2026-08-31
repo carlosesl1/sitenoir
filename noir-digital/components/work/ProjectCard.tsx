@@ -122,7 +122,15 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
         lastCanvasRenderRef.current = null;
         return;
       }
-      if (!shouldRenderWorkCardCanvas({ imageReady, motionAllowed, visible, webglReady })) {
+      if (
+        !shouldRenderWorkCardCanvas({
+          curlStrength,
+          imageReady,
+          motionAllowed,
+          visible,
+          webglReady,
+        })
+      ) {
         resetWorkCardCanvas(frame, canvas);
         lastCanvasRenderRef.current = null;
         return;

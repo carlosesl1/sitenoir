@@ -23,9 +23,19 @@ describe("work card curl", () => {
     expect(resolveScreenCurlProfile(225, 900)).toBeCloseTo(1 - Math.sqrt(0.75));
   });
 
-  it("keeps one render surface at rest instead of swapping back to the image", () => {
+  it("keeps the authored image visible while the 2D canvas has no distortion to render", () => {
     expect(
       shouldRenderWorkCardCanvas({
+        curlStrength: 0,
+        imageReady: true,
+        motionAllowed: true,
+        visible: true,
+        webglReady: false,
+      }),
+    ).toBe(false);
+    expect(
+      shouldRenderWorkCardCanvas({
+        curlStrength: 0.01,
         imageReady: true,
         motionAllowed: true,
         visible: true,
@@ -34,6 +44,7 @@ describe("work card curl", () => {
     ).toBe(true);
     expect(
       shouldRenderWorkCardCanvas({
+        curlStrength: 0.01,
         imageReady: false,
         motionAllowed: true,
         visible: true,
@@ -42,6 +53,7 @@ describe("work card curl", () => {
     ).toBe(false);
     expect(
       shouldRenderWorkCardCanvas({
+        curlStrength: 0.01,
         imageReady: true,
         motionAllowed: true,
         visible: false,
@@ -53,6 +65,7 @@ describe("work card curl", () => {
   it("stops the 2D strip renderer when the global WebGL layer owns the cards", () => {
     expect(
       shouldRenderWorkCardCanvas({
+        curlStrength: 0.01,
         imageReady: true,
         motionAllowed: true,
         visible: true,
@@ -64,6 +77,7 @@ describe("work card curl", () => {
   it("keeps the authored responsive image on touch-only devices", () => {
     expect(
       shouldRenderWorkCardCanvas({
+        curlStrength: 0.01,
         imageReady: true,
         motionAllowed: false,
         visible: true,
