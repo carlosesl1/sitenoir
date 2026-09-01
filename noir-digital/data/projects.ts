@@ -128,7 +128,7 @@ export const projects = [
     href: "/services/contabil-sudoeste",
     image: "/work/contabil-google-main.webp",
     hoverImage: "/work/contabil-google-hover.webp",
-    imageAlt: "Case de presença no Google da Contábil Sudoeste com perfil e resultados locais",
+    imageAlt: "Fachada real da Contábil Sudoeste em uma composição diurna com rota, pin e estrelas",
   },
   {
     slug: "posto-ipiranga",
@@ -141,7 +141,7 @@ export const projects = [
     href: "/services/posto-ipiranga",
     image: "/work/posto-google-main.webp",
     hoverImage: "/work/posto-google-hover.webp",
-    imageAlt: "Case de presença no Google do Posto Ipiranga com perfil e busca local",
+    imageAlt: "Posto Ipiranga de Brumado em uma composição diurna com rota, pin e estrelas",
   },
 ] as const satisfies readonly Project[];
 

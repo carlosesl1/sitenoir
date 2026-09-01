@@ -91,20 +91,35 @@ const assets = [
       "google-presence",
       "contabil-sudoeste",
       "generated",
-      "contabil-google-main-square.png",
+      "contabil-google-cinematic-pilot-real-day.png",
     ],
   },
   {
     output: "contabil-google-hover.webp",
-    source: ["google-presence", "contabil-sudoeste", "generated", "contabil-google-hover.png"],
+    source: [
+      "google-presence",
+      "contabil-sudoeste",
+      "generated",
+      "contabil-google-cinematic-pilot-real-day.png",
+    ],
   },
   {
     output: "posto-google-main.webp",
-    source: ["google-presence", "posto-ipiranga", "generated", "posto-google-main-square.png"],
+    source: [
+      "google-presence",
+      "posto-ipiranga",
+      "generated",
+      "posto-google-cinematic-pilot-real-day.png",
+    ],
   },
   {
     output: "posto-google-hover.webp",
-    source: ["google-presence", "posto-ipiranga", "generated", "posto-google-hover.png"],
+    source: [
+      "google-presence",
+      "posto-ipiranga",
+      "generated",
+      "posto-google-cinematic-pilot-real-day.png",
+    ],
   },
 ];
 
