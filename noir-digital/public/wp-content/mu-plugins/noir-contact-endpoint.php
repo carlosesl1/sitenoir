@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NOIR Digital - Contatos do site
  * Description: Persiste contatos enviados pelo site e notifica a equipe por e-mail.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: NOIR Digital
  */
 
@@ -16,6 +16,10 @@ const NOIR_CONTACT_ROUTE = '/contact';
 const NOIR_CONTACT_DEFAULT_FROM = 'contato@noirdigital.com.br';
 const NOIR_CONTACT_DEFAULT_FROM_NAME = 'NOIR Digital';
 const NOIR_CONTACT_DEFAULT_RECIPIENTS = array('contato@noirdigital.com.br');
+const NOIR_CONTACT_DEFAULT_SMTP_HOST = 'smtp.hostinger.com';
+const NOIR_CONTACT_DEFAULT_SMTP_USERNAME = 'contato@noirdigital.com.br';
+const NOIR_CONTACT_DEFAULT_SMTP_PORT = 587;
+const NOIR_CONTACT_DEFAULT_SMTP_SECURE = 'tls';
 const NOIR_CONTACT_DEFAULT_ORIGINS = array(
     'https://noirdigital.com.br',
     'https://www.noirdigital.com.br',
@@ -309,7 +313,9 @@ function noir_contact_get_recipients()
 function noir_contact_from_email()
 {
     $configured = defined('NOIR_MAIL_FROM_EMAIL') ? sanitize_email(NOIR_MAIL_FROM_EMAIL) : '';
-    $smtp_username = defined('NOIR_SMTP_USERNAME') ? sanitize_email(NOIR_SMTP_USERNAME) : '';
+    $smtp_username = defined('NOIR_SMTP_USERNAME')
+        ? sanitize_email(NOIR_SMTP_USERNAME)
+        : NOIR_CONTACT_DEFAULT_SMTP_USERNAME;
     $authenticated_email = $smtp_username !== '' && is_email($smtp_username)
         ? $smtp_username
         : NOIR_CONTACT_DEFAULT_FROM;
@@ -552,16 +558,24 @@ function noir_contact_configure_smtp($phpmailer)
         return;
     }
 
-    $host = defined('NOIR_SMTP_HOST') ? sanitize_text_field(NOIR_SMTP_HOST) : '';
-    $username = defined('NOIR_SMTP_USERNAME') ? sanitize_email(NOIR_SMTP_USERNAME) : '';
+    $host = defined('NOIR_SMTP_HOST')
+        ? sanitize_text_field(NOIR_SMTP_HOST)
+        : NOIR_CONTACT_DEFAULT_SMTP_HOST;
+    $username = defined('NOIR_SMTP_USERNAME')
+        ? sanitize_email(NOIR_SMTP_USERNAME)
+        : NOIR_CONTACT_DEFAULT_SMTP_USERNAME;
     if ($host === '' || $username === '' || !is_email($username)) {
         return;
     }
 
-    $port = defined('NOIR_SMTP_PORT') ? absint(NOIR_SMTP_PORT) : 587;
-    $secure = defined('NOIR_SMTP_SECURE') ? strtolower(sanitize_text_field(NOIR_SMTP_SECURE)) : 'tls';
+    $port = defined('NOIR_SMTP_PORT')
+        ? absint(NOIR_SMTP_PORT)
+        : NOIR_CONTACT_DEFAULT_SMTP_PORT;
+    $secure = defined('NOIR_SMTP_SECURE')
+        ? strtolower(sanitize_text_field(NOIR_SMTP_SECURE))
+        : NOIR_CONTACT_DEFAULT_SMTP_SECURE;
     if (!in_array($secure, array('tls', 'ssl'), true)) {
-        $secure = 'tls';
+        $secure = NOIR_CONTACT_DEFAULT_SMTP_SECURE;
     }
 
     $phpmailer->isSMTP();
@@ -569,7 +583,7 @@ function noir_contact_configure_smtp($phpmailer)
     $phpmailer->SMTPAuth = true;
     $phpmailer->Username = $username;
     $phpmailer->Password = (string) NOIR_SMTP_PASSWORD;
-    $phpmailer->Port = $port > 0 ? $port : 587;
+    $phpmailer->Port = $port > 0 ? $port : NOIR_CONTACT_DEFAULT_SMTP_PORT;
     $phpmailer->SMTPSecure = $secure;
     $phpmailer->CharSet = 'UTF-8';
     $phpmailer->setFrom(noir_contact_from_email(), noir_contact_from_name(), false);

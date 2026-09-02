@@ -1,104 +1,106 @@
-# NOIR WordPress SMTP Configuration Design
+# NOIR WordPress SMTP Defaults Design
 
 **Date:** 2026-09-02  
-**Status:** Approved direction; pending execution plan and production access  
-**Scope:** Restore contact notification e-mails without changing the contact page, its payload, or the lead persistence flow.
+**Status:** Approved for implementation and production deployment
+**Scope:** Make the deployed contact mu-plugin fully configured with non-secret Hostinger defaults so the server owner only needs to add the mailbox password.
 
 ## Context and evidence
 
-The contact page already posts JSON to `https://noirdigital.com.br/wp-json/noir/v1/contact`. The WordPress mu-plugin persists each valid submission as a private `noir_contact` post before calling `wp_mail`.
+The contact page already posts to `https://noirdigital.com.br/wp-json/noir/v1/contact`. The WordPress mu-plugin validates the payload, stores each lead as a private `noir_contact` post, then calls `wp_mail`.
 
-The reported response — `A mensagem foi registrada, mas a notificação por e-mail não foi enviada.` — proves that the request reached WordPress and the lead was saved, but `wp_mail` returned a failure. A safe invalid production request also returned the expected HTTP 400 JSON contract, so the REST route itself is active. Public MX records for `noirdigital.com.br` currently point to Hostinger (`mx1.hostinger.com` and `mx2.hostinger.com`).
+The reported message — `A mensagem foi registrada, mas a notificação por e-mail não foi enviada.` — proves the REST request and persistence succeeded while mail delivery failed. The production route also returned its expected HTTP 400 JSON response to a safe invalid request. Public MX records for `noirdigital.com.br` point to Hostinger.
 
-The existing mu-plugin enables authenticated SMTP only when `NOIR_SMTP_PASSWORD` is defined and non-empty. It also requires a valid `NOIR_SMTP_HOST` and `NOIR_SMTP_USERNAME`. Missing or incomplete constants leave WordPress on its default mail transport, which matches the observed failure mode.
+The current plugin enables SMTP only when `NOIR_SMTP_PASSWORD` is non-empty, but it also requires `NOIR_SMTP_HOST` and `NOIR_SMTP_USERNAME` to exist in `wp-config.php`. That creates avoidable server configuration and differs from the TOGETHER pattern, whose mu-plugin contains non-secret transport defaults.
 
 ## Decision
 
-Configure authenticated Hostinger SMTP directly in the production WordPress `wp-config.php`, following the same operational pattern used by the TOGETHER site.
+Version and deploy the following non-secret defaults inside `noir-contact-endpoint.php`:
 
-This approach is preferred because it:
-
-- uses the integration already implemented and deployed;
-- keeps the frontend, REST contract, antispam, CORS, persistence, and admin UI unchanged;
-- avoids adding a second SMTP plugin and another update surface;
-- keeps the mailbox password outside Git, the static build, browser code, and logs;
-- preserves the authenticated sender domain for SPF/DKIM alignment.
-
-## Production configuration
-
-The following constants belong in the production `wp-config.php`, before the WordPress stop-editing marker. The real password must be entered only in the protected server file and must never be copied into this repository, a build variable prefixed with `NEXT_PUBLIC_`, a task message, screenshot, or command output.
-
-```php
-define('NOIR_CONTACT_RECIPIENTS', 'contato@noirdigital.com.br');
-define('NOIR_MAIL_FROM_EMAIL', 'contato@noirdigital.com.br');
-define('NOIR_MAIL_FROM_NAME', 'NOIR Digital');
-
-define('NOIR_SMTP_HOST', 'smtp.hostinger.com');
-define('NOIR_SMTP_USERNAME', 'contato@noirdigital.com.br');
-define('NOIR_SMTP_PASSWORD', 'SECRET_ENTERED_ONLY_ON_THE_SERVER');
-define('NOIR_SMTP_PORT', 587);
-define('NOIR_SMTP_SECURE', 'tls');
+```text
+Recipients: contato@noirdigital.com.br
+From address: contato@noirdigital.com.br
+From name: NOIR Digital
+SMTP host: smtp.hostinger.com
+SMTP username: contato@noirdigital.com.br
+SMTP port: 587
+SMTP security: tls
 ```
 
-Before editing, the operator must inspect the file for existing `NOIR_*` definitions. Existing definitions should be updated in place rather than duplicated. A recoverable backup of `wp-config.php` must be created through the hosting control panel before the change.
+The plugin will continue to permit `NOIR_*` constants in `wp-config.php` as optional overrides. SMTP will remain disabled until `NOIR_SMTP_PASSWORD` exists and is non-empty. Therefore the only required production secret becomes:
 
-The authenticated username and `From` address remain identical. Visitor addresses are used only in `Reply-To`, avoiding sender spoofing and improving deliverability.
+```php
+define('NOIR_SMTP_PASSWORD', 'the current mailbox password entered only on the server');
+```
+
+The real value must never appear in Git, build variables, screenshots, task messages, browser developer tools, or command output.
 
 ## Runtime flow
 
-1. The browser submits the existing contact payload to the NOIR REST endpoint.
-2. WordPress validates CORS, fields, honeypot, and rate limit.
-3. WordPress saves the lead as a private `noir_contact` post.
-4. `phpmailer_init` applies the Hostinger SMTP constants.
-5. `wp_mail` authenticates as `contato@noirdigital.com.br` and sends the notification.
-6. The lead receives `mail_status=sent`, or remains stored with `mail_status=failed` and a safe diagnostic message.
-7. The frontend shows success only when notification delivery was accepted by `wp_mail`.
+1. The static contact page sends the existing JSON payload.
+2. WordPress applies the existing CORS, validation, honeypot, and rate-limit controls.
+3. The lead is saved privately before any e-mail attempt.
+4. When `NOIR_SMTP_PASSWORD` is absent, the plugin leaves WordPress's normal mail transport unchanged.
+5. When the password is present, `phpmailer_init` applies the versioned Hostinger defaults, with server constants overriding individual values when deliberately configured.
+6. The notification authenticates as `contato@noirdigital.com.br`; the visitor remains only in `Reply-To`.
+7. The lead records `sent` or `failed` with a safe diagnostic string.
 
-## Verification
+## Code changes
 
-Verification must be progressive and must not expose credentials:
+- Add named default constants for host, username, port, and transport security.
+- Make `noir_contact_from_email()` use the default SMTP username when no override exists.
+- Make `noir_contact_configure_smtp()` fall back to the versioned defaults instead of returning early when host or username constants are absent.
+- Preserve the password gate, override support, invalid-security fallback, and sender-domain validation.
+- Bump the mu-plugin version to make the deployed revision identifiable.
+- Extend the PHP harness to prove SMTP stays disabled without a password and becomes fully configured with only a password.
+- Update operations documentation so only the password is required and all other constants are optional overrides.
 
-1. Confirm the endpoint still returns HTTP 400 JSON for an invalid payload; this creates no lead and sends no e-mail.
-2. Submit one authorized, clearly labeled valid test through `/contato/`.
-3. Confirm the page shows the success response.
-4. Confirm the private lead appears in **Contatos do site**.
-5. Confirm its e-mail metadata shows `sent`, an empty safe error field, the expected recipient, and the attempt timestamp.
-6. Confirm the message arrives at `contato@noirdigital.com.br`, checking spam if necessary.
-7. Confirm replying to the notification targets the visitor address from `Reply-To`.
+## Deployment
 
-A successful API response alone does not prove inbox delivery. Completion requires both WordPress status evidence and receipt in the destination mailbox.
+The existing GitHub Actions workflow will run the frontend and PHP checks, build the static export, upload the mu-plugin separately, download it again, compare SHA-256, and run safe production endpoint checks. Publishing this change must not include the pending footer/CNPJ branch or the dirty primary checkout.
 
-## Failure handling
+## Verification before the password
 
-If the authorized test still fails, do not submit repeated live leads. Inspect the saved lead's safe mail error first, then verify:
+Deployment is considered successful when:
 
-- mailbox password and whether SMTP access is enabled;
-- `smtp.hostinger.com`, port `587`, and `tls`;
-- that the mailbox exists and can sign in;
-- that `NOIR_MAIL_FROM_EMAIL` matches the authenticated account;
-- DNS SPF/DKIM status and the spam folder.
+- the focused PHP harness passes;
+- the repository checks and production workflow pass;
+- the workflow proves the remote mu-plugin hash matches the committed file;
+- the production route still returns HTTP 400 JSON for an invalid request;
+- no valid lead or e-mail is sent during deployment.
 
-Resetting a mailbox password is outside this configuration change and requires separate explicit authorization because it can interrupt other clients using the mailbox.
+## Verification after the password
+
+After the owner adds `NOIR_SMTP_PASSWORD` to the production `wp-config.php`, submit exactly one authorized contact test. Completion of e-mail setup requires:
+
+- a success message on the contact page;
+- a private lead in **Contatos do site**;
+- `mail_status=sent` with no safe error value;
+- one notification received at `contato@noirdigital.com.br`;
+- correct `Reply-To` behavior.
+
+If the password is unknown, do not reset it without separate explicit authorization because a reset can disconnect other mail clients.
 
 ## Rollback
 
-If WordPress becomes unhealthy after the edit, restore the backed-up `wp-config.php`. This removes the new SMTP transport without deleting saved leads or changing the frontend. The original failure behavior may return, but contact data will continue to be persisted by the mu-plugin.
+The remote workflow creates a backup of the prior mu-plugin before replacement. If the plugin or route regresses, restore that backup. If adding the password later causes WordPress health problems, restore the backed-up `wp-config.php`. Neither rollback deletes saved leads.
 
 ## Alternatives considered
 
-### WordPress SMTP plugin
+### Put every constant in `wp-config.php`
 
-This would provide a UI for configuration and test sends, but adds another plugin, update responsibility, and configuration surface. It is unnecessary while the deployed mu-plugin already configures PHPMailer safely.
+This works but duplicates stable non-secret values on the server and increases manual error risk. It no longer matches the requested one-secret setup.
 
-### External transactional e-mail provider
+### Install a WordPress SMTP plugin
 
-This could improve observability and future deliverability at scale, but requires a new vendor, DNS changes, credentials, and possibly a different sender. It is disproportionate to the current failure and can be reconsidered if Hostinger SMTP proves unreliable.
+This adds UI convenience but also another plugin, update responsibility, and configuration surface while the existing mu-plugin already owns PHPMailer configuration.
+
+### Use a transactional e-mail provider
+
+This may be appropriate later for higher volume or richer observability, but it requires a vendor, DNS work, and new credentials. It is unnecessary for the current Hostinger mailbox.
 
 ## Out of scope
 
-- redesigning the contact page;
-- changing form fields or the REST payload;
-- changing CORS, rate limits, or honeypot behavior;
-- exposing credentials to the frontend or repository;
-- resetting the mailbox password without separate approval;
-- publishing unrelated local changes or the pending footer/CNPJ branch.
+- changing the contact page, fields, payload, CORS, rate limits, or honeypot;
+- storing the mailbox password in the repository;
+- resetting the mailbox password;
+- publishing unrelated footer/CNPJ work or dirty-checkout changes.

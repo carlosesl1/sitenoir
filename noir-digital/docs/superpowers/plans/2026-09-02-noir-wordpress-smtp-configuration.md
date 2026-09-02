@@ -1,182 +1,183 @@
-# NOIR WordPress SMTP Configuration Implementation Plan
+# NOIR WordPress SMTP Defaults Implementation Plan
 
 > **For agentic workers:** Execute directly by default. Use subagents only for independent bounded lanes that satisfy the global harness policy. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Restore notification e-mails for valid NOIR contact submissions while preserving the existing WordPress lead record and frontend behavior.
+**Goal:** Deploy a contact mu-plugin whose Hostinger SMTP transport is fully configured by versioned non-secret defaults and requires only `NOIR_SMTP_PASSWORD` on the server.
 
-**Architecture:** Keep the static frontend and deployed `noir/v1/contact` mu-plugin unchanged. Configure PHPMailer through protected `NOIR_*` constants in the production WordPress `wp-config.php`, then prove the full path with one authorized contact submission and inbox verification.
+**Architecture:** Keep the static frontend and REST payload unchanged. Extend the existing WordPress mu-plugin with overrideable SMTP defaults, prove the password-only behavior in the PHP harness, update operator documentation, and publish through the existing hash-verified Hostinger workflow.
 
-**Tech Stack:** Next.js static export, WordPress REST API, WordPress `wp_mail`, PHPMailer, Hostinger SMTP, Hostinger hPanel.
+**Tech Stack:** PHP, WordPress REST API, PHPMailer, Hostinger SMTP, Vitest deployment checks, GitHub Actions.
 
 ---
 
 ## File map
 
-- Production-only modify: `public_html/wp-config.php` — protected WordPress configuration that supplies the SMTP password and non-secret transport settings to the existing mu-plugin.
-- Reference only: `public/wp-content/mu-plugins/noir-contact-endpoint.php` — already deployed integration that reads `NOIR_*` constants, persists the lead, configures PHPMailer, and records mail status.
-- Reference only: `features/contact/submit-contact.ts` — existing browser client and response contract; no change is expected.
-- Reference only: `components/contact/ContactPage.tsx` — existing contact form; no change is expected.
-- Design record: `docs/superpowers/specs/2026-09-02-noir-wordpress-smtp-configuration-design.md`.
+- Modify: `public/wp-content/mu-plugins/noir-contact-endpoint.php` — default SMTP settings and PHPMailer configuration.
+- Modify: `tests/wordpress/noir-contact-endpoint.test.php` — password gate and password-only default configuration coverage.
+- Modify: `WORDPRESS_BACKEND.md` — one-secret server instructions and optional overrides.
+- Modify: `docs/superpowers/specs/2026-09-02-noir-wordpress-smtp-configuration-design.md` — approved architecture record.
+- Modify: `docs/superpowers/plans/2026-09-02-noir-wordpress-smtp-configuration.md` — executable plan.
+- Verify only: `.github/workflows/deploy-hostinger.yml` and `tests/deploy-hostinger.test.ts` — existing remote upload, hash comparison, and safe endpoint checks.
 
-No application source or deployment artifact should change unless preflight contradicts the approved design.
-
-### Task 1: Production preflight and recoverable backup
+### Task 1: Prove the password-only SMTP contract
 
 **Files:**
-- Inspect: `public_html/wp-config.php`
-- Reference: `public/wp-content/mu-plugins/noir-contact-endpoint.php:549`
+- Modify: `tests/wordpress/noir-contact-endpoint.test.php`
+- Test: `tests/wordpress/noir-contact-endpoint.test.php`
 
-- [ ] **Step 1: Confirm safe endpoint behavior before configuration**
+- [ ] **Step 1: Expand `TestMailer` with the PHPMailer surface used by the plugin**
 
-Send the documented invalid payload to production with the NOIR origin. It must not create a lead or send an e-mail.
+Add public properties for `Host`, `SMTPAuth`, `Username`, `Password`, `Port`, `SMTPSecure`, and `CharSet`, plus captured `fromEmail` and `fromName` fields. Add `setFrom(string $email, string $name, bool $auto): void` to capture the sender.
 
-```powershell
-$headers = @{ Origin = 'https://noirdigital.com.br'; Accept = 'application/json' }
-$body = '{"firstName":"","email":"invalido","service":"","message":"","website":""}'
-Invoke-WebRequest -UseBasicParsing `
-  -Uri 'https://noirdigital.com.br/wp-json/noir/v1/contact' `
-  -Method Post `
-  -Headers $headers `
-  -ContentType 'application/json' `
-  -Body $body `
-  -SkipHttpErrorCheck
-```
+- [ ] **Step 2: Add assertions for password-only setup**
 
-Expected: HTTP `400`, JSON content type, and `{"ok":false,"message":"Confira os campos informados."}`.
-
-- [ ] **Step 2: Open the production `wp-config.php` through authenticated Hostinger access**
-
-Use hPanel's file manager for the NOIR WordPress installation. If authentication is required, pause for the account owner to sign in. Do not collect credentials through task messages or command output.
-
-- [ ] **Step 3: Inspect for existing definitions**
-
-Search the file for each exact name below:
+Keep the existing no-password assertion. Then define a test-only `NOIR_SMTP_PASSWORD`, configure a fresh `TestMailer`, and require these exact values:
 
 ```text
-NOIR_CONTACT_RECIPIENTS
-NOIR_MAIL_FROM_EMAIL
-NOIR_MAIL_FROM_NAME
-NOIR_SMTP_HOST
-NOIR_SMTP_USERNAME
-NOIR_SMTP_PASSWORD
-NOIR_SMTP_PORT
-NOIR_SMTP_SECURE
+smtpEnabled=true
+Host=smtp.hostinger.com
+SMTPAuth=true
+Username=contato@noirdigital.com.br
+Password=test-only-password
+Port=587
+SMTPSecure=tls
+CharSet=UTF-8
+fromEmail=contato@noirdigital.com.br
+fromName=NOIR Digital
 ```
 
-Expected: record whether each definition is absent or present. Never reveal the value of `NOIR_SMTP_PASSWORD`. Existing definitions must be edited in place rather than duplicated.
+Also define an invalid cross-domain `NOIR_MAIL_FROM_EMAIL` and keep the assertion that the authenticated NOIR sender wins.
 
-- [ ] **Step 4: Create a recoverable backup**
+- [ ] **Step 3: Run the focused test and confirm it fails before implementation**
 
-Use the hosting file manager's copy or download operation to preserve the current `wp-config.php` before editing. Keep the backup outside the public web path when the control panel permits it. Do not add the backup to Git.
+Run: `npm run test:wordpress`
 
-Expected: the original configuration can be restored without reconstructing secrets.
+Expected before implementation: failure because the plugin does not configure a host or username when only the password exists.
 
-### Task 2: Configure authenticated Hostinger SMTP
+### Task 2: Implement versioned SMTP defaults
 
 **Files:**
-- Modify: `public_html/wp-config.php`
+- Modify: `public/wp-content/mu-plugins/noir-contact-endpoint.php`
+- Test: `tests/wordpress/noir-contact-endpoint.test.php`
 
-- [ ] **Step 1: Add or update the non-secret constants**
+- [ ] **Step 1: Add the named defaults and bump the plugin version**
 
-Place these definitions before `/* That's all, stop editing! Happy publishing. */`. If the installation uses the Portuguese equivalent marker, place them immediately before that marker.
+Add exact constants:
 
 ```php
-define('NOIR_CONTACT_RECIPIENTS', 'contato@noirdigital.com.br');
-define('NOIR_MAIL_FROM_EMAIL', 'contato@noirdigital.com.br');
-define('NOIR_MAIL_FROM_NAME', 'NOIR Digital');
-
-define('NOIR_SMTP_HOST', 'smtp.hostinger.com');
-define('NOIR_SMTP_USERNAME', 'contato@noirdigital.com.br');
-define('NOIR_SMTP_PORT', 587);
-define('NOIR_SMTP_SECURE', 'tls');
+const NOIR_CONTACT_DEFAULT_SMTP_HOST = 'smtp.hostinger.com';
+const NOIR_CONTACT_DEFAULT_SMTP_USERNAME = 'contato@noirdigital.com.br';
+const NOIR_CONTACT_DEFAULT_SMTP_PORT = 587;
+const NOIR_CONTACT_DEFAULT_SMTP_SECURE = 'tls';
 ```
 
-Expected: every name is defined exactly once and the authenticated username matches the `From` address.
+Change the plugin header version from `1.0.0` to `1.1.0`.
 
-- [ ] **Step 2: Add or update the password through the protected editor**
+- [ ] **Step 2: Use the default username for sender-domain validation**
 
-Define `NOIR_SMTP_PASSWORD` with the current password of the Hostinger mailbox `contato@noirdigital.com.br`. Enter the actual secret only in the authenticated `wp-config.php` editor. Do not copy it into this plan, Git, browser developer tools, screenshots, shell history, or task messages.
+In `noir_contact_from_email()`, use `NOIR_CONTACT_DEFAULT_SMTP_USERNAME` when `NOIR_SMTP_USERNAME` is absent. Preserve sanitization and the same-domain check.
 
-If the password is unknown, stop. Do not reset it without separate explicit authorization because a reset can disconnect existing mail clients.
+- [ ] **Step 3: Apply defaults in `noir_contact_configure_smtp()`**
 
-Expected: `NOIR_SMTP_PASSWORD` is defined exactly once with a non-empty server-only value.
+Keep the non-empty password gate. Resolve host, username, port, and security from matching `NOIR_*` overrides when defined, otherwise from the new constants. Preserve the validation guard and use the default constants as fallbacks for invalid port or security values.
 
-- [ ] **Step 3: Save and verify WordPress health**
+- [ ] **Step 4: Run the focused PHP harness**
 
-Save the file, reload `https://noirdigital.com.br/wp-json/noir/v1/contact` with the invalid request from Task 1, and compare the response.
+Run: `npm run test:wordpress`
 
-Expected: the endpoint still returns the same HTTP `400` JSON response. A PHP syntax error, HTTP 500, HTML body, or unavailable site triggers immediate rollback from the backup.
+Expected: all WordPress contact assertions pass, including the new password-only SMTP checks.
 
-### Task 3: One authorized end-to-end submission
+### Task 3: Document the one-secret server setup
 
 **Files:**
-- Exercise only: `components/contact/ContactPage.tsx`
-- Exercise only: production WordPress `noir_contact` data
+- Modify: `WORDPRESS_BACKEND.md`
 
-- [ ] **Step 1: Submit one clearly labeled test through the page**
+- [ ] **Step 1: Replace the required configuration block**
 
-Open `https://noirdigital.com.br/contato/` and submit exactly one test with:
+Document that the plugin already contains recipient, sender, Hostinger host, username, port, and TLS defaults. Make `NOIR_SMTP_PASSWORD` the only required production definition. State explicitly that documentation uses a marker instead of a real password and that it must never be copied as the value.
 
-```text
-Nome: Teste
-Sobrenome: SMTP NOIR
-E-mail: contato@noirdigital.com.br
-Empresa: NOIR Digital
-Serviço de interesse: Outro
-Mensagem: Teste autorizado de configuração SMTP em 02/09/2026. Pode ser desconsiderado.
-Website honeypot: empty
-```
+- [ ] **Step 2: Document optional overrides**
 
-Expected: the button enters its pending state once and the page reports `Mensagem recebida com sucesso.`. Do not retry automatically if the result is ambiguous.
+List `NOIR_CONTACT_RECIPIENTS`, `NOIR_MAIL_FROM_EMAIL`, `NOIR_MAIL_FROM_NAME`, `NOIR_SMTP_HOST`, `NOIR_SMTP_USERNAME`, `NOIR_SMTP_PORT`, `NOIR_SMTP_SECURE`, and `NOIR_ALLOWED_ORIGINS` as optional server overrides. Keep the password security warning and update diagnosis to distinguish defaults from overrides.
 
-- [ ] **Step 2: Verify the saved lead in WordPress**
-
-Open **Contatos do site**, locate the unique `Teste SMTP NOIR` lead, and inspect its metadata.
-
-Expected:
-
-```text
-Status do e-mail: sent
-Erro de e-mail: empty
-Destinatários: contato@noirdigital.com.br
-Tentativa de e-mail: populated
-```
-
-If the status is `failed`, record only the safe error text, stop further sends, and diagnose that evidence before changing any settings.
-
-- [ ] **Step 3: Verify actual mailbox receipt**
-
-Open the mailbox for `contato@noirdigital.com.br`, search for the subject beginning with `[NOIR Digital] Novo contato do site`, and check spam if it is not in the inbox.
-
-Expected: one notification arrives, its body contains the test values, and `Reply-To` resolves to `contato@noirdigital.com.br` for this controlled test.
-
-### Task 4: Final evidence and rollback decision
+### Task 4: Verify the coherent change
 
 **Files:**
-- Inspect: production `public_html/wp-config.php`
-- Inspect: production WordPress contact entry and mailbox
+- Verify: all modified files
+- Verify: `.github/workflows/deploy-hostinger.yml`
+- Verify: `tests/deploy-hostinger.test.ts`
 
-- [ ] **Step 1: Confirm the final evidence set**
+- [ ] **Step 1: Run focused checks**
 
-Completion requires all of the following:
+Run:
 
-```text
-Invalid endpoint request: HTTP 400 JSON
-Valid page submission: success message
-WordPress lead: saved privately
-WordPress mail status: sent
-Destination mailbox: notification received
-Credential exposure: none
+```powershell
+npm run test:wordpress
+npx vitest run tests/deploy-hostinger.test.ts
 ```
 
-- [ ] **Step 2: Roll back if site health regressed**
+Expected: both commands pass.
 
-If saving `wp-config.php` caused a PHP error or made WordPress unavailable, restore the pre-change backup immediately and repeat only the invalid endpoint health check.
+- [ ] **Step 2: Run the project verification gates**
 
-Expected after rollback: WordPress and the REST validation route are healthy again. Do not claim the SMTP issue resolved.
+Run:
 
-- [ ] **Step 3: Preserve scope**
+```powershell
+npm run check
+npm run typecheck
+npm run build
+```
 
-Do not deploy frontend files, publish the documentation branch, modify the mu-plugin, reset the mailbox password, or publish unrelated footer/CNPJ work as part of this production configuration.
+Expected: no new errors and a successful static export.
 
-Expected: the only production mutation is the approved `wp-config.php` SMTP configuration plus one explicitly labeled test lead/e-mail.
+- [ ] **Step 3: Inspect the final diff and secret scan**
+
+Run:
+
+```powershell
+git diff --check
+rg -n "NOIR_SMTP_PASSWORD" . --glob '!node_modules/**' --glob '!out/**'
+git status --short
+```
+
+Expected: only the test-only password and documentation markers appear; no real credential is present. Only the five scoped files are modified.
+
+- [ ] **Step 4: Commit the implementation**
+
+Stage only the scoped paths and commit with `fix(contact): add Hostinger SMTP defaults`.
+
+### Task 5: Publish and verify production deployment
+
+**Files:**
+- Publish: committed branch to `origin/main`
+- Deploy: `public/wp-content/mu-plugins/noir-contact-endpoint.php`
+
+- [ ] **Step 1: Refresh the remote and confirm a fast-forward base**
+
+Run `git fetch origin main` and verify `origin/main` remains an ancestor of `HEAD`. Stop if remote changes require integration.
+
+- [ ] **Step 2: Push the reviewed commit range to `origin/main`**
+
+Run `git push origin HEAD:main`.
+
+Expected: GitHub accepts a fast-forward update and starts `.github/workflows/deploy-hostinger.yml`.
+
+- [ ] **Step 3: Wait for the exact deployment run**
+
+Identify the Actions run by the pushed HEAD SHA and wait for terminal `success`. Do not treat push acceptance as deployment proof.
+
+- [ ] **Step 4: Reuse workflow proof and run one safe production check**
+
+The workflow must report successful remote mu-plugin SHA-256 comparison and safe REST checks. Then send the documented invalid payload once.
+
+Expected: HTTP `400`, JSON content type, and `{"ok":false,"message":"Confira os campos informados."}`. No lead or e-mail is created.
+
+- [ ] **Step 5: Hand off the password-only server action**
+
+Tell the owner to add only this constant before the WordPress stop-editing marker:
+
+```php
+define('NOIR_SMTP_PASSWORD', 'the current password entered directly in hPanel');
+```
+
+Do not ask the owner to paste the value into the task. A valid end-to-end send remains pending until this server-only action is complete.

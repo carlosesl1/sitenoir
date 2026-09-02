@@ -93,10 +93,25 @@ final class WP_REST_Response
 final class TestMailer
 {
     public bool $smtpEnabled = false;
+    public string $Host = '';
+    public bool $SMTPAuth = false;
+    public string $Username = '';
+    public string $Password = '';
+    public int $Port = 0;
+    public string $SMTPSecure = '';
+    public string $CharSet = '';
+    public string $fromEmail = '';
+    public string $fromName = '';
 
     public function isSMTP(): void
     {
         $this->smtpEnabled = true;
+    }
+
+    public function setFrom(string $email, string $name, bool $auto): void
+    {
+        $this->fromEmail = $email;
+        $this->fromName = $name;
     }
 }
 
@@ -367,9 +382,22 @@ assert_true(isset($GLOBALS['wp_meta_boxes']['noir_contact_details']), 'Registers
 $mailer_without_password = new TestMailer();
 noir_contact_configure_smtp($mailer_without_password);
 assert_same(false, $mailer_without_password->smtpEnabled, 'SMTP stays disabled when no password constant is configured.');
-define('NOIR_SMTP_USERNAME', 'contato@noirdigital.com.br');
+define('NOIR_SMTP_PASSWORD', 'test-only-password');
 define('NOIR_MAIL_FROM_EMAIL', 'attacker@example.com');
 assert_same('contato@noirdigital.com.br', noir_contact_from_email(), 'Rejects a From address outside the authenticated mail domain.');
+
+$mailer_with_password_only = new TestMailer();
+noir_contact_configure_smtp($mailer_with_password_only);
+assert_same(true, $mailer_with_password_only->smtpEnabled, 'A password alone enables the versioned Hostinger SMTP defaults.');
+assert_same('smtp.hostinger.com', $mailer_with_password_only->Host, 'Uses the default Hostinger SMTP host.');
+assert_same(true, $mailer_with_password_only->SMTPAuth, 'Enables SMTP authentication.');
+assert_same('contato@noirdigital.com.br', $mailer_with_password_only->Username, 'Uses the NOIR mailbox as the default SMTP username.');
+assert_same('test-only-password', $mailer_with_password_only->Password, 'Passes the server-only password to PHPMailer.');
+assert_same(587, $mailer_with_password_only->Port, 'Uses the default STARTTLS port.');
+assert_same('tls', $mailer_with_password_only->SMTPSecure, 'Uses TLS by default.');
+assert_same('UTF-8', $mailer_with_password_only->CharSet, 'Uses UTF-8 for contact notifications.');
+assert_same('contato@noirdigital.com.br', $mailer_with_password_only->fromEmail, 'Uses the authenticated NOIR mailbox as From.');
+assert_same('NOIR Digital', $mailer_with_password_only->fromName, 'Uses the NOIR brand as the sender name.');
 
 reset_request_state();
 $invalid = noir_contact_handle_request(new WP_REST_Request(valid_payload(array('firstName' => '', 'email' => 'not-email'))));

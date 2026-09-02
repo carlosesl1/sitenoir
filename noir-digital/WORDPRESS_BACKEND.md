@@ -104,26 +104,40 @@ Lead salvo e notificação não enviada, HTTP 500:
 
 ## Configuração no `wp-config.php`
 
-Adicione as constantes acima da linha `/* That's all, stop editing! */` do WordPress:
+O mu-plugin já contém os valores não secretos usados pela NOIR:
+
+- destinatário: `contato@noirdigital.com.br`;
+- remetente: `NOIR Digital <contato@noirdigital.com.br>`;
+- servidor: `smtp.hostinger.com`;
+- usuário SMTP: `contato@noirdigital.com.br`;
+- porta: `587`;
+- segurança: `tls`.
+
+Por isso, a única configuração obrigatória no servidor é a senha atual da caixa de e-mail. Adicione esta constante acima da linha `/* That's all, stop editing! */` do WordPress, substituindo o marcador pela senha real diretamente no servidor:
+
+```php
+define('NOIR_SMTP_PASSWORD', 'COLOQUE_A_SENHA_SOMENTE_NO_SERVIDOR');
+```
+
+`COLOQUE_A_SENHA_SOMENTE_NO_SERVIDOR` é apenas um marcador da documentação e não funciona como senha.
+
+Se algum valor precisar mudar no futuro, estas constantes opcionais sobrescrevem os padrões do mu-plugin:
 
 ```php
 define('NOIR_CONTACT_RECIPIENTS', 'contato@noirdigital.com.br');
 define('NOIR_MAIL_FROM_EMAIL', 'contato@noirdigital.com.br');
 define('NOIR_MAIL_FROM_NAME', 'NOIR Digital');
-
 define('NOIR_SMTP_HOST', 'smtp.hostinger.com');
 define('NOIR_SMTP_USERNAME', 'contato@noirdigital.com.br');
-define('NOIR_SMTP_PASSWORD', 'COLOQUE_A_SENHA_SOMENTE_NO_SERVIDOR');
 define('NOIR_SMTP_PORT', 587);
 define('NOIR_SMTP_SECURE', 'tls');
-
 define(
     'NOIR_ALLOWED_ORIGINS',
     'https://noirdigital.com.br,https://www.noirdigital.com.br'
 );
 ```
 
-O host `smtp.hostinger.com` com TLS/STARTTLS na porta 587 é uma alternativa documentada para contas Hostinger Email. Antes de configurar, confirme em **hPanel → E-mails → Gerenciar → Conectar apps e dispositivos** se a caixa `contato@noirdigital.com.br` pertence mesmo ao Hostinger Email e consulte a [documentação oficial de configuração de e-mail da Hostinger](https://support.hostinger.com/en/articles/1575756-how-to-get-email-account-configuration-details-for-hostinger-email). Se o e-mail estiver em outro provedor, use os dados SMTP desse provedor.
+O host `smtp.hostinger.com` com TLS/STARTTLS na porta 587 é o padrão versionado para esta caixa Hostinger Email. Consulte **hPanel → E-mails → Gerenciar → Conectar apps e dispositivos** e a [documentação oficial de configuração de e-mail da Hostinger](https://support.hostinger.com/en/articles/1575756-how-to-get-email-account-configuration-details-for-hostinger-email) antes de criar qualquer sobrescrita.
 
 ### Regra de segurança do SMTP
 
@@ -227,7 +241,7 @@ Execute somente com um endereço de teste autorizado e após configurar SMTP. De
 2. Abra `/wp-json/noir/v1/contact` com `OPTIONS` ou faça o `POST` inválido acima.
 3. Verifique se o WordPress consegue executar a REST API e se o `.htaccess` encaminha `/wp-json` para `index.php`.
 4. No lead salvo, confira `Status do e-mail`, `Erro de e-mail`, destinatários e horário da tentativa.
-5. Confira usuário, host, porta, segurança, senha e endereço `From` no `wp-config.php`.
+5. Confira a senha no `wp-config.php`; se houver sobrescritas `NOIR_*`, confira também usuário, host, porta, segurança e endereço `From`.
 6. Confirme SPF/DKIM/MX no provedor de e-mail e verifique a pasta de spam.
 7. Se `wp_mail` falhar, o lead continua salvo; não apague o registro durante o diagnóstico.
 
