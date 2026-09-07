@@ -3,20 +3,13 @@
 import { MeshTransmissionMaterial } from "@react-three/drei/core/MeshTransmissionMaterial";
 import { useLoader, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useMemo } from "react";
-import {
-  type BufferGeometry,
-  Color,
-  FrontSide,
-  NormalBlending,
-  type WebGLRenderTarget,
-} from "three";
+import { type BufferGeometry, Color, FrontSide, NormalBlending } from "three";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import { useTheme } from "@/features/theme/ThemeProvider";
 import { POINTER_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
-import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";
 import {
   HERO_CANVAS_UI_GLASS_CONFIG as glassConfig,
   resolveHeroCanvasUiSamples,
@@ -30,6 +23,7 @@ import {
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
 import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
+import { useSharedOpticalEnvironment } from "@/scene/use-shared-optical-environment";
 
 interface HeroCanvasUiPointerAssetProps {
   readonly sceneScale: number;
@@ -62,7 +56,7 @@ export function HeroCanvasUiPointerMesh({
   const width = useThree((state) => state.size.width);
   const { texture } = useHeroRefraction();
   const materialColor = resolveThreeDimensionalColor(resolvedTheme, "#ffffff");
-  const environment = useMemo<WebGLRenderTarget>(() => createHeroCanvasUiEnvironment(gl), [gl]);
+  const environment = useSharedOpticalEnvironment(gl);
   const rimUniforms = useMemo(
     () => ({
       uColor: { value: new Color(rimConfig.color) },
@@ -76,7 +70,7 @@ export function HeroCanvasUiPointerMesh({
     [],
   );
 
-  useLayoutEffect(() => () => environment.dispose(), [environment]);
+  if (!environment) return null;
 
   return (
     <>

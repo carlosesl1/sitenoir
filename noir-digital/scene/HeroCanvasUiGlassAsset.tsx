@@ -3,7 +3,7 @@
 import { MeshTransmissionMaterial } from "@react-three/drei/core/MeshTransmissionMaterial";
 import { useLoader, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useMemo } from "react";
-import { Color, FrontSide, NormalBlending, type WebGLRenderTarget } from "three";
+import { Color, FrontSide, NormalBlending } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import { useTheme } from "@/features/theme/ThemeProvider";
@@ -17,7 +17,6 @@ import {
   HERO_CANVAS_UI_EDGE_FLARE_FRAGMENT_SHADER,
   HERO_CANVAS_UI_EDGE_FLARE_VERTEX_SHADER,
 } from "@/scene/hero-canvas-ui-edge-flare-shaders";
-import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";
 import {
   HERO_CANVAS_UI_GLASS_CONFIG as glassConfig,
   resolveHeroCanvasUiSamples,
@@ -31,6 +30,7 @@ import {
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
 import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
+import { useSharedOpticalEnvironment } from "@/scene/use-shared-optical-environment";
 
 interface HeroCanvasUiGlassAssetProps {
   readonly sceneScale: number;
@@ -44,7 +44,7 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
   const { texture } = useHeroRefraction();
   const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
   const materialColor = resolveThreeDimensionalColor(resolvedTheme, "#ffffff");
-  const environment = useMemo<WebGLRenderTarget>(() => createHeroCanvasUiEnvironment(gl), [gl]);
+  const environment = useSharedOpticalEnvironment(gl);
   const rimUniforms = useMemo(
     () => ({
       uColor: { value: new Color(rimConfig.color) },
@@ -78,7 +78,7 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
   );
 
   useLayoutEffect(() => () => geometry.dispose(), [geometry]);
-  useLayoutEffect(() => () => environment.dispose(), [environment]);
+  if (!environment) return null;
 
   return (
     <>

@@ -215,15 +215,24 @@ export function PrinciplesStory() {
       return;
     }
 
+    let pendingFrame = 0;
+    const scheduleUpdate = () => {
+      if (pendingFrame !== 0) return;
+      pendingFrame = window.requestAnimationFrame(() => {
+        pendingFrame = 0;
+        updateStory();
+      });
+    };
     updateStory();
-    window.addEventListener("scroll", updateStory, { passive: true });
-    window.addEventListener("resize", updateStory, { passive: true });
-    window.addEventListener("orientationchange", updateStory, { passive: true });
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate, { passive: true });
+    window.addEventListener("orientationchange", scheduleUpdate, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", updateStory);
-      window.removeEventListener("resize", updateStory);
-      window.removeEventListener("orientationchange", updateStory);
+      window.cancelAnimationFrame(pendingFrame);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      window.removeEventListener("orientationchange", scheduleUpdate);
       setActive(false);
       sectionRectRef.current = null;
     };

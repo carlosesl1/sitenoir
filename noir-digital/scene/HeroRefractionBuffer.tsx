@@ -3,9 +3,8 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { createContext, type ReactNode, useContext, useEffect, useMemo } from "react";
 import { HalfFloatType, LinearFilter, type Texture, Vector2, WebGLRenderTarget } from "three";
-
-import { CONTACT_FLARE_LAYER } from "@/scene/contact-flare-layer";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
+import { createRefractionVisibility } from "@/scene/refraction-visibility";
 import { sceneTransitionStore } from "@/scene/scene-transition";
 
 interface HeroRefractionContextValue {
@@ -37,6 +36,7 @@ export function HeroRefractionBuffer({
   const scene = useThree((state) => state.scene);
   const size = useThree((state) => state.size);
   const screenResolution = useMemo(() => new Vector2(1, 1), []);
+  const contactVisibility = useMemo(createRefractionVisibility, []);
   const target = useMemo(
     () =>
       new WebGLRenderTarget(1, 1, {
@@ -74,22 +74,14 @@ export function HeroRefractionBuffer({
     const previousLayerMask = camera.layers.mask;
     const previousTarget = gl.getRenderTarget();
     const previousAutoClear = gl.autoClear;
-    const hiddenContactObjects: { object: { visible: boolean }; visible: boolean }[] = [];
     try {
-      scene.traverse((object) => {
-        const isContactObject =
-          object.userData["contactRefractiveObject"] === true ||
-          object.layers.isEnabled(CONTACT_FLARE_LAYER);
-        if (!isContactObject || !object.visible) return;
-        hiddenContactObjects.push({ object, visible: object.visible });
-        object.visible = false;
-      });
+      contactVisibility.hide(scene);
       camera.layers.mask = 1;
       gl.setRenderTarget(target);
       gl.clear();
       gl.render(scene, camera);
     } finally {
-      for (const entry of hiddenContactObjects) entry.object.visible = entry.visible;
+      contactVisibility.restore();
       camera.layers.mask = previousLayerMask;
       gl.setRenderTarget(previousTarget);
       gl.autoClear = previousAutoClear;

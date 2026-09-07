@@ -12,7 +12,6 @@ import {
   Mesh,
   NormalBlending,
   type Object3D,
-  type WebGLRenderTarget,
 } from "three";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -22,7 +21,6 @@ import { useTheme } from "@/features/theme/ThemeProvider";
 import { CONTACT_FLARE_LAYER } from "@/scene/contact-flare-layer";
 import { resolveContactCanvasUiGeometryScale } from "@/scene/contact-model-scale";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
-import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";
 import {
   HERO_CANVAS_UI_GLASS_CONFIG as glassConfig,
   resolveHeroCanvasUiSamples,
@@ -35,6 +33,7 @@ import {
 } from "@/scene/hero-canvas-ui-rim-shaders";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
+import { useSharedOpticalEnvironment } from "@/scene/use-shared-optical-environment";
 
 interface ContactCanvasUiGlassAssetProps {
   readonly depthScale: number;
@@ -125,7 +124,7 @@ export function ContactCanvasUiGlassAsset({
     creasedGeometry.computeBoundingSphere();
     return creasedGeometry;
   }, [depthScale, source.scene]);
-  const environment = useMemo<WebGLRenderTarget>(() => createHeroCanvasUiEnvironment(gl), [gl]);
+  const environment = useSharedOpticalEnvironment(gl);
   const rimUniforms = useMemo(
     () => ({
       uColor: { value: new Color(rimConfig.color) },
@@ -140,7 +139,7 @@ export function ContactCanvasUiGlassAsset({
   );
 
   useLayoutEffect(() => () => geometry.dispose(), [geometry]);
-  useLayoutEffect(() => () => environment.dispose(), [environment]);
+  if (!environment) return null;
 
   return (
     <group userData={{ contactRefractiveObject: true }}>

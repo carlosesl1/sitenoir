@@ -21,7 +21,7 @@ describe("Canvas UI hero glass integration", () => {
       'import { MeshTransmissionMaterial } from "@react-three/drei/core/MeshTransmissionMaterial";',
     );
     expect(source).toContain(
-      'import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";',
+      'import { useSharedOpticalEnvironment } from "@/scene/use-shared-optical-environment";',
     );
     expect(source).toContain('import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";');
     expect(source).toContain("const { texture } = useHeroRefraction();");
@@ -29,7 +29,7 @@ describe("Canvas UI hero glass integration", () => {
     expect(source).not.toContain(
       'import { pointerStore } from "@/features/pointer/pointer-store";',
     );
-    expect(source).toContain("createHeroCanvasUiEnvironment(gl)");
+    expect(source).toContain("useSharedOpticalEnvironment(gl)");
     expect(source).toContain("resolveHeroCanvasUiSamples(width)");
     expect(source).toContain("buffer={texture}");
     expect(source).not.toContain("createPhysicalPrismSpectrumBuffer");

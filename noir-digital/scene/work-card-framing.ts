@@ -1,4 +1,4 @@
-const WORK_CARD_SCROLL_CURL_MAX = 0;
+const WORK_CARD_SCROLL_CURL_MAX = 0.06;
 
 export function resolveWorkCardCurl(scrollVelocity: number): number {
   const normalizedVelocity = Math.min(1, Math.abs(scrollVelocity) / 800);

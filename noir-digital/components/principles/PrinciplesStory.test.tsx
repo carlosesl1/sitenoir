@@ -1,5 +1,5 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { PrinciplesStory } from "@/components/principles/PrinciplesStory";
 import { principleStages, principleStatements } from "@/data/content";
@@ -14,8 +14,12 @@ vi.mock("motion/react", () => ({
   useReducedMotion: () => reducedMotion,
 }));
 
+beforeEach(() => {
+  vi.useFakeTimers();
+});
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
   reducedMotion = false;
 });
 
@@ -39,7 +43,10 @@ describe("PrinciplesStory", () => {
       story.getBoundingClientRect = () => ({ top: -250, bottom: 7750, height: 8000 }) as DOMRect;
     }
 
-    act(() => window.dispatchEvent(new Event("scroll")));
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+      vi.advanceTimersByTime(20);
+    });
 
     expect(sceneRef.current?.sectionRectRef.current).toEqual({
       bottom: 7750,
@@ -121,7 +128,10 @@ describe("PrinciplesStory", () => {
         }) as DOMRect;
     }
 
-    act(() => window.dispatchEvent(new Event("scroll")));
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+      vi.advanceTimersByTime(20);
+    });
     expect(story?.style.getPropertyValue("--principles-story-height")).toBe("5000px");
     expect(story?.style.getPropertyValue("--principles-viewport-height")).toBe("1000px");
     expect(view.container.querySelector('[data-stage="positioning"]')).toHaveAttribute(
@@ -130,21 +140,30 @@ describe("PrinciplesStory", () => {
     );
 
     sectionTop = -999;
-    act(() => window.dispatchEvent(new Event("scroll")));
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+      vi.advanceTimersByTime(20);
+    });
     expect(view.container.querySelector('[data-stage="positioning"]')).toHaveAttribute(
       "data-active",
       "true",
     );
 
     sectionTop = -1000;
-    act(() => window.dispatchEvent(new Event("scroll")));
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+      vi.advanceTimersByTime(20);
+    });
     expect(view.container.querySelector('[data-stage="design"]')).toHaveAttribute(
       "data-active",
       "true",
     );
 
     sectionTop = -2000;
-    act(() => window.dispatchEvent(new Event("scroll")));
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+      vi.advanceTimersByTime(20);
+    });
     expect(view.container.querySelector('[data-stage="principles"]')).toHaveAttribute(
       "data-active",
       "true",
@@ -152,7 +171,10 @@ describe("PrinciplesStory", () => {
     expect(view.container.querySelector('[data-principle-orbit="true"]')).toBeInTheDocument();
 
     sectionTop = -3000;
-    act(() => window.dispatchEvent(new Event("scroll")));
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+      vi.advanceTimersByTime(20);
+    });
     expect(view.container.querySelector('[data-stage="technology"]')).toHaveAttribute(
       "data-active",
       "true",
@@ -160,7 +182,10 @@ describe("PrinciplesStory", () => {
     expect(view.container.querySelector('[data-cursor-closing="false"]')).toBeInTheDocument();
 
     sectionTop = -3191;
-    act(() => window.dispatchEvent(new Event("scroll")));
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+      vi.advanceTimersByTime(20);
+    });
     expect(view.container.querySelector('[data-stage="technology"]')).toHaveAttribute(
       "data-active",
       "true",
@@ -168,21 +193,30 @@ describe("PrinciplesStory", () => {
     expect(view.container.querySelector('[data-cursor-closing="true"]')).toBeInTheDocument();
 
     sectionTop = -4650;
-    act(() => window.dispatchEvent(new Event("scroll")));
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+      vi.advanceTimersByTime(20);
+    });
     expect(view.container.querySelector('[data-stage="technology"]')).toHaveAttribute(
       "data-active",
       "true",
     );
 
     sectionTop = -4651;
-    act(() => window.dispatchEvent(new Event("scroll")));
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+      vi.advanceTimersByTime(20);
+    });
     expect(view.container.querySelector('[data-stage="technology"]')).toHaveAttribute(
       "data-active",
       "false",
     );
 
     sectionTop = -2600;
-    act(() => window.dispatchEvent(new Event("scroll")));
+    act(() => {
+      window.dispatchEvent(new Event("scroll"));
+      vi.advanceTimersByTime(20);
+    });
     expect(view.container.querySelector('[data-stage="principles"]')).toHaveAttribute(
       "data-active",
       "true",

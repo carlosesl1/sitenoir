@@ -17,7 +17,7 @@ describe("Canvas UI contact glass", () => {
       'import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";',
     );
     expect(assetSource).toContain(
-      'import { createHeroCanvasUiEnvironment } from "@/scene/hero-canvas-ui-environment";',
+      'import { useSharedOpticalEnvironment } from "@/scene/use-shared-optical-environment";',
     );
     expect(assetSource).toContain("const { texture } = useHeroRefraction();");
     expect(assetSource).toContain("buffer={texture}");

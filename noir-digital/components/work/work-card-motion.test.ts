@@ -9,11 +9,12 @@ import {
 } from "@/components/work/work-card-motion";
 
 describe("work card curl", () => {
-  it("keeps the project image framing stable at every scroll velocity", () => {
+  it("restores the original scroll curl in both directions and caps its strength", () => {
     expect(resolveWorkCardCurl(0)).toBe(0);
-    expect(resolveWorkCardCurl(400)).toBe(0);
-    expect(resolveWorkCardCurl(800)).toBe(0);
-    expect(resolveWorkCardCurl(1600)).toBe(0);
+    expect(resolveWorkCardCurl(400)).toBeCloseTo(0.03);
+    expect(resolveWorkCardCurl(-400)).toBeCloseTo(0.03);
+    expect(resolveWorkCardCurl(800)).toBeCloseTo(0.06);
+    expect(resolveWorkCardCurl(1600)).toBeCloseTo(0.06);
   });
 
   it("uses the original screen-space profile at the viewport edges", () => {

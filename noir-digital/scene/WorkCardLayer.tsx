@@ -28,6 +28,16 @@ import {
 } from "@/scene/work-card-runtime";
 import { WORK_CARD_FRAGMENT_SHADER, WORK_CARD_VERTEX_SHADER } from "@/scene/work-card-shaders";
 
+const coverInputs = new WeakMap<
+  Vector2,
+  {
+    imageWidth: number;
+    imageHeight: number;
+    rectWidth: number;
+    rectHeight: number;
+  }
+>();
+
 function setCoverScale(
   target: Vector2,
   imageWidth: number,
@@ -35,11 +45,46 @@ function setCoverScale(
   rectWidth: number,
   rectHeight: number,
 ) {
+  const previous = coverInputs.get(target);
+  if (
+    previous?.imageWidth === imageWidth &&
+    previous.imageHeight === imageHeight &&
+    previous.rectWidth === rectWidth &&
+    previous.rectHeight === rectHeight
+  )
+    return;
+  coverInputs.set(target, { imageWidth, imageHeight, rectWidth, rectHeight });
   const rectAspect = Math.max(1, rectWidth) / Math.max(1, rectHeight);
   const imageAspect = Math.max(1, imageWidth) / Math.max(1, imageHeight);
-  target.set(1, 1);
-  if (imageAspect > rectAspect) target.x = rectAspect / imageAspect;
-  else target.y = imageAspect / rectAspect;
+  target.set(
+    imageAspect > rectAspect ? rectAspect / imageAspect : 1,
+    imageAspect > rectAspect ? 1 : imageAspect / rectAspect,
+  );
+}
+
+interface CardImages {
+  primary: HTMLImageElement | null;
+  hover: HTMLImageElement | null;
+}
+const cardImages = new WeakMap<HTMLElement, CardImages>();
+
+function resolveCardImages(element: HTMLElement): CardImages {
+  const cached = cardImages.get(element);
+  if (
+    cached?.primary &&
+    cached.hover &&
+    element.contains(cached.primary) &&
+    element.contains(cached.hover) &&
+    cached.primary.dataset["imageRole"] === "primary" &&
+    cached.hover.dataset["imageRole"] === "hover"
+  )
+    return cached;
+  const images = {
+    primary: element.querySelector<HTMLImageElement>('[data-image-role="primary"]'),
+    hover: element.querySelector<HTMLImageElement>('[data-image-role="hover"]'),
+  };
+  cardImages.set(element, images);
+  return images;
 }
 
 function configureTexture(texture: Texture) {
@@ -424,10 +469,9 @@ const CARD_BASE_READY = 1;
 const CARD_HOVER_READY = 2;
 type CardPreparation = 0 | 1 | 2 | 3;
 
-function resolveHoverTexture(input: CardUpdateInput): boolean {
+function resolveHoverTexture(input: CardUpdateInput, image: HTMLImageElement | null): boolean {
   const pair = input.textures[input.index];
   if (!pair || !input.element || !input.material) return false;
-  const image = input.element.querySelector<HTMLImageElement>('[data-image-role="hover"]');
   if (!image?.complete || image.naturalWidth <= 0) return false;
   const prepared = input.prepareImage(
     image,
@@ -448,10 +492,9 @@ function resolveHoverTexture(input: CardUpdateInput): boolean {
   return true;
 }
 
-function resolveCardTextures(input: CardUpdateInput): boolean {
+function resolveCardTextures(input: CardUpdateInput, baseImage: HTMLImageElement | null): boolean {
   if (!input.element) return false;
   const existing = input.textures[input.index];
-  const baseImage = input.element.querySelector<HTMLImageElement>('[data-image-role="primary"]');
   if (!baseImage?.complete || baseImage.naturalWidth <= 0 || !input.material) {
     return Boolean(existing);
   }
@@ -476,7 +519,7 @@ function resolveCardTextures(input: CardUpdateInput): boolean {
   return true;
 }
 
-function updateCardMaterial(input: CardUpdateInput): CardPreparation {
+export function updateCardMaterial(input: CardUpdateInput): CardPreparation {
   const material = input.material;
   const element = input.element;
   if (!material || !element) return 0;
@@ -488,11 +531,10 @@ function updateCardMaterial(input: CardUpdateInput): CardPreparation {
   }
   const rect = input.rect;
   if (!rect) return 0;
-  const baseReady = resolveCardTextures(input);
-  const hoverReady = baseReady && resolveHoverTexture(input);
+  const { primary: baseImage, hover: hoverImage } = resolveCardImages(element);
+  const baseReady = resolveCardTextures(input, baseImage);
+  const hoverReady = baseReady && resolveHoverTexture(input, hoverImage);
   const preparation = (baseReady ? CARD_BASE_READY : 0) | (hoverReady ? CARD_HOVER_READY : 0);
-  const baseImage = element.querySelector<HTMLImageElement>('[data-image-role="primary"]');
-  const hoverImage = element.querySelector<HTMLImageElement>('[data-image-role="hover"]');
   const baseCoverScale = material.uniforms["uBaseCoverScale"];
   const hoverCoverScale = material.uniforms["uHoverCoverScale"];
   if (baseCoverScale && baseImage) {
