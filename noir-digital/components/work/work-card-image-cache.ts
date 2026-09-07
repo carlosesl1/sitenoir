@@ -1,7 +1,9 @@
 export interface PreparedWorkCardImage {
   readonly dpr: number;
   readonly height: number;
-  readonly image: HTMLImageElement;
+  readonly image: HTMLCanvasElement;
+  readonly source: HTMLImageElement;
+  readonly currentSrc: string;
   readonly naturalHeight: number;
   readonly naturalWidth: number;
   readonly sourceHeight: number;
@@ -30,7 +32,8 @@ export function prepareWorkCardImage({
   const naturalHeight = image.naturalHeight;
   if (naturalWidth <= 0 || naturalHeight <= 0) return null;
   if (
-    previous?.image === image &&
+    previous?.source === image &&
+    previous.currentSrc === image.currentSrc &&
     previous.width === width &&
     previous.height === height &&
     previous.dpr === dpr &&
@@ -41,21 +44,36 @@ export function prepareWorkCardImage({
   }
 
   const coverScale = Math.max(width / naturalWidth, height / naturalHeight);
-  const sourceWidth = width / coverScale;
-  const sourceHeight = height / coverScale;
-  const sourceLeft = (naturalWidth - sourceWidth) / 2;
-  const sourceTop = (naturalHeight - sourceHeight) / 2;
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(width * dpr));
+  canvas.height = Math.max(1, Math.round(height * dpr));
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+  context.setTransform(canvas.width / width, 0, 0, canvas.height / height, 0, 0);
+  // The five-argument overload draws the entire decoded source. Source rectangles on
+  // responsive images otherwise mix density-corrected natural sizes with raw pixels.
+  const drawnWidth = naturalWidth * coverScale;
+  const drawnHeight = naturalHeight * coverScale;
+  context.drawImage(
+    image,
+    (width - drawnWidth) / 2,
+    (height - drawnHeight) / 2,
+    drawnWidth,
+    drawnHeight,
+  );
 
   return {
     dpr,
     height,
-    image,
+    image: canvas,
+    source: image,
+    currentSrc: image.currentSrc,
     naturalHeight,
     naturalWidth,
-    sourceHeight,
-    sourceLeft,
-    sourceTop,
-    sourceWidth,
+    sourceHeight: canvas.height,
+    sourceLeft: 0,
+    sourceTop: 0,
+    sourceWidth: canvas.width,
     width,
   };
 }

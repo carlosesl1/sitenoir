@@ -288,6 +288,8 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
       const ready = frameRef.current?.dataset["webglReady"] === "true";
       setWebglOwned(ready);
       if (ready) {
+        primaryImageCacheRef.current = null;
+        hoverImageCacheRef.current = null;
         hoverRevealRef.current?.release();
         if (canvasRef.current) canvasRef.current.style.opacity = "0";
         lastCanvasRenderRef.current = null;
