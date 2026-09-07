@@ -446,7 +446,7 @@ assert_same('2026-07-31 19:00:00', get_post_meta($lead_id, '_noir_contact_receiv
 assert_same('2026-07-31 19:00:00', get_post_meta($lead_id, '_noir_contact_mail_attempted_at'), 'Stores mail attempt time.');
 
 $recipients = get_post_meta($lead_id, '_noir_contact_recipients');
-assert_same(array('contato@noirdigital.com.br', 'financeiro@noirdigital.com.br'), $recipients, 'Merges defaults and configured recipients, removing duplicates and invalid values.');
+assert_same(array('contato@noirdigital.com.br', 'carlosedusl10@gmail.com', 'financeiro@noirdigital.com.br'), $recipients, 'Merges defaults and configured recipients, removing duplicates and invalid values.');
 assert_same(1, count($GLOBALS['wp_mail_calls']), 'Calls wp_mail once for a valid lead.');
 $mail = $GLOBALS['wp_mail_calls'][0];
 assert_same($recipients, $mail['to'], 'Uses all sanitized recipients.');
