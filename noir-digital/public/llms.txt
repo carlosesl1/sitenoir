@@ -1,0 +1,26 @@
+# NOIR DIGITAL
+
+> Agência de estrutura digital que combina posicionamento, design e tecnologia para ajudar empresas a serem encontradas, gerar confiança e crescer.
+
+A NOIR DIGITAL desenvolve sites, produz vídeos e trabalha a presença de empresas no Google. Também oferece soluções de inteligência artificial, incluindo automação de processos, softwares sob medida, copilotos, agentes e integrações. O conteúdo do site está em português do Brasil.
+
+## Páginas principais
+
+- [Página inicial](https://noirdigital.com.br/): Apresentação da agência, serviços, projetos e soluções de IA.
+- [Serviços](https://noirdigital.com.br/services/): Informações sobre os serviços da NOIR DIGITAL.
+- [Contato](https://noirdigital.com.br/contato/): Formulário para conversar com a equipe sobre um projeto.
+
+## Projetos
+
+- [Together — site](https://noirdigital.com.br/services/together-site/): Projeto de desenvolvimento de site.
+- [Madeireira Fortaleza](https://noirdigital.com.br/services/madeireira-fortaleza/): Projeto de site para a Madeireira Fortaleza.
+- [JR Express](https://noirdigital.com.br/services/jr-express/): Projeto de site para a JR Express.
+- [Strong](https://noirdigital.com.br/services/strong/): Projeto de vídeo e motion design.
+- [Chapada Backpackers](https://noirdigital.com.br/services/chapada-backpackers/): Projeto de presença no Google e SEO local.
+
+## Optional
+
+- [Política de privacidade](https://noirdigital.com.br/privacidade/): Informações sobre o tratamento de dados pessoais.
+- [Termos de uso](https://noirdigital.com.br/termos/): Condições de uso do site.
+- [Mapa do site](https://noirdigital.com.br/sitemap.xml): Lista das páginas públicas do site.
+- [robots.txt](https://noirdigital.com.br/robots.txt): Orientações de acesso para rastreadores.

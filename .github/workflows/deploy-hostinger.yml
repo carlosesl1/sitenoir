@@ -71,6 +71,8 @@ jobs:
           test -d out/_next/static
           test -f out/wp-content/mu-plugins/noir-contact-endpoint.php
           grep -q "NOIR DIGITAL" out/index.html
+          test -s out/llms.txt
+          grep -q '^# NOIR DIGITAL' out/llms.txt
 
       - name: Write deployment manifest
         run: |
@@ -334,6 +336,20 @@ jobs:
             "${PRODUCTION_URL}/?deploy=${GITHUB_SHA}" \
             --output "${response_file}"
           grep -q "NOIR DIGITAL" "${response_file}"
+
+          llms_file="${RUNNER_TEMP}/noir-llms.txt"
+          llms_headers="${RUNNER_TEMP}/noir-llms.headers"
+          curl --fail --silent --show-error \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 15 \
+            -H "Cache-Control: no-cache" \
+            -D "${llms_headers}" \
+            "${PRODUCTION_URL}/llms.txt" \
+            --output "${llms_file}"
+          tr -d '\r' <"${llms_headers}" | grep -qi '^content-type: text/plain'
+          grep -q '^# NOIR DIGITAL' "${llms_file}"
+          cmp out/llms.txt "${llms_file}"
 
           curl --fail --silent --show-error \
             --retry 3 \
