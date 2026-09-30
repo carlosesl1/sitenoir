@@ -1,27 +1,32 @@
+"use client";
+
 import { aiServices } from "@/data/ai-services";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 import styles from "./AiServicesSection.module.css";
 import { AiSignalIcon } from "./AiSignalIcon";
 
 const totalServices = String(aiServices.length).padStart(2, "0");
 
 export function AiServicesSection() {
+  const { t } = useLanguage();
   return (
     <section id="ai-services" className={styles["section"]} aria-labelledby="ai-services-heading">
       <div className={styles["inner"]}>
         <header className={styles["intro"]}>
           <p className={styles["kicker"]}>
-            IA FIRST
+            {t("IA FIRST")}
             <span className={styles["focusMark"]} aria-hidden="true" />
           </p>
 
           <h2 id="ai-services-heading" className={styles["heading"]}>
-            <span>IA para simplificar</span>
-            <span>sua operação</span>
+            <span>{t("IA para simplificar")}</span>
+            <span>{t("sua operação")}</span>
           </h2>
 
           <p className={styles["introCopy"]}>
-            Soluções de IA aplicadas ao que realmente move o seu negócio: eficiência, escala e
-            decisões melhores.
+            {t(
+              "Soluções de IA aplicadas ao que realmente move o seu negócio: eficiência, escala e decisões melhores.",
+            )}
           </p>
         </header>
 
@@ -39,8 +44,8 @@ export function AiServicesSection() {
                 <div className={styles["cardMain"]}>
                   <div className={styles["cardCopy"]}>
                     <p className={styles["number"]}>{number}</p>
-                    <h3>{service.label}</h3>
-                    <p className={styles["description"]}>{service.description}</p>
+                    <h3>{t(service.label)}</h3>
+                    <p className={styles["description"]}>{t(service.description)}</p>
                   </div>
 
                   <div
@@ -53,7 +58,10 @@ export function AiServicesSection() {
                 </div>
 
                 <footer className={styles["cardFooter"]}>
-                  <span>NOIR-IA · {service.code}</span>
+                  <span>
+                    {t("NOIR-IA · ")}
+                    {t(service.code)}
+                  </span>
                   <span>
                     {number}/{totalServices}
                   </span>

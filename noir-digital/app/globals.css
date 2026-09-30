@@ -19,3 +19,8 @@ html[data-entry-loading="true"],
 html[data-entry-loading="true"] body {
   overflow: hidden;
 }
+
+html[data-language-pending="true"] body {
+  opacity: 0;
+  pointer-events: none;
+}

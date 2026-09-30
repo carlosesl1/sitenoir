@@ -1,3 +1,7 @@
+"use client";
+
+import { useLanguage } from "@/features/i18n/LanguageProvider";
+
 import styles from "./SpectrumContactCta.module.css";
 
 interface SpectrumContactCtaProps {
@@ -9,9 +13,10 @@ export function SpectrumContactCta({
   href = "/contato",
   label = "Entrar em contato",
 }: SpectrumContactCtaProps = {}) {
+  const { t } = useLanguage();
   return (
     <a className={styles["root"]} data-spectrum-contact-cta="true" href={href}>
-      <span className={styles["surface"]}>{label}</span>
+      <span className={styles["surface"]}>{t(label)}</span>
     </a>
   );
 }

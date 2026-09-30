@@ -8,7 +8,6 @@ import lockKeyholeLinear from "@iconify-icons/solar/lock-keyhole-linear";
 import stopBold from "@iconify-icons/solar/stop-bold";
 import Image from "next/image";
 import { type ChangeEvent, type FormEvent, useEffect, useRef, useState } from "react";
-
 import {
   contactEmail,
   contactPhoneDisplay,
@@ -16,6 +15,7 @@ import {
   contactWhatsAppHref,
 } from "@/data/content";
 import { ContactSubmissionError, submitContact } from "@/features/contact/submit-contact";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 
 import styles from "./ContactPage.module.css";
 import spectrumStyles from "./SpectrumContactCta.module.css";
@@ -63,6 +63,11 @@ function isServiceOption(value: string): value is (typeof serviceOptions)[number
 }
 
 function WhatsAppPanel({ variant }: { readonly variant: "desktop" | "mobile" }) {
+  const { t, language } = useLanguage();
+  const whatsAppHref =
+    language === "pt"
+      ? contactWhatsAppHref
+      : `https://wa.me/5577998453006?text=${encodeURIComponent(t("Olá! Vim pelo site da NOIR Digital e gostaria de conversar sobre um projeto."))}`;
   const variantClass =
     variant === "mobile" ? styles["mobileWhatsAppPanel"] : styles["desktopWhatsAppPanel"];
 
@@ -71,18 +76,18 @@ function WhatsAppPanel({ variant }: { readonly variant: "desktop" | "mobile" }) 
       className={`${styles["whatsAppPanel"]} ${variantClass}`}
       data-contact-whatsapp-panel={variant}
     >
-      <span className={styles["recommended"]}>RECOMENDADO</span>
+      <span className={styles["recommended"]}>{t("RECOMENDADO")}</span>
       <div className={styles["whatsAppHeading"]}>
-        <h3>WHATSAPP</h3>
-        <p className={styles["whatsAppSubtitle"]}>RESPOSTA RÁPIDA</p>
+        <h3>{t("WHATSAPP")}</h3>
+        <p className={styles["whatsAppSubtitle"]}>{t("RESPOSTA RÁPIDA")}</p>
       </div>
       <div className={styles["whatsAppMark"]} aria-hidden="true" data-contact-whatsapp-icon>
         <Icon icon={whatsappIcon} />
       </div>
-      <p>Prefere falar diretamente? Abra uma conversa com a mensagem inicial já pronta.</p>
+      <p>{t("Prefere falar diretamente? Abra uma conversa com a mensagem inicial já pronta.")}</p>
       <a
         className={`${spectrumStyles["root"]} ${styles["whatsAppAction"]}`}
-        href={contactWhatsAppHref}
+        href={whatsAppHref}
         target="_blank"
         rel="noreferrer"
         data-spectrum-contact-cta="true"
@@ -91,7 +96,7 @@ function WhatsAppPanel({ variant }: { readonly variant: "desktop" | "mobile" }) 
           className={`${spectrumStyles["surface"]} ${styles["actionSurface"]} ${styles["whatsAppActionSurface"]}`}
           data-spectrum-contact-surface
         >
-          <span>Iniciar conversa no WhatsApp</span>
+          <span>{t("Iniciar conversa no WhatsApp")}</span>
           <Icon
             className={styles["ctaIcon"]}
             icon={arrowRightUpLinear}
@@ -105,6 +110,7 @@ function WhatsAppPanel({ variant }: { readonly variant: "desktop" | "mobile" }) 
 }
 
 export function ContactPage() {
+  const { t, language } = useLanguage();
   const [values, setValues] = useState<ContactFormValues>(EMPTY_FORM);
   const [submission, setSubmission] = useState<SubmissionState>({ status: "idle" });
   const submittingRef = useRef(false);
@@ -157,13 +163,15 @@ export function ContactPage() {
 
       <div className={styles["layout"]}>
         <section className={styles["intro"]} aria-labelledby="contact-page-heading">
-          <span className={styles["sectionLabel"]}>CONTATO / 00</span>
+          <span className={styles["sectionLabel"]}>{t("CONTATO / 00")}</span>
           <h1 id="contact-page-heading">
-            VAMOS CRIAR ALGO EXCEPCIONAL JUNTOS<span aria-hidden="true">.</span>
+            {t("VAMOS CRIAR ALGO EXCEPCIONAL JUNTOS")}
+            <span aria-hidden="true">.</span>
           </h1>
           <p>
-            Conte-nos sobre o seu projeto. Vamos encontrar a estrutura certa para transformar a
-            ideia em um próximo passo claro.
+            {t(
+              "Conte-nos sobre o seu projeto. Vamos encontrar a estrutura certa para transformar a ideia em um próximo passo claro.",
+            )}
           </p>
 
           <WhatsAppPanel variant="mobile" />
@@ -171,7 +179,7 @@ export function ContactPage() {
           <a
             className={styles["brandLockup"]}
             href="/"
-            aria-label="NOIR DIGITAL — Início"
+            aria-label={t("NOIR DIGITAL — Início")}
             data-contact-brand-lockup
           >
             <span className={styles["brandNameRow"]} data-contact-brand-name-row>
@@ -193,7 +201,7 @@ export function ContactPage() {
               />
             </span>
             <small className={styles["brandTagline"]} data-contact-brand-tagline>
-              AGÊNCIA DE ESTRUTURA DIGITAL
+              {t("AGÊNCIA DE ESTRUTURA DIGITAL")}
             </small>
           </a>
         </section>
@@ -205,13 +213,17 @@ export function ContactPage() {
         >
           <div className={styles["panelHeading"]}>
             <span>01</span>
-            <h2 id="project-data-heading">DADOS DO PROJETO</h2>
+            <h2 id="project-data-heading">{t("DADOS DO PROJETO")}</h2>
           </div>
 
-          <form className={styles["form"]} aria-label="Dados do projeto" onSubmit={handleSubmit}>
+          <form
+            className={styles["form"]}
+            aria-label={t("Dados do projeto")}
+            onSubmit={handleSubmit}
+          >
             <div className={styles["fieldGrid"]}>
               <label className={styles["field"]}>
-                <span>Nome</span>
+                <span>{t("Nome")}</span>
                 <input
                   name="firstName"
                   value={values.firstName}
@@ -223,7 +235,7 @@ export function ContactPage() {
               </label>
 
               <label className={styles["field"]}>
-                <span>Sobrenome</span>
+                <span>{t("Sobrenome")}</span>
                 <input
                   name="lastName"
                   value={values.lastName}
@@ -234,7 +246,7 @@ export function ContactPage() {
               </label>
 
               <label className={`${styles["field"]} ${styles["wideField"]}`}>
-                <span>E-mail</span>
+                <span>{t("E-mail")}</span>
                 <input
                   name="email"
                   type="email"
@@ -247,7 +259,7 @@ export function ContactPage() {
               </label>
 
               <label className={styles["field"]}>
-                <span>Empresa</span>
+                <span>{t("Empresa")}</span>
                 <input
                   name="company"
                   value={values.company}
@@ -258,7 +270,7 @@ export function ContactPage() {
               </label>
 
               <label className={styles["field"]}>
-                <span>Telefone</span>
+                <span>{t("Telefone")}</span>
                 <input
                   name="phone"
                   type="tel"
@@ -271,15 +283,15 @@ export function ContactPage() {
               </label>
 
               <label className={`${styles["field"]} ${styles["wideField"]}`}>
-                <span>Serviço de interesse</span>
+                <span>{t("Serviço de interesse")}</span>
                 <span className={styles["selectControl"]}>
                   <select name="service" value={values.service} onChange={updateField} required>
                     <option value="" disabled>
-                      Selecione o serviço desejado
+                      {t("Selecione o serviço desejado")}
                     </option>
                     {serviceOptions.map((service) => (
                       <option key={service} value={service}>
-                        {service}
+                        {t(service)}
                       </option>
                     ))}
                   </select>
@@ -296,25 +308,25 @@ export function ContactPage() {
             <div className={styles["projectSection"]}>
               <div className={styles["panelHeading"]}>
                 <span>02</span>
-                <h2>SOBRE O PROJETO</h2>
+                <h2>{t("SOBRE O PROJETO")}</h2>
               </div>
 
               <label className={styles["field"]}>
-                <span>Mensagem</span>
+                <span>{t("Mensagem")}</span>
                 <textarea
                   name="message"
                   value={values.message}
                   onChange={updateField}
                   rows={7}
                   maxLength={4000}
-                  placeholder="Fale sobre o projeto, os objetivos e como podemos ajudar."
+                  placeholder={t("Fale sobre o projeto, os objetivos e como podemos ajudar.")}
                   required
                 />
               </label>
 
               <div className={styles["honeypot"]} aria-hidden="true">
                 <label>
-                  Website
+                  {t("Website")}
                   <input
                     name="website"
                     value={values.website}
@@ -335,7 +347,7 @@ export function ContactPage() {
                   className={`${spectrumStyles["surface"]} ${styles["actionSurface"]}`}
                   data-spectrum-contact-surface
                 >
-                  <span>{pending ? "Enviando mensagem" : "Enviar mensagem"}</span>
+                  <span>{t(pending ? "Enviando mensagem" : "Enviar mensagem")}</span>
                   <Icon
                     className={styles["ctaIcon"]}
                     icon={arrowRightUpLinear}
@@ -347,12 +359,12 @@ export function ContactPage() {
 
               {submission.status === "success" ? (
                 <p className={`${styles["feedback"]} ${styles["success"]}`} role="status">
-                  {submission.message}
+                  {language === "en" ? t("Mensagem enviada com sucesso.") : submission.message}
                 </p>
               ) : null}
               {submission.status === "error" ? (
                 <p className={`${styles["feedback"]} ${styles["error"]}`} role="alert">
-                  {submission.message}
+                  {t(submission.message)}
                 </p>
               ) : null}
 
@@ -364,10 +376,10 @@ export function ContactPage() {
                   data-contact-privacy-icon
                 />
                 <p>
-                  <span>Seus dados estão protegidos.</span>
+                  <span>{t("Seus dados estão protegidos.")}</span>
                   <span>
-                    Não compartilhamos suas informações. Consulte a{" "}
-                    <a href="/privacidade">Política de privacidade</a>.
+                    {t("Não compartilhamos suas informações. Consulte a")}{" "}
+                    <a href="/privacidade">{t("Política de privacidade")}</a>.
                   </span>
                 </p>
               </div>
@@ -378,7 +390,7 @@ export function ContactPage() {
         <aside className={styles["channels"]} aria-labelledby="contact-channels-heading">
           <div className={styles["panelHeading"]}>
             <span>03</span>
-            <h2 id="contact-channels-heading">OUTRA FORMA DE CONTATO</h2>
+            <h2 id="contact-channels-heading">{t("OUTRA FORMA DE CONTATO")}</h2>
           </div>
 
           <WhatsAppPanel variant="desktop" />
@@ -386,24 +398,24 @@ export function ContactPage() {
           <section className={styles["information"]} aria-labelledby="contact-info-heading">
             <div className={styles["panelHeading"]}>
               <span>04</span>
-              <h2 id="contact-info-heading">INFORMAÇÕES</h2>
+              <h2 id="contact-info-heading">{t("INFORMAÇÕES")}</h2>
             </div>
             <dl>
               <div>
-                <dt>E-mail</dt>
+                <dt>{t("E-mail")}</dt>
                 <dd>
                   <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
                 </dd>
               </div>
               <div>
-                <dt>Telefone</dt>
+                <dt>{t("Telefone")}</dt>
                 <dd>
                   <a href={contactPhoneHref}>{contactPhoneDisplay}</a>
                 </dd>
               </div>
               <div>
-                <dt>Horário de atendimento</dt>
-                <dd>Seg - Sex, 09h às 18h</dd>
+                <dt>{t("Horário de atendimento")}</dt>
+                <dd>{t("Seg - Sex, 09h às 18h")}</dd>
               </div>
             </dl>
 
@@ -414,8 +426,8 @@ export function ContactPage() {
                 aria-hidden="true"
               />
               <p>
-                <span>Atendemos projetos em todo o Brasil</span>
-                <span>e também internacionalmente.</span>
+                <span>{t("Atendemos projetos em todo o Brasil")}</span>
+                <span>{t("e também internacionalmente.")}</span>
               </p>
               <Image
                 className={styles["globalIcon"]}

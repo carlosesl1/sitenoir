@@ -2,12 +2,13 @@
 
 import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
-
 import { type ClientLogo, clientLogos } from "@/data/content";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 
 import styles from "./TrustStrip.module.css";
 
 export function TrustStrip() {
+  const { t } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export function TrustStrip() {
       data-animation-active="false"
     >
       <h2 id="clients-heading" className={styles["eyebrow"]}>
-        Empresas que confiam
+        {t("Empresas que confiam")}
       </h2>
       <div className={styles["marqueeViewport"]}>
         <div className={styles["marqueeTrack"]} data-logo-marquee="track">
@@ -71,10 +72,11 @@ function LogoSequence({
   logos: readonly ClientLogo[];
   duplicate?: boolean;
 }) {
+  const { t } = useLanguage();
   return (
     <ul
       className={styles["logoSequence"]}
-      aria-label={duplicate ? undefined : "Clientes"}
+      aria-label={duplicate ? undefined : t("Clientes")}
       aria-hidden={duplicate || undefined}
       data-logo-marquee="sequence"
     >
@@ -89,7 +91,7 @@ function LogoSequence({
             <span
               className={styles["logo"]}
               role="img"
-              aria-label={client.label}
+              aria-label={t(client.label)}
               data-client-logo={client.id}
               style={style}
             />

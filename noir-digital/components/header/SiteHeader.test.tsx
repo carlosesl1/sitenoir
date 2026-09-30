@@ -61,8 +61,8 @@ describe("SiteHeader", () => {
     const desktopNavigation = document.querySelector<HTMLElement>('nav[aria-label="Principal"]');
     expect(desktopNavigation).toBeInTheDocument();
     if (!desktopNavigation) return;
-    expect(within(desktopNavigation).getAllByRole("button", { hidden: true })).toHaveLength(2);
-    for (const label of ["Serviços", "Tema"]) {
+    expect(within(desktopNavigation).getAllByRole("button", { hidden: true })).toHaveLength(3);
+    for (const label of ["Serviços", "Tema", "Switch to English"]) {
       expect(
         within(desktopNavigation).getByRole("button", { name: label, hidden: true }),
       ).toBeInTheDocument();

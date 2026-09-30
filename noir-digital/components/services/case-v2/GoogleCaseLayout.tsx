@@ -1,10 +1,13 @@
+"use client";
+
 import type {
+  CaseStudyV2,
   EvidenceSection,
   InsightSection,
   TextSection,
-  CaseStudyV2,
 } from "@/data/case-studies-v2";
 import type { Project } from "@/data/projects";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 
 import { CaseMediaV2 } from "./CaseMediaV2";
 import styles from "./GoogleCaseLayout.module.css";
@@ -23,9 +26,8 @@ export function GoogleCaseLayout({
   readonly project: Project;
   readonly study: CaseStudyV2;
 }) {
-  const text = study.sections.find(
-    (section): section is TextSection => section.type === "text",
-  );
+  const { t } = useLanguage();
+  const text = study.sections.find((section): section is TextSection => section.type === "text");
   const evidence = study.sections.find(
     (section): section is EvidenceSection => section.type === "evidence",
   );
@@ -41,39 +43,42 @@ export function GoogleCaseLayout({
     <div className={styles["layout"]}>
       <header className={styles["hero"]}>
         <div className={styles["heroCopy"]}>
-          <p>Presença no Google / {project.client}</p>
-          <h1>{study.headline}</h1>
-          <p className={styles["summary"]}>{study.summary}</p>
+          <p>
+            {t("Presença no Google / ")}
+            {project.client}
+          </p>
+          <h1>{t(study.headline)}</h1>
+          <p className={styles["summary"]}>{t(study.summary)}</p>
         </div>
         <div className={styles["heroMedia"]}>
           <CaseMediaV2 media={study.hero} priority />
         </div>
       </header>
 
-      <ol className={styles["journey"]} aria-label="Jornada da busca local">
+      <ol className={styles["journey"]} aria-label={t("Jornada da busca local")}>
         {journey.map(([index, title, body]) => (
           <li key={title}>
             <span>{index}</span>
-            <h2>{title}</h2>
-            <p>{body}</p>
+            <h2>{t(title)}</h2>
+            <p>{t(body)}</p>
           </li>
         ))}
       </ol>
 
       <section className={styles["context"]} id={text.id}>
-        <p>{text.eyebrow ?? "Contexto local"}</p>
+        <p>{t(text.eyebrow ?? "Contexto local")}</p>
         <div>
-          <h2>{text.title}</h2>
+          <h2>{t(text.title)}</h2>
           {text.paragraphs.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+            <p key={paragraph}>{t(paragraph)}</p>
           ))}
         </div>
       </section>
 
       <section className={styles["evidenceSection"]} id={evidence.id}>
         <div className={styles["sectionHeading"]}>
-          <span>Prova real</span>
-          <h2>{evidence.title}</h2>
+          <span>{t("Prova real")}</span>
+          <h2>{t(evidence.title)}</h2>
         </div>
         <div className={styles["evidence"]}>
           {evidence.media.map((media) => (
@@ -83,15 +88,15 @@ export function GoogleCaseLayout({
       </section>
 
       <section className={styles["insights"]} id={insights.id}>
-        <h2>{insights.title}</h2>
+        <h2>{t(insights.title)}</h2>
         <dl>
           {insights.items.map((item, index) => (
             <div key={item.label}>
               <dt>
                 <span>{String(index + 1).padStart(2, "0")}</span>
-                {item.label}
+                {t(item.label)}
               </dt>
-              <dd>{item.body}</dd>
+              <dd>{t(item.body)}</dd>
             </div>
           ))}
         </dl>

@@ -19,6 +19,7 @@ import {
   shouldRenderWorkCardCanvas,
 } from "@/components/work/work-card-motion";
 import type { Project } from "@/data/projects";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 import { setDataFlag } from "@/scene/work-card-dom";
 
 import { CardHoverRevealCanvas, type CardHoverRevealHandle } from "./CardHoverRevealCanvas";
@@ -59,6 +60,7 @@ type CanvasRenderState = {
 };
 
 export function ProjectCard({ featured, project }: ProjectCardProps) {
+  const { t } = useLanguage();
   const reducedMotion = useReducedMotion() ?? false;
   const motionAllowed = useWorkCardMotionSupport();
   const [imagesEnabled, setImagesEnabled] = useState(false);
@@ -371,7 +373,7 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
               data-image-role="primary"
               src={imagesEnabled ? project.image : undefined}
               srcSet={imagesEnabled ? resolveWorkImageSrcSet(project.image, featured) : undefined}
-              alt={project.imageAlt}
+              alt={t(project.imageAlt)}
               sizes={sizes}
               width={featured ? 2400 : 1200}
               height={featured ? 1351 : 1200}
@@ -415,7 +417,7 @@ export function ProjectCard({ featured, project }: ProjectCardProps) {
             {project.client}
           </span>
           <span>{project.year}</span>
-          <span>{project.deliveryLabels.join(" / ")}</span>
+          <span>{project.deliveryLabels.map(t).join(" / ")}</span>
         </span>
       </a>
     </article>

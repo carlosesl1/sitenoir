@@ -1,5 +1,6 @@
-import Image from "next/image";
+"use client";
 
+import Image from "next/image";
 import { SpectrumContactCta } from "@/components/contact/SpectrumContactCta";
 import {
   contactEmail,
@@ -8,17 +9,19 @@ import {
   contactPhoneHref,
   socialLinks,
 } from "@/data/content";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 
 import styles from "./ContactFooter.module.css";
 
 export function ContactFooter() {
+  const { t } = useLanguage();
   return (
     <footer id="contact" className={styles["contact"]}>
       <div className={styles["contactStage"]}>
         <div className={styles["contactContent"]}>
           <h2 id="contact-heading" className={styles["headline"]}>
             {contactHeadlineLines.map((line) => (
-              <span key={line}>{line}</span>
+              <span key={line}>{t(line)}</span>
             ))}
           </h2>
 
@@ -34,7 +37,7 @@ export function ContactFooter() {
         <div className={styles["informationGrid"]}>
           <section
             className={`${styles["informationCell"]} ${styles["brandCell"]}`}
-            aria-label="NOIR DIGITAL — Agência de Estrutura Digital"
+            aria-label={t("NOIR DIGITAL — Agência de Estrutura Digital")}
           >
             <div className={styles["brandNameRow"]} data-footer-brand-name-row="true">
               <Image
@@ -54,14 +57,14 @@ export function ContactFooter() {
                 aria-hidden="true"
               />
             </div>
-            <span className={styles["brandTagline"]}>AGÊNCIA DE ESTRUTURA DIGITAL</span>
+            <span className={styles["brandTagline"]}>{t("AGÊNCIA DE ESTRUTURA DIGITAL")}</span>
           </section>
 
           <section
             className={`${styles["informationCell"]} ${styles["contactCell"]}`}
             aria-labelledby="footer-contact-label"
           >
-            <h3 id="footer-contact-label">Contato</h3>
+            <h3 id="footer-contact-label">{t("Contato")}</h3>
             <div className={styles["informationList"]}>
               <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
               <a href={contactPhoneHref}>{contactPhoneDisplay}</a>
@@ -72,11 +75,11 @@ export function ContactFooter() {
             className={`${styles["informationCell"]} ${styles["socialCell"]}`}
             aria-labelledby="footer-social-label"
           >
-            <h3 id="footer-social-label">Social</h3>
+            <h3 id="footer-social-label">{t("Social")}</h3>
             <div className={styles["informationList"]}>
               {socialLinks.map((social) => (
                 <a key={social.label} href={social.href} target="_blank" rel="noreferrer">
-                  {social.label}
+                  {t(social.label)}
                 </a>
               ))}
             </div>
@@ -84,20 +87,20 @@ export function ContactFooter() {
 
           <nav
             className={`${styles["informationCell"]} ${styles["linksCell"]}`}
-            aria-label="Links do footer"
+            aria-label={t("Links do footer")}
           >
-            <h3>Links</h3>
-            <a href="/contato">Contato</a>
-            <a href="/#selected-work">Serviços</a>
+            <h3>{t("Links")}</h3>
+            <a href="/contato">{t("Contato")}</a>
+            <a href="/#selected-work">{t("Serviços")}</a>
           </nav>
         </div>
 
         <div className={styles["closingBar"]}>
-          <p>© NOIR DIGITAL 2026. TODOS OS DIREITOS RESERVADOS.</p>
-          <p className={styles["manifesto"]}>DO ESCURO, HÁ IDEIAS QUE MARCAM.</p>
-          <nav className={styles["legalClosing"]} aria-label="Links legais finais">
-            <a href="/privacidade">Privacidade</a>
-            <a href="/termos">Termos</a>
+          <p>{t("© NOIR DIGITAL 2026. TODOS OS DIREITOS RESERVADOS.")}</p>
+          <p className={styles["manifesto"]}>{t("DO ESCURO, HÁ IDEIAS QUE MARCAM.")}</p>
+          <nav className={styles["legalClosing"]} aria-label={t("Links legais finais")}>
+            <a href="/privacidade">{t("Privacidade")}</a>
+            <a href="/termos">{t("Termos")}</a>
             <span className={styles["footerMark"]} aria-hidden="true" />
           </nav>
         </div>

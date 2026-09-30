@@ -11,10 +11,12 @@ import {
   heroLabels,
   heroSupportLines,
 } from "@/data/content";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 
 import styles from "./Hero.module.css";
 
 export function Hero() {
+  const { t } = useLanguage();
   const heroRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion() ?? false;
   const [hasEnteredViewport, setHasEnteredViewport] = useState(false);
@@ -79,7 +81,7 @@ export function Hero() {
                 letterDelayMs={10}
                 reducedMotion={reducedMotion}
                 startDelayMs={0}
-                text={label}
+                text={t(label)}
               />
             </li>
           ))}
@@ -93,7 +95,7 @@ export function Hero() {
               letterDelayMs={10}
               reducedMotion={reducedMotion}
               startDelayMs={0}
-              text={line}
+              text={t(line)}
             />
           ))}
         </p>
@@ -106,7 +108,7 @@ export function Hero() {
                 letterDelayMs={50}
                 reducedMotion={reducedMotion}
                 startDelayMs={index * 120}
-                text={line}
+                text={t(line)}
               />
               {index < heroHeadlineLines.length - 1 ? " " : null}
             </Fragment>
@@ -122,7 +124,7 @@ export function Hero() {
                   letterDelayMs={10}
                   reducedMotion={reducedMotion}
                   startDelayMs={0}
-                  text={line}
+                  text={t(line)}
                 />
                 {index < heroDescriptionLines.length - 1 ? " " : null}
               </Fragment>

@@ -11,6 +11,7 @@ import {
   resolvePrincipleViewportProgress,
 } from "@/components/principles/principles-progress";
 import { principleStages, principleStatements } from "@/data/content";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 import { usePrincipleScene } from "@/features/principles/PrincipleSceneProvider";
 
 import styles from "./PrinciplesStory.module.css";
@@ -50,12 +51,14 @@ function characterDelays(line: string, salt?: string): readonly number[] {
 }
 
 const StaggeredLine = memo(function StaggeredLine({
-  line,
+  line: sourceLine,
   groupDelayMs = 0,
 }: {
   readonly line: string;
   readonly groupDelayMs?: number;
 }) {
+  const { t } = useLanguage();
+  const line = t(sourceLine);
   const enterDelays = characterDelays(line);
   const exitDelays = characterDelays(line, "out");
 
@@ -109,6 +112,7 @@ const CopyPanel = memo(function CopyPanel({
 });
 
 export function PrinciplesStory() {
+  const { t } = useLanguage();
   const storyRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
   const {
@@ -251,7 +255,7 @@ export function PrinciplesStory() {
       aria-labelledby="principles-heading"
     >
       <h2 id="principles-heading" className={styles["visuallyHidden"]}>
-        Princípios
+        {t("Princípios")}
       </h2>
 
       <div

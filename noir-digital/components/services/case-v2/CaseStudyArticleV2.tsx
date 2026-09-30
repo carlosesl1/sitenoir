@@ -3,6 +3,7 @@
 import { SpectrumContactCta } from "@/components/contact/SpectrumContactCta";
 import type { CaseStudyV2 } from "@/data/case-studies-v2";
 import type { Project } from "@/data/projects";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 
 import styles from "./CaseStudyArticleV2.module.css";
 import { GoogleCaseLayout } from "./GoogleCaseLayout";
@@ -34,6 +35,7 @@ export function CaseStudyArticleV2({
   readonly study: CaseStudyV2;
   readonly navigation: Navigation;
 }) {
+  const { t } = useLanguage();
   const Layout = {
     site: SiteCaseLayout,
     video: VideoCaseLayout,
@@ -51,34 +53,34 @@ export function CaseStudyArticleV2({
       <Layout project={project} study={study} />
 
       <section className={styles["closing"]}>
-        <p>Próximo passo</p>
-        <h2>{study.cta.body}</h2>
+        <p>{t("Próximo passo")}</p>
+        <h2>{t(study.cta.body)}</h2>
         <div className={styles["closingAction"]}>
           <SpectrumContactCta href={contactHref} label={study.cta.label} />
         </div>
       </section>
 
-      <nav className={styles["navigation"]} aria-label="Navegação entre cases">
+      <nav className={styles["navigation"]} aria-label={t("Navegação entre cases")}>
         {navigation.previous ? (
           <a href={`/services/${navigation.previous.slug}`}>
-            <span>Anterior</span>
-            {navigation.previous.headline}
+            <span>{t("Anterior")}</span>
+            {t(navigation.previous.headline)}
           </a>
         ) : (
           <a href="/#selected-work">
-            <span>Voltar</span>
-            Todos os cases
+            <span>{t("Voltar")}</span>
+            {t("Todos os cases")}
           </a>
         )}
         {navigation.next ? (
           <a href={`/services/${navigation.next.slug}`}>
-            <span>Próximo</span>
-            {navigation.next.headline}
+            <span>{t("Próximo")}</span>
+            {t(navigation.next.headline)}
           </a>
         ) : (
           <a href={contactHref}>
-            <span>Próximo</span>
-            Iniciar uma conversa
+            <span>{t("Próximo")}</span>
+            {t("Iniciar uma conversa")}
           </a>
         )}
       </nav>

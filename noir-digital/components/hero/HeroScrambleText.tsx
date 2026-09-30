@@ -111,7 +111,9 @@ export function HeroScrambleText({
     return unsubscribe;
   }, [glyphs, letterDelayMs, scrambleState, startDelayMs]);
 
-  const settled = reducedMotion || scrambleState === "settled";
+  // Keep the first client render identical to the server; the effect applies
+  // the browser's motion preference and updates the visibility attribute.
+  const settled = scrambleState === "settled";
 
   return (
     <span

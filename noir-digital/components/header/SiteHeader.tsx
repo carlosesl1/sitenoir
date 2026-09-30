@@ -2,10 +2,12 @@
 
 import { AnimatePresence } from "motion/react";
 import { useRef, useState } from "react";
+import { LanguageButton } from "@/components/controls/LanguageButton";
 
 import { ThemeButton } from "@/components/controls/ThemeButton";
 import { HeaderStatus } from "@/components/header/HeaderStatus";
 import { MobileMenu } from "@/components/header/MobileMenu";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 import { usePrincipleScene } from "@/features/principles/PrincipleSceneProvider";
 import { useScroll } from "@/features/scroll/ScrollProvider";
 import { type SectionTarget, sectionSelector } from "@/features/scroll/scroll-targets";
@@ -17,6 +19,7 @@ interface SiteHeaderProps {
 }
 
 export function SiteHeader({ sectionLinksBase }: SiteHeaderProps = {}) {
+  const { t } = useLanguage();
   const { scrollTo } = useScroll();
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuLayerActive, setMenuLayerActive] = useState(false);
@@ -42,37 +45,42 @@ export function SiteHeader({ sectionLinksBase }: SiteHeaderProps = {}) {
       }
     >
       <div className={styles["headerGrid"]}>
-        <a className={styles["brand"]} href={sectionLinksBase ?? "#home"} aria-label="NOIR DIGITAL">
-          <span>NOIR DIGITAL</span>
+        <a
+          className={styles["brand"]}
+          href={sectionLinksBase ?? "#home"}
+          aria-label={t("NOIR DIGITAL")}
+        >
+          <span>{t("NOIR DIGITAL")}</span>
           <span className={styles["brandDescriptor"]} aria-hidden="true">
-            Foundation / 00
+            {t("Foundation / 00")}
           </span>
         </a>
 
-        <nav className={styles["desktopNavigation"]} aria-label="Principal">
+        <nav className={styles["desktopNavigation"]} aria-label={t("Principal")}>
           {sectionLinksBase ? (
             <>
               <a
                 className={styles["control"]}
                 href={`${sectionLinksBase}${sectionSelector("work")}`}
               >
-                Serviços
+                {t("Serviços")}
               </a>
               <a className={styles["control"]} href="/contato">
-                Contato
+                {t("Contato")}
               </a>
             </>
           ) : (
             <>
               <button className={styles["control"]} type="button" onClick={() => scrollTo("work")}>
-                Serviços
+                {t("Serviços")}
               </button>
               <a className={styles["control"]} href="/contato">
-                Contato
+                {t("Contato")}
               </a>
             </>
           )}
           <ThemeButton className={styles["control"]} />
+          <LanguageButton className={styles["control"]} />
         </nav>
 
         <button
@@ -80,7 +88,7 @@ export function SiteHeader({ sectionLinksBase }: SiteHeaderProps = {}) {
           className={styles["menuTrigger"]}
           data-open={menuOpen}
           type="button"
-          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+          aria-label={t(menuOpen ? "Fechar menu" : "Abrir menu")}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           onClick={() => {

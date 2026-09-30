@@ -1,12 +1,16 @@
+"use client";
+
 import { LazyWorkCardCanvas } from "@/components/work/LazyWorkCardCanvas";
 import { ProjectCard } from "@/components/work/ProjectCard";
 import { ServiceStatement } from "@/components/work/ServiceStatement";
 import { WorkCardAnimationProvider } from "@/components/work/work-card-animation-controller";
 import { groupProjectsByService } from "@/data/projects";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 
 import styles from "./SelectedWork.module.css";
 
 export function SelectedWork() {
+  const { t } = useLanguage();
   const groupedProjects = groupProjectsByService();
 
   return (
@@ -29,7 +33,7 @@ export function SelectedWork() {
               >
                 <header className={styles["serviceHeading"]}>
                   <span aria-hidden="true">{group.index}</span>
-                  <h3 id={headingId}>{group.title}</h3>
+                  <h3 id={headingId}>{t(group.title)}</h3>
                 </header>
 
                 {group.projects.map((project, index) => (

@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { act, cleanup, render } from "@testing-library/react";
+import { hydrateRoot } from "react-dom/client";
+import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { HeroScrambleText } from "@/components/hero/HeroScrambleText";
@@ -12,6 +14,29 @@ afterEach(() => {
 });
 
 describe("HeroScrambleText", () => {
+  it("reveals server-rendered text when the browser requests reduced motion", async () => {
+    const props = {
+      active: false,
+      letterDelayMs: 50,
+      startDelayMs: 0,
+      text: "The digital foundation",
+    };
+    const container = document.createElement("div");
+    container.innerHTML = renderToString(<HeroScrambleText {...props} reducedMotion={false} />);
+    document.body.append(container);
+    let root: ReturnType<typeof hydrateRoot> | undefined;
+    try {
+      await act(async () => {
+        root = hydrateRoot(container, <HeroScrambleText {...props} reducedMotion />);
+      });
+      expect(container.firstElementChild).toHaveAttribute("data-scramble-state", "settled");
+      expect(container.firstElementChild).toHaveTextContent("The digital foundation");
+    } finally {
+      await act(async () => root?.unmount());
+      container.remove();
+    }
+  });
+
   it("keeps waiting copy visually concealed until the decoder starts", () => {
     const css = readFileSync(
       join(process.cwd(), "components/hero/HeroScrambleText.module.css"),

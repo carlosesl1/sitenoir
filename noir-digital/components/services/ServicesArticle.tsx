@@ -1,6 +1,7 @@
 "use client";
 
 import type { MouseEvent } from "react";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 
 import { useScroll } from "@/features/scroll/ScrollProvider";
 import { useScrollSpy } from "@/features/scroll/use-scroll-spy";
@@ -29,26 +30,28 @@ type ServicePanelProps = {
 };
 
 function ServicePanel({ index, label, title, details }: ServicePanelProps) {
+  const { t } = useLanguage();
   return (
     <figure className={styles["figure"]}>
       <div className={styles["mediaSurface"]}>
         <div className={styles["mediaHeader"]}>
           <span>{index}</span>
-          <span>{label}</span>
+          <span>{t(label)}</span>
         </div>
-        <p className={styles["mediaTitle"]}>{title}</p>
+        <p className={styles["mediaTitle"]}>{t(title)}</p>
         <ul className={styles["mediaDetails"]}>
           {details.map((detail) => (
-            <li key={detail}>{detail}</li>
+            <li key={detail}>{t(detail)}</li>
           ))}
         </ul>
       </div>
-      <figcaption>{label}</figcaption>
+      <figcaption>{t(label)}</figcaption>
     </figure>
   );
 }
 
 export function ServicesArticle() {
+  const { t } = useLanguage();
   const activeChapter = useScrollSpy({
     ids: chapterIds,
     initialId: INITIAL_CHAPTER_ID,
@@ -64,7 +67,7 @@ export function ServicesArticle() {
   return (
     <div className={styles["page"]}>
       <aside className={styles["toc"]}>
-        <nav data-service-toc="true" aria-label="Sumário do serviço">
+        <nav data-service-toc="true" aria-label={t("Sumário do serviço")}>
           {chapters.map((chapter) => (
             <a
               key={chapter.id}
@@ -73,7 +76,7 @@ export function ServicesArticle() {
               aria-current={activeChapter === chapter.id ? "location" : undefined}
               onClick={(event) => scrollToChapter(event, chapter.id)}
             >
-              {chapter.label}
+              {t(chapter.label)}
             </a>
           ))}
         </nav>
@@ -81,22 +84,24 @@ export function ServicesArticle() {
 
       <article className={styles["article"]}>
         <div className={styles["intro"]}>
-          <p className={styles["eyebrow"]}>Serviços / Estrutura editorial</p>
-          <h1>Estrutura de serviço</h1>
-          <time dateTime="2026-07-14">Jul 14, 2026</time>
+          <p className={styles["eyebrow"]}>{t("Serviços / Estrutura editorial")}</p>
+          <h1>{t("Estrutura de serviço")}</h1>
+          <time dateTime="2026-07-14">{t("Jul 14, 2026")}</time>
           <p className={styles["lead"]}>
-            Texto de teste para apresentar o serviço, seu contexto e a transformação que será
-            detalhada nesta página.
+            {t(
+              "Texto de teste para apresentar o serviço, seu contexto e a transformação que será detalhada nesta página.",
+            )}
           </p>
         </div>
 
         <section id="visao-geral" className={styles["chapter"]}>
           <h2>
-            <a href="#visao-geral">Visão geral</a>
+            <a href="#visao-geral">{t("Visão geral")}</a>
           </h2>
           <p>
-            Este bloco reserva espaço para explicar o cenário atual, os desafios prioritários e o
-            recorte do trabalho a ser realizado.
+            {t(
+              "Este bloco reserva espaço para explicar o cenário atual, os desafios prioritários e o recorte do trabalho a ser realizado.",
+            )}
           </p>
           <ServicePanel
             index="01"
@@ -105,20 +110,22 @@ export function ServicesArticle() {
             details={["Cenário", "Prioridades", "Critérios"]}
           />
           <p>
-            O conteúdo final poderá combinar narrativa, evidências e decisões sem alterar a
-            estrutura editorial da página.
+            {t(
+              "O conteúdo final poderá combinar narrativa, evidências e decisões sem alterar a estrutura editorial da página.",
+            )}
           </p>
         </section>
 
         <section id="processo" className={styles["chapter"]}>
           <h2>
-            <a href="#processo">Como trabalhamos</a>
+            <a href="#processo">{t("Como trabalhamos")}</a>
           </h2>
           <div id="diagnostico" className={styles["subchapter"]}>
-            <h3>Diagnóstico</h3>
+            <h3>{t("Diagnóstico")}</h3>
             <p>
-              Texto de teste para descrever pesquisa, alinhamento e definição do problema antes das
-              decisões de projeto.
+              {t(
+                "Texto de teste para descrever pesquisa, alinhamento e definição do problema antes das decisões de projeto.",
+              )}
             </p>
             <ServicePanel
               index="02"
@@ -127,14 +134,14 @@ export function ServicesArticle() {
               details={["Pesquisa", "Mapeamento", "Síntese"]}
             />
             <ul className={styles["list"]}>
-              <li>Leitura do contexto e dos objetivos.</li>
-              <li>Organização dos riscos e oportunidades.</li>
-              <li>Definição dos critérios de sucesso.</li>
+              <li>{t("Leitura do contexto e dos objetivos.")}</li>
+              <li>{t("Organização dos riscos e oportunidades.")}</li>
+              <li>{t("Definição dos critérios de sucesso.")}</li>
             </ul>
           </div>
 
           <div id="direcao" className={styles["subchapter"]}>
-            <h3>Direção</h3>
+            <h3>{t("Direção")}</h3>
             <ServicePanel
               index="03"
               label="Direção estratégica"
@@ -144,7 +151,7 @@ export function ServicesArticle() {
           </div>
 
           <div id="entrega" className={styles["subchapter"]}>
-            <h3>Entrega</h3>
+            <h3>{t("Entrega")}</h3>
             <ServicePanel
               index="04"
               label="Construção e entrega"
@@ -156,11 +163,12 @@ export function ServicesArticle() {
 
         <section id="sistema" className={styles["chapter"]}>
           <h2>
-            <a href="#sistema">Sistema e acompanhamento</a>
+            <a href="#sistema">{t("Sistema e acompanhamento")}</a>
           </h2>
           <p>
-            Este trecho poderá documentar componentes, rotinas e ferramentas usadas para manter
-            consistência depois da primeira entrega.
+            {t(
+              "Este trecho poderá documentar componentes, rotinas e ferramentas usadas para manter consistência depois da primeira entrega.",
+            )}
           </p>
           <ServicePanel
             index="05"
@@ -172,7 +180,7 @@ export function ServicesArticle() {
 
         <section id="continuidade" className={styles["chapter"]}>
           <h2>
-            <a href="#continuidade">Continuidade</a>
+            <a href="#continuidade">{t("Continuidade")}</a>
           </h2>
           <ServicePanel
             index="06"
@@ -181,33 +189,34 @@ export function ServicesArticle() {
             details={["Medição", "Aprendizado", "Evolução"]}
           />
           <p>
-            Texto final de teste para registrar resultados, aprendizados e os próximos passos do
-            serviço.
+            {t(
+              "Texto final de teste para registrar resultados, aprendizados e os próximos passos do serviço.",
+            )}
           </p>
         </section>
 
         <footer className={styles["footer"]}>
           <div>
-            <p className={styles["footerLabel"]}>Metadata</p>
+            <p className={styles["footerLabel"]}>{t("Metadata")}</p>
             <dl className={styles["metadata"]}>
               <div>
-                <dt>Atualização</dt>
-                <dd>Jul 14, 2026</dd>
+                <dt>{t("Atualização")}</dt>
+                <dd>{t("Jul 14, 2026")}</dd>
               </div>
               <div>
-                <dt>Formato</dt>
-                <dd>Editorial responsivo</dd>
+                <dt>{t("Formato")}</dt>
+                <dd>{t("Editorial responsivo")}</dd>
               </div>
               <div>
-                <dt>Conteúdo</dt>
-                <dd>Texto demonstrativo</dd>
+                <dt>{t("Conteúdo")}</dt>
+                <dd>{t("Texto demonstrativo")}</dd>
               </div>
             </dl>
           </div>
-          <nav className={styles["footerLinks"]} aria-label="Links finais">
-            <a href="/">Início</a>
-            <a href="/#selected-work">Projetos</a>
-            <a href="/#contact">Contato</a>
+          <nav className={styles["footerLinks"]} aria-label={t("Links finais")}>
+            <a href="/">{t("Início")}</a>
+            <a href="/#selected-work">{t("Projetos")}</a>
+            <a href="/#contact">{t("Contato")}</a>
           </nav>
         </footer>
       </article>

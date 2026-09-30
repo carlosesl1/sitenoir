@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { preload } from "react-dom";
 
 import { RouteTransition } from "@/components/transitions/RouteTransition";
+import { LanguageProvider } from "@/features/i18n/LanguageProvider";
+import { languageBootstrapScript } from "@/features/i18n/language-bootstrap";
 import { themeBootstrapScript } from "@/features/theme/theme-bootstrap";
 
 import "./globals.css";
@@ -115,6 +117,11 @@ export default function RootLayout({ children }: RootLayoutProps): ReactNode {
       <head>
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: Static local bootstrap must run before the poster element is parsed. */}
         <script id="theme-bootstrap" dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
+        <script
+          id="language-bootstrap"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Static local bootstrap resolves language before the first paint.
+          dangerouslySetInnerHTML={{ __html: languageBootstrapScript }}
+        />
         {enableDevInspectors
           ? devScriptSources.map(({ id, integrity, src }) =>
               integrity === undefined || src === undefined ? null : (
@@ -131,8 +138,10 @@ export default function RootLayout({ children }: RootLayoutProps): ReactNode {
           : null}
       </head>
       <body>
-        {children}
-        <RouteTransition />
+        <LanguageProvider>
+          {children}
+          <RouteTransition />
+        </LanguageProvider>
       </body>
     </html>
   );

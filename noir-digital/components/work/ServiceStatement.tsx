@@ -1,9 +1,9 @@
 "use client";
 
 import { type MouseEvent, useEffect, useRef, useState } from "react";
-
 import { serviceContent } from "@/data/content";
-import { serviceGroups, type ServiceId } from "@/data/projects";
+import { type ServiceId, serviceGroups } from "@/data/projects";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 import { useScroll } from "@/features/scroll/ScrollProvider";
 import { useScrollSpy } from "@/features/scroll/use-scroll-spy";
 
@@ -19,6 +19,11 @@ const serviceAnchorIds: readonly ServiceAnchorId[] = serviceGroups.map(
 const INITIAL_SERVICE_ANCHOR: ServiceAnchorId = "service-sites";
 
 export function ServiceStatement() {
+  const { t, language } = useLanguage();
+  const headingLines =
+    language === "en"
+      ? ["Services that", "equip your", "business for", "growth"]
+      : serviceContent.headingLines;
   const railRef = useRef<HTMLDivElement>(null);
   const statementRef = useRef<HTMLDivElement>(null);
   const [pinState, setPinState] = useState<ServicePinState>("before");
@@ -28,10 +33,7 @@ export function ServiceStatement() {
   });
   const { scrollToSelector } = useScroll();
 
-  const scrollToService = (
-    event: MouseEvent<HTMLAnchorElement>,
-    anchorId: ServiceAnchorId,
-  ) => {
+  const scrollToService = (event: MouseEvent<HTMLAnchorElement>, anchorId: ServiceAnchorId) => {
     event.preventDefault();
     window.history.replaceState(null, "", `#${anchorId}`);
     scrollToSelector(`#${anchorId}`);
@@ -100,18 +102,18 @@ export function ServiceStatement() {
   return (
     <div ref={railRef} className={styles["statementRail"]} data-services-sticky-rail="true">
       <div ref={statementRef} className={styles["statement"]} data-service-pin-state={pinState}>
-        <p>{serviceContent.eyebrow}</p>
-        <h2 id="work-heading" aria-label={serviceContent.heading}>
+        <p>{t(serviceContent.eyebrow)}</p>
+        <h2 id="work-heading" aria-label={t(serviceContent.heading)}>
           <span className={styles["statementLink"]}>
-            {serviceContent.headingLines.map((line, index) => (
+            {headingLines.map((line, index) => (
               <span key={line}>
-                {line}
+                {t(line)}
                 {index < serviceContent.headingLines.length - 1 ? " " : null}
               </span>
             ))}
           </span>
         </h2>
-        <nav className={styles["serviceIndex"]} aria-label="Índice de serviços">
+        <nav className={styles["serviceIndex"]} aria-label={t("Índice de serviços")}>
           {serviceGroups.map((service) => {
             const anchorId: ServiceAnchorId = `service-${service.id}`;
 
@@ -122,7 +124,7 @@ export function ServiceStatement() {
                 aria-current={activeService === anchorId ? "location" : undefined}
                 onClick={(event) => scrollToService(event, anchorId)}
               >
-                {service.title}
+                {t(service.title)}
               </a>
             );
           })}

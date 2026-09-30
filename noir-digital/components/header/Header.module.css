@@ -264,7 +264,7 @@
     top: 0;
     left: 50%;
     display: flex;
-    width: min(420px, 40vw);
+    width: min(530px, 52vw);
     justify-content: space-between;
     transform: translateX(-50%);
   }

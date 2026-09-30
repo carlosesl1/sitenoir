@@ -3,8 +3,10 @@
 import { domAnimation, LazyMotion, m, useIsPresent, useReducedMotion } from "motion/react";
 import type { KeyboardEvent } from "react";
 import { useEffect, useRef } from "react";
+import { LanguageButton } from "@/components/controls/LanguageButton";
 import { ThemeButton } from "@/components/controls/ThemeButton";
 import { EntryRevealCanvas } from "@/components/preloader/EntryRevealCanvas";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 import type { SectionTarget } from "@/features/scroll/scroll-targets";
 import { sectionSelector } from "@/features/scroll/scroll-targets";
 
@@ -19,6 +21,7 @@ interface MobileMenuProps {
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenuProps) {
+  const { t } = useLanguage();
   const dialogRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
   const isPresent = useIsPresent();
@@ -63,7 +66,7 @@ export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenu
         className={styles["mobileOverlay"]}
         role="dialog"
         aria-modal="true"
-        aria-label="Menu"
+        aria-label={t("Menu")}
         initial={false}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0.999 }}
@@ -81,21 +84,21 @@ export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenu
         ) : null}
 
         <div className={styles["mobileMenuContent"]}>
-          <nav className={styles["mobileNavigation"]} aria-label="Menu móvel">
+          <nav className={styles["mobileNavigation"]} aria-label={t("Menu móvel")}>
             {sectionLinksBase ? (
               <>
                 <a className={styles["mobileLink"]} href={sectionLinksBase} onClick={onClose}>
-                  Início
+                  {t("Início")}
                 </a>
                 <a
                   className={styles["mobileLink"]}
                   href={`${sectionLinksBase}${sectionSelector("work")}`}
                   onClick={onClose}
                 >
-                  Serviços
+                  {t("Serviços")}
                 </a>
                 <a className={styles["mobileLink"]} href="/contato" onClick={onClose}>
-                  Contato
+                  {t("Contato")}
                 </a>
               </>
             ) : (
@@ -105,23 +108,24 @@ export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenu
                   type="button"
                   onClick={() => onNavigate("home")}
                 >
-                  Início
+                  {t("Início")}
                 </button>
                 <button
                   className={styles["mobileLink"]}
                   type="button"
                   onClick={() => onNavigate("work")}
                 >
-                  Serviços
+                  {t("Serviços")}
                 </button>
                 <a className={styles["mobileLink"]} href="/contato" onClick={onClose}>
-                  Contato
+                  {t("Contato")}
                 </a>
               </>
             )}
           </nav>
 
           <div className={styles["mobileControls"]}>
+            <LanguageButton className={styles["mobileUtilityControl"]} />
             <ThemeButton className={styles["mobileUtilityControl"]} />
           </div>
         </div>

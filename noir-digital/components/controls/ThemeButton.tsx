@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 import { useTheme } from "@/features/theme/ThemeProvider";
 
 interface ThemeButtonProps {
@@ -9,6 +9,7 @@ interface ThemeButtonProps {
 }
 
 export function ThemeButton({ className }: ThemeButtonProps) {
+  const { t, language } = useLanguage();
   const { cycleTheme, resolvedTheme, theme } = useTheme();
   const descriptionId = useId();
 
@@ -16,14 +17,16 @@ export function ThemeButton({ className }: ThemeButtonProps) {
     <button
       type="button"
       className={className}
-      aria-label="Tema"
+      aria-label={t("Tema")}
       aria-pressed={theme !== "system"}
       aria-describedby={descriptionId}
       onClick={cycleTheme}
     >
-      {`TEMA[${theme === "system" ? "A" : theme === "dark" ? "D" : "L"}]`}
+      {`${t("TEMA")}[${theme === "system" ? "A" : theme === "dark" ? "D" : "L"}]`}
       <span id={descriptionId} className="visuallyHidden">
-        {`Modo ${theme}; aparência ${resolvedTheme}`}
+        {language === "en"
+          ? `${theme} mode; ${resolvedTheme} appearance`
+          : `Modo ${theme}; aparência ${resolvedTheme}`}
       </span>
     </button>
   );

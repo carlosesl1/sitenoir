@@ -1,5 +1,6 @@
-import Image from "next/image";
+"use client";
 
+import Image from "next/image";
 import type {
   CaseStudyV2,
   EvidenceSection,
@@ -7,6 +8,7 @@ import type {
   TextSection,
 } from "@/data/case-studies-v2";
 import type { Project } from "@/data/projects";
+import { useLanguage } from "@/features/i18n/LanguageProvider";
 
 import { CaseMediaV2 } from "./CaseMediaV2";
 import styles from "./VideoCaseLayout.module.css";
@@ -18,13 +20,14 @@ const presentationClasses = {
 } as const;
 
 function Story({ section }: { readonly section: TextSection }) {
+  const { t } = useLanguage();
   return (
     <section className={styles["story"]} id={section.id}>
-      <p>{section.eyebrow ?? "Direção"}</p>
+      <p>{t(section.eyebrow ?? "Direção")}</p>
       <div>
-        <h2>{section.title}</h2>
+        <h2>{t(section.title)}</h2>
         {section.paragraphs.map((paragraph) => (
-          <p key={paragraph}>{paragraph}</p>
+          <p key={paragraph}>{t(paragraph)}</p>
         ))}
       </div>
     </section>
@@ -32,6 +35,7 @@ function Story({ section }: { readonly section: TextSection }) {
 }
 
 function Films({ section }: { readonly section: EvidenceSection }) {
+  const { t } = useLanguage();
   const className =
     section.presentation in presentationClasses
       ? styles[presentationClasses[section.presentation as keyof typeof presentationClasses]]
@@ -44,8 +48,8 @@ function Films({ section }: { readonly section: EvidenceSection }) {
   return (
     <section className={styles["films"]} id={section.id}>
       <div className={styles["sectionHeading"]}>
-        <span>PLAY</span>
-        <h2>{section.title}</h2>
+        <span>{t("PLAY")}</span>
+        <h2>{t(section.title)}</h2>
       </div>
       <div className={className} data-video-presentation={section.presentation}>
         {section.media.map((media, index) => (
@@ -59,16 +63,17 @@ function Films({ section }: { readonly section: EvidenceSection }) {
 }
 
 function Direction({ section }: { readonly section: InsightSection }) {
+  const { t } = useLanguage();
   return (
     <section className={styles["direction"]} id={section.id}>
-      <h2>{section.title}</h2>
+      <h2>{t(section.title)}</h2>
       <ol>
         {section.items.map((item, index) => (
           <li key={item.label}>
             <span>{String(index + 1).padStart(2, "0")}</span>
             <div>
-              <h3>{item.label}</h3>
-              <p>{item.body}</p>
+              <h3>{t(item.label)}</h3>
+              <p>{t(item.body)}</p>
             </div>
           </li>
         ))}
@@ -84,6 +89,7 @@ export function VideoCaseLayout({
   readonly project: Project;
   readonly study: CaseStudyV2;
 }) {
+  const { t } = useLanguage();
   if (!study.credit) {
     throw new Error(`Video case ${study.slug} requires production credit`);
   }
@@ -104,11 +110,14 @@ export function VideoCaseLayout({
     <div className={styles["layout"]}>
       <header className={styles["hero"]}>
         <div className={styles["heroTopline"]}>
-          <p>{project.client} / Filme</p>
+          <p>
+            {project.client}
+            {t(" / Filme")}
+          </p>
           <span>{project.year}</span>
         </div>
-        <h1>{study.headline}</h1>
-        <p className={styles["summary"]}>{study.summary}</p>
+        <h1>{t(study.headline)}</h1>
+        <p className={styles["summary"]}>{t(study.summary)}</p>
         <div className={styles["heroMedia"]}>
           <CaseMediaV2 media={study.hero} priority />
         </div>
@@ -121,17 +130,17 @@ export function VideoCaseLayout({
         <div className={styles["portrait"]}>
           <Image
             src={study.credit.portrait.src}
-            alt={study.credit.portrait.alt}
+            alt={t(study.credit.portrait.alt)}
             width={study.credit.portrait.width}
             height={study.credit.portrait.height}
             sizes="(max-width: 767px) calc(100vw - 82px), 240px"
           />
         </div>
         <div>
-          <p>Designer responsável</p>
+          <p>{t("Designer responsável")}</p>
           <h2>{study.credit.name}</h2>
-          <p className={styles["creditRole"]}>{study.credit.role}</p>
-          <p>{study.credit.contribution}</p>
+          <p className={styles["creditRole"]}>{t(study.credit.role)}</p>
+          <p>{t(study.credit.contribution)}</p>
         </div>
       </aside>
 
