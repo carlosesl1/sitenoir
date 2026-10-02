@@ -8,7 +8,7 @@ import type {
 } from "@/data/case-studies-v2";
 import type { Project } from "@/data/projects";
 import { useLanguage } from "@/features/i18n/LanguageProvider";
-
+import { CaseDetails, CaseJumpLink } from "./CaseDetails";
 import { CaseMediaV2 } from "./CaseMediaV2";
 import styles from "./GoogleCaseLayout.module.css";
 
@@ -42,16 +42,16 @@ export function GoogleCaseLayout({
   return (
     <div className={styles["layout"]}>
       <header className={styles["hero"]}>
-        <div className={styles["heroCopy"]}>
-          <p>
-            {t("Presença no Google / ")}
-            {project.client}
-          </p>
-          <h1>{t(study.headline)}</h1>
-          <p className={styles["summary"]}>{t(study.summary)}</p>
-        </div>
-        <div className={styles["heroMedia"]}>
-          <CaseMediaV2 media={study.hero} priority />
+        <h1>{t(study.headline)}</h1>
+        <div className={styles["heroStage"]}>
+          <div className={styles["heroMedia"]}>
+            <CaseMediaV2 media={study.hero} priority />
+          </div>
+          <div className={styles["heroCopy"]}>
+            <p className={styles["summary"]}>{t(study.summary)}</p>
+            <CaseDetails project={project} />
+            <CaseJumpLink id={evidence.id} label="Explorar o perfil" />
+          </div>
         </div>
       </header>
 
@@ -66,9 +66,8 @@ export function GoogleCaseLayout({
       </ol>
 
       <section className={styles["context"]} id={text.id}>
-        <p>{t(text.eyebrow ?? "Contexto local")}</p>
+        <h2>{t(text.title)}</h2>
         <div>
-          <h2>{t(text.title)}</h2>
           {text.paragraphs.map((paragraph) => (
             <p key={paragraph}>{t(paragraph)}</p>
           ))}
@@ -77,7 +76,6 @@ export function GoogleCaseLayout({
 
       <section className={styles["evidenceSection"]} id={evidence.id}>
         <div className={styles["sectionHeading"]}>
-          <span>{t("Prova real")}</span>
           <h2>{t(evidence.title)}</h2>
         </div>
         <div className={styles["evidence"]}>
@@ -90,12 +88,9 @@ export function GoogleCaseLayout({
       <section className={styles["insights"]} id={insights.id}>
         <h2>{t(insights.title)}</h2>
         <dl>
-          {insights.items.map((item, index) => (
+          {insights.items.map((item) => (
             <div key={item.label}>
-              <dt>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                {t(item.label)}
-              </dt>
+              <dt>{t(item.label)}</dt>
               <dd>{t(item.body)}</dd>
             </div>
           ))}

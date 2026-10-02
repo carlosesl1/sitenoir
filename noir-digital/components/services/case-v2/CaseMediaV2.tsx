@@ -40,7 +40,7 @@ export function CaseMediaV2({
             width={media.width}
             height={media.height}
             priority={priority}
-            sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1199px) 88vw, 1120px"
+            sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1552px) 92vw, 1440px"
           />
         ) : (
           <video
