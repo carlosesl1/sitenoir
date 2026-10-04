@@ -101,7 +101,6 @@ export function ContactFooter() {
           <nav className={styles["legalClosing"]} aria-label={t("Links legais finais")}>
             <a href="/privacidade">{t("Privacidade")}</a>
             <a href="/termos">{t("Termos")}</a>
-            <span className={styles["footerMark"]} aria-hidden="true" />
           </nav>
         </div>
       </div>

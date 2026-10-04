@@ -1,0 +1,111 @@
+.root {
+  position: fixed;
+  right: max(24px, calc(env(safe-area-inset-right, 0px) + 16px));
+  bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+  z-index: 2;
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  background: var(--color-noir-warm-white);
+  color: var(--color-noir-black);
+  text-decoration: none;
+  pointer-events: auto;
+  transition:
+    transform var(--duration-standard) var(--ease-standard),
+    background-color var(--duration-standard) var(--ease-standard);
+}
+
+:global([data-theme="light"]) .root {
+  background: var(--color-noir-black);
+  color: var(--color-noir-warm-white);
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+}
+
+.label {
+  position: absolute;
+  right: calc(100% + 12px);
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  font-family: var(--font-pixel);
+  font-size: 0.6875rem;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(4px);
+  pointer-events: none;
+  transition:
+    opacity var(--duration-micro) var(--ease-standard),
+    transform var(--duration-micro) var(--ease-standard),
+    visibility var(--duration-micro);
+}
+
+.root:focus-visible {
+  outline: 2px dotted var(--focus-color);
+  outline-offset: 5px;
+}
+
+.root:focus-visible .label {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .root:hover {
+    transform: translateY(-3px);
+  }
+
+  .root:hover .label {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+  }
+}
+
+.root:active {
+  transform: scale(0.96);
+}
+
+@media (min-width: 1024px) {
+  .root {
+    right: max(56px, calc(env(safe-area-inset-right, 0px) + 16px));
+    bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+    width: 56px;
+    height: 56px;
+  }
+
+  .icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 359px) {
+  .root {
+    right: max(16px, calc(env(safe-area-inset-right, 0px) + 12px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .label {
+    transition: none;
+  }
+
+  .root:hover,
+  .root:active {
+    transform: none;
+  }
+}

@@ -108,6 +108,7 @@ describe("SiteHeader", () => {
     );
     expect(screen.queryByText("GMT-3 BR")).not.toBeInTheDocument();
     expect(screen.queryByText(/X 0360 Y/)).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Iniciar conversa no WhatsApp" })).toBeInTheDocument();
   });
 
   it("operates the theme control without exposing sound", () => {
@@ -127,6 +128,7 @@ describe("SiteHeader", () => {
     fireEvent.click(trigger);
 
     expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(screen.queryByRole("link", { name: "Iniciar conversa no WhatsApp" })).toBeNull();
     expect(screen.getByRole("dialog", { name: "Menu" })).toBeInTheDocument();
     const mobileNavigation = screen.getByRole("navigation", { name: "Menu móvel" });
     for (const item of ["Início", "Serviços"]) {

@@ -232,15 +232,8 @@
 .legalClosing {
   justify-content: flex-end;
   gap: clamp(16px, 2.5vw, 40px);
+  padding-right: 96px;
   border-right: 0;
-}
-
-.footerMark {
-  width: 28px;
-  flex: 0 0 auto;
-  aspect-ratio: 1;
-  border: 2px solid currentColor;
-  border-radius: 50%;
 }
 
 .sceneAnchor {
@@ -325,11 +318,8 @@
 
   .legalClosing {
     justify-content: space-between;
+    padding-right: 96px;
     border-bottom: 0;
-  }
-
-  .footerMark {
-    width: 22px;
   }
 
   .sceneAnchor {

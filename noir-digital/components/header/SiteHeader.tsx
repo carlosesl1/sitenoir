@@ -2,6 +2,7 @@
 
 import { AnimatePresence } from "motion/react";
 import { useRef, useState } from "react";
+import { FloatingWhatsApp } from "@/components/contact/FloatingWhatsApp";
 import { LanguageButton } from "@/components/controls/LanguageButton";
 
 import { ThemeButton } from "@/components/controls/ThemeButton";
@@ -112,6 +113,7 @@ export function SiteHeader({ sectionLinksBase }: SiteHeaderProps = {}) {
         ) : null}
       </AnimatePresence>
       {sectionLinksBase ? null : <HeaderStatus hidden={menuLayerActive} />}
+      <FloatingWhatsApp hidden={menuLayerActive} />
     </header>
   );
 }

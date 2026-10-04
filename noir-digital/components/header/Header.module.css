@@ -226,14 +226,6 @@
   display: none;
 }
 
-.statusMark {
-  width: 20px;
-  aspect-ratio: 1;
-  justify-self: end;
-  border: 2px solid currentColor;
-  border-radius: 50%;
-}
-
 .mobileLink {
   display: block;
   width: 100%;
@@ -301,14 +293,6 @@
     display: block;
     grid-column: 6 / span 2;
     justify-self: center;
-  }
-
-  .statusMark {
-    width: 42px;
-    height: 22px;
-    grid-column: 12;
-    justify-self: end;
-    border-radius: 50%;
   }
 }
 

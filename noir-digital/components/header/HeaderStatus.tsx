@@ -68,9 +68,10 @@ export function HeaderStatus({ hidden = false }: { readonly hidden?: boolean } =
     return () => observer.disconnect();
   }, []);
 
-  const className = contactActive || hidden
-    ? `${styles["statusBar"]} ${styles["hiddenStatus"]}`
-    : styles["statusBar"];
+  const className =
+    contactActive || hidden
+      ? `${styles["statusBar"]} ${styles["hiddenStatus"]}`
+      : styles["statusBar"];
 
   return (
     <div className={className} aria-hidden={contactActive || hidden}>
@@ -79,7 +80,6 @@ export function HeaderStatus({ hidden = false }: { readonly hidden?: boolean } =
         {clock} {weather.temperature}°C
       </span>
       <PointerCoordinates className={styles["statusCoordinates"]} />
-      <span className={styles["statusMark"]} aria-hidden="true" />
     </div>
   );
 }
