@@ -14,6 +14,7 @@ import {
   ShaderMaterial,
   Vector2,
   Vector3,
+  Vector4,
 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
@@ -86,6 +87,7 @@ export function PrinciplePointerModel({
   const spinRef = useRef<Group>(null);
   const fullscreenRef = useRef(false);
   const lightAngleRef = useRef(DEFAULT_LIGHT_ANGLE);
+  const renderViewport = useMemo(() => new Vector4(), []);
   const { resolvedTheme } = useTheme();
   const source = useLoader(GLTFLoader, POINTER_MODEL_SOURCE);
   const geometry = useMemo(() => mergeCursorGeometry(source.scene), [source.scene]);
@@ -247,7 +249,6 @@ export function PrinciplePointerModel({
       LIGHT_RADIUS * Math.sin(lightAngleRef.current),
       0.5,
     );
-    state.gl.getDrawingBufferSize(uniforms.uResolution.value);
     uniforms.uScaleReveal.value = actualReveal;
 
     const fullscreen = actualReveal >= 0.5;
@@ -262,7 +263,19 @@ export function PrinciplePointerModel({
       <group rotation={[0, 0, AXIS_TILT]}>
         <group ref={spinRef}>
           <group rotation={[0, 0, -AXIS_TILT]}>
-            <mesh geometry={geometry} material={material} frustumCulled={false} renderOrder={12} />
+            <mesh
+              geometry={geometry}
+              material={material}
+              frustumCulled={false}
+              onBeforeRender={(renderer) => {
+                // Pointer effects can render this mesh into a smaller offscreen target.
+                // Match gl_FragCoord to the active viewport on every render pass.
+                renderer.getCurrentViewport(renderViewport);
+                uniforms.uResolution.value.set(renderViewport.z, renderViewport.w);
+                material.uniformsNeedUpdate = true;
+              }}
+              renderOrder={12}
+            />
             <mesh
               geometry={geometry}
               frustumCulled={false}
