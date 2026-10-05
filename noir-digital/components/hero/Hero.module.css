@@ -308,6 +308,17 @@
     top: 14svh;
   }
 
+  .disciplines {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(0.65rem, 1.4vw, 1.1rem);
+    white-space: nowrap;
+  }
+
+  .disciplines li {
+    flex: 0 0 auto;
+  }
+
   .headline {
     top: calc(18.5svh + 20px);
     right: clamp(90px, 16.5vw, 338px);

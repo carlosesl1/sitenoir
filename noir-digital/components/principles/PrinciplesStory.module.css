@@ -67,6 +67,11 @@
   display: block;
 }
 
+.copyWord {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .copyCharacter {
   display: inline-block;
   opacity: 0;
@@ -235,6 +240,18 @@
 
   .statementGrid p:nth-child(4) {
     grid-column: 5 / span 8;
+  }
+}
+
+@media (max-height: 600px) and (min-aspect-ratio: 4 / 3) {
+  .panel[data-stage="principles"] {
+    padding-block: 76px 48px;
+  }
+
+  .statementGrid p {
+    padding: 4px 6px;
+    font-size: clamp(1rem, 2.6vw, 1.25rem);
+    line-height: 1.15;
   }
 }
 

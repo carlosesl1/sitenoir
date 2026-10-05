@@ -66,21 +66,37 @@ const StaggeredLine = memo(function StaggeredLine({
     <span className={styles["copyLine"]} data-staggered-line="true">
       <span className={styles["visuallyHidden"]}>{line}</span>
       <span aria-hidden="true">
-        {Array.from(line).map((character, characterIndex) => {
-          const style: CharacterStyle = {
-            "--character-delay": `${(enterDelays[characterIndex] ?? 0) + groupDelayMs}ms`,
-            "--character-exit-delay": `${(exitDelays[characterIndex] ?? 0) + groupDelayMs}ms`,
-          };
-          return (
-            <span
-              key={`${line}-${line.slice(0, characterIndex + 1)}`}
-              className={styles["copyCharacter"]}
-              style={style}
-            >
-              {character === " " ? "\u00a0" : character}
-            </span>
-          );
-        })}
+        {(() => {
+          let characterOffset = 0;
+          return line.split(/(\s+)/u).map((segment) => {
+            const segmentOffset = characterOffset;
+            characterOffset += segment.length;
+            if (/^\s+$/u.test(segment)) return segment.replace(/\s/gu, "\u00a0");
+            return (
+              <span
+                key={`${line}-${line.slice(0, characterOffset)}`}
+                className={styles["copyWord"]}
+              >
+                {Array.from(segment).map((character, characterIndex) => {
+                  const index = segmentOffset + characterIndex;
+                  const style: CharacterStyle = {
+                    "--character-delay": `${(enterDelays[index] ?? 0) + groupDelayMs}ms`,
+                    "--character-exit-delay": `${(exitDelays[index] ?? 0) + groupDelayMs}ms`,
+                  };
+                  return (
+                    <span
+                      key={`${line}-${index}`}
+                      className={styles["copyCharacter"]}
+                      style={style}
+                    >
+                      {character}
+                    </span>
+                  );
+                })}
+              </span>
+            );
+          });
+        })()}
       </span>
     </span>
   );

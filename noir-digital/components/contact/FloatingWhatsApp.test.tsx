@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LanguageButton } from "@/components/controls/LanguageButton";
 import { contactWhatsAppHref } from "@/data/content";
@@ -13,6 +13,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 describe("FloatingWhatsApp", () => {
@@ -50,4 +51,55 @@ describe("FloatingWhatsApp", () => {
     rerender(<FloatingWhatsApp hidden={false} />);
     expect(screen.getByRole("link", { name: "Iniciar conversa no WhatsApp" })).toBeInTheDocument();
   });
+});
+
+it("yields to visible contact actions and returns after the last action leaves", () => {
+  let notify: IntersectionObserverCallback = () => undefined;
+  const disconnect = vi.fn();
+  vi.stubGlobal(
+    "IntersectionObserver",
+    class {
+      constructor(callback: IntersectionObserverCallback) {
+        notify = callback;
+      }
+      observe = vi.fn();
+      disconnect = disconnect;
+    },
+  );
+  const view = render(
+    <>
+      <a href="/contato" data-spectrum-contact-cta>
+        Contact action
+      </a>
+      <button type="button" data-spectrum-contact-cta>
+        Send message
+      </button>
+      <FloatingWhatsApp />
+    </>,
+  );
+  const actions = view.container.querySelectorAll("[data-spectrum-contact-cta]");
+  const update = (index: number, isIntersecting: boolean) => {
+    act(() =>
+      notify(
+        [
+          {
+            target: actions[index],
+            isIntersecting,
+            intersectionRatio: isIntersecting ? 0.1 : 0,
+          } as IntersectionObserverEntry,
+        ],
+        {} as IntersectionObserver,
+      ),
+    );
+  };
+  expect(view.container.querySelector("[data-floating-whatsapp]")).toBeInTheDocument();
+  update(0, true);
+  expect(view.container.querySelector("[data-floating-whatsapp]")).toBeNull();
+  update(1, true);
+  update(0, false);
+  expect(view.container.querySelector("[data-floating-whatsapp]")).toBeNull();
+  update(1, false);
+  expect(screen.getByRole("link", { name: "Iniciar conversa no WhatsApp" })).toBeInTheDocument();
+  view.unmount();
+  expect(disconnect).toHaveBeenCalledOnce();
 });

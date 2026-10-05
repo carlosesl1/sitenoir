@@ -59,10 +59,10 @@ export function HeaderStatus({ hidden = false }: { readonly hidden?: boolean } =
 
   useEffect(() => {
     const contact = document.querySelector("#contact");
-    if (!contact || !("IntersectionObserver" in window)) return;
+    if (!contact || typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(
-      ([entry]) => setContactActive((entry?.intersectionRatio ?? 0) > 0.55),
-      { threshold: [0.55] },
+      ([entry]) => setContactActive(entry?.isIntersecting ?? false),
+      { threshold: 0 },
     );
     observer.observe(contact);
     return () => observer.disconnect();
