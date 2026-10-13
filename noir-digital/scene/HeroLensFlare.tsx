@@ -19,6 +19,7 @@ import {
 import { useTheme } from "@/features/theme/ThemeProvider";
 import { resolveFlareSourceLayer } from "@/scene/contact-flare-layer";
 import { useHeroFluid } from "@/scene/HeroFluidProvider";
+import { useHeroOpticalFlareSources } from "@/scene/HeroOpticalFlareSources";
 import {
   HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER,
   HERO_CANVAS_UI_EDGE_FLARE_LAYER,
@@ -30,6 +31,7 @@ import {
   HERO_POST_VERTEX_SHADER,
 } from "@/scene/hero-lens-flare-shaders";
 import { resolveLensFlareTuning } from "@/scene/hero-lens-flare-tuning";
+import { createHeroOpticalFlarePass } from "@/scene/hero-optical-flare-pass";
 import { sceneTransitionStore } from "@/scene/scene-transition";
 
 interface HeroLensFlareProps {
@@ -77,6 +79,9 @@ function readToken(name: string): Color {
 
 export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
   const fluid = useHeroFluid();
+  const opticalSources = useHeroOpticalFlareSources();
+  const opticalPass = useMemo(createHeroOpticalFlarePass, []);
+  useEffect(() => () => opticalPass.dispose(), [opticalPass]);
   const { resolvedTheme } = useTheme();
   const camera = useThree((state) => state.camera);
   const gl = useThree((state) => state.gl);
@@ -243,10 +248,19 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
     const transition = sceneTransitionStore.getSnapshot();
     const flareEnabled =
       active && transition.sourceVisible && (!transition.solid || transition.contactVisible);
-    const edgeSourceEnabled = flareEnabled && !transition.contactVisible;
+    const opticalEnabled =
+      flareEnabled && !transition.contactVisible && !!opticalSources?.wordmark.current;
+    // Contact and the legacy glass preview retain their isolated extraction.
+    const legacyFlareEnabled = flareEnabled && !opticalEnabled;
+    const renderOpticalFlares = () => {
+      if (opticalEnabled && opticalSources) {
+        opticalPass.render(gl, camera, opticalSources, size.width, size.height);
+      }
+    };
+    const edgeSourceEnabled = legacyFlareEnabled && !transition.contactVisible;
     const tuning = resolveLensFlareTuning(transition.contactVisible);
     const enabledUniform = flareMaterial.uniforms["uEnabled"];
-    if (enabledUniform) enabledUniform.value = flareEnabled ? 1 : 0;
+    if (enabledUniform) enabledUniform.value = legacyFlareEnabled ? 1 : 0;
     const gateUniform = flareMaterial.uniforms["uGate"];
     if (gateUniform) gateUniform.value = tuning.gate;
     const hotspotPowerUniform = flareMaterial.uniforms["uHotspotPower"];
@@ -266,13 +280,14 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
       streakScaleUniform.value = resolveStreakScale(size.width, tuning.streakScale);
     }
     const flareCompositeUniform = compositeMaterial.uniforms["uFlareEnabled"];
-    if (flareCompositeUniform) flareCompositeUniform.value = flareEnabled ? 1 : 0;
+    if (flareCompositeUniform) flareCompositeUniform.value = legacyFlareEnabled ? 1 : 0;
     const requiresComposite =
       flareEnabled || fluid.effectEnabled.value >= 0.5 || fluid.overlayEnabled.value >= 0.5;
     if (!requiresComposite) {
       gl.setRenderTarget(null);
       gl.clear();
       gl.render(scene, camera);
+      renderOpticalFlares();
       return;
     }
 
@@ -280,7 +295,7 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
     gl.clear();
     gl.render(scene, camera);
 
-    if (flareEnabled && frame.current % 2 === 0) {
+    if (legacyFlareEnabled && frame.current % 2 === 0) {
       const flareSourceLayer = resolveFlareSourceLayer(transition.contactVisible);
       const diffuseUniform = flareMaterial.uniforms["tDiffuse"];
       const previousLayerMask = camera.layers.mask;
@@ -328,7 +343,7 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
       gl.clear();
       gl.render(postScene, postCamera);
       gl.setClearColor(previousClearColor, previousClearAlpha);
-    } else if (!flareEnabled) {
+    } else if (!legacyFlareEnabled && !opticalEnabled) {
       gl.setRenderTarget(flareTarget);
       gl.getClearColor(previousClearColor);
       const previousClearAlpha = gl.getClearAlpha();
@@ -342,6 +357,7 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
     gl.setRenderTarget(null);
     gl.clear();
     gl.render(postScene, postCamera);
+    renderOpticalFlares();
   }, 998);
 
   return null;

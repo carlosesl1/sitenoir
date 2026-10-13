@@ -12,6 +12,7 @@ import { HeroFluidProvider } from "@/scene/HeroFluidProvider";
 import { HeroLensFlare } from "@/scene/HeroLensFlare";
 import { HeroModel } from "@/scene/HeroModel";
 import { HeroOpticalBackground } from "@/scene/HeroOpticalBackground";
+import { HeroOpticalFlareProvider } from "@/scene/HeroOpticalFlareSources";
 import { HeroRefractionBuffer } from "@/scene/HeroRefractionBuffer";
 import type { HeroGlassVariant } from "@/scene/hero-glass-variant";
 import { PersistentSiteGrid } from "@/scene/PersistentSiteGrid";
@@ -216,60 +217,65 @@ export function SiteCanvas({
             gl.toneMappingExposure = 1.05;
           }}
         >
-          <DemandFrameInvalidator
-            idleWindowMs={qualityConfig.idleWindowMs}
-            reducedMotion={deterministicMotion}
-            scrollProgress={scrollYProgress}
-          />
-          <SiteCameraRig centerLocked={principleScene.active} reducedMotion={deterministicMotion} />
-          <HeroOpticalBackground
-            active
-            frameStride={qualityConfig.opticalFrameStride}
-            forceDark={principleScene.fullscreen}
-            reducedMotion={deterministicMotion}
-            resolutionScale={qualityConfig.opticalResolutionScale}
-          />
-          <ambientLight intensity={0.38} />
-          <directionalLight position={[-8, -4, 6]} intensity={0.72} />
-          {ambientOnly ? (
-            <AmbientSceneReadyMarker />
-          ) : (
-            <>
-              <HeroRefractionBuffer
-                active={!principleScene.active}
-                resolutionScale={qualityConfig.refractionResolutionScale}
-              >
-                <Suspense fallback={null}>
-                  <HeroSceneContent
-                    heroGlassVariant={heroGlassVariant}
-                    onReady={markHeroSceneReady}
-                    reducedMotion={deterministicMotion}
-                    scrollProgress={scrollYProgress}
-                  />
-                </Suspense>
-                {progressiveSceneEnabled ? (
+          <HeroOpticalFlareProvider>
+            <DemandFrameInvalidator
+              idleWindowMs={qualityConfig.idleWindowMs}
+              reducedMotion={deterministicMotion}
+              scrollProgress={scrollYProgress}
+            />
+            <SiteCameraRig
+              centerLocked={principleScene.active}
+              reducedMotion={deterministicMotion}
+            />
+            <HeroOpticalBackground
+              active
+              frameStride={qualityConfig.opticalFrameStride}
+              forceDark={principleScene.fullscreen}
+              reducedMotion={deterministicMotion}
+              resolutionScale={qualityConfig.opticalResolutionScale}
+            />
+            <ambientLight intensity={0.38} />
+            <directionalLight position={[-8, -4, 6]} intensity={0.72} />
+            {ambientOnly ? (
+              <AmbientSceneReadyMarker />
+            ) : (
+              <>
+                <HeroRefractionBuffer
+                  active={!principleScene.active}
+                  resolutionScale={qualityConfig.refractionResolutionScale}
+                >
                   <Suspense fallback={null}>
-                    <ProgressiveSceneContent
+                    <HeroSceneContent
+                      heroGlassVariant={heroGlassVariant}
+                      onReady={markHeroSceneReady}
                       reducedMotion={deterministicMotion}
                       scrollProgress={scrollYProgress}
                     />
                   </Suspense>
-                ) : null}
-              </HeroRefractionBuffer>
-              <Suspense fallback={null}>
-                <PrinciplePointerModel
-                  reducedMotion={deterministicMotion}
-                  sectionRef={principleScene.sectionRef}
-                  sectionRectRef={principleScene.sectionRectRef}
-                  setFullscreen={principleScene.setFullscreen}
-                />
-              </Suspense>
-            </>
-          )}
-          <FullscreenDither />
-          <HeroFluidProvider reducedMotion={deterministicMotion}>
-            <HeroLensFlare active resolutionScale={qualityConfig.flareResolutionScale} />
-          </HeroFluidProvider>
+                  {progressiveSceneEnabled ? (
+                    <Suspense fallback={null}>
+                      <ProgressiveSceneContent
+                        reducedMotion={deterministicMotion}
+                        scrollProgress={scrollYProgress}
+                      />
+                    </Suspense>
+                  ) : null}
+                </HeroRefractionBuffer>
+                <Suspense fallback={null}>
+                  <PrinciplePointerModel
+                    reducedMotion={deterministicMotion}
+                    sectionRef={principleScene.sectionRef}
+                    sectionRectRef={principleScene.sectionRectRef}
+                    setFullscreen={principleScene.setFullscreen}
+                  />
+                </Suspense>
+              </>
+            )}
+            <FullscreenDither />
+            <HeroFluidProvider reducedMotion={deterministicMotion}>
+              <HeroLensFlare active resolutionScale={qualityConfig.flareResolutionScale} />
+            </HeroFluidProvider>
+          </HeroOpticalFlareProvider>
         </Canvas>
       </SceneErrorBoundary>
       <PersistentSiteGrid />

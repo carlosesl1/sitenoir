@@ -9,6 +9,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import { useTheme } from "@/features/theme/ThemeProvider";
 import { POINTER_MODEL_SOURCE } from "@/scene/critical-hero-preload";
+import { useHeroOpticalFlareSources } from "@/scene/HeroOpticalFlareSources";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
 import {
   HERO_CANVAS_UI_GLASS_CONFIG as glassConfig,
@@ -52,6 +53,7 @@ export function HeroCanvasUiPointerMesh({
   sceneScale,
 }: HeroCanvasUiPointerMeshProps) {
   const { resolvedTheme } = useTheme();
+  const opticalSources = useHeroOpticalFlareSources();
   const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
   const { texture } = useHeroRefraction();
@@ -75,6 +77,7 @@ export function HeroCanvasUiPointerMesh({
   return (
     <>
       <mesh
+        ref={opticalSources?.pointer ?? null}
         geometry={geometry}
         onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
         renderOrder={renderOrder}

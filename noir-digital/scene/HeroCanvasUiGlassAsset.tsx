@@ -8,6 +8,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import { useTheme } from "@/features/theme/ThemeProvider";
 import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
+import { useHeroOpticalFlareSources } from "@/scene/HeroOpticalFlareSources";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
 import {
   HERO_CANVAS_UI_EDGE_FLARE_CONFIG as edgeFlareConfig,
@@ -38,6 +39,7 @@ interface HeroCanvasUiGlassAssetProps {
 
 export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetProps) {
   const { resolvedTheme } = useTheme();
+  const opticalSources = useHeroOpticalFlareSources();
   const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
   const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
@@ -83,6 +85,7 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
   return (
     <>
       <mesh
+        ref={opticalSources?.wordmark ?? null}
         geometry={geometry}
         onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
         renderOrder={1}
