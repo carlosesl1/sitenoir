@@ -13,6 +13,8 @@ import {
   Vector3,
   type WebGLRenderer,
 } from "three";
+import type { PointerSnapshot } from "@/features/pointer/pointer-store";
+import { resolveSceneFrameDelta } from "@/scene/scene-frame";
 import type { HeroOpticalFlareSources } from "@/scene/HeroOpticalFlareSources";
 import {
   HERO_OPTICAL_FLARE_FRAGMENT_SHADER,
@@ -51,6 +53,10 @@ export function createHeroOpticalFlarePass() {
   geometry.setAttribute("aCenter", centers);
   geometry.setAttribute("aGain", gains);
   geometry.setAttribute("aRadius", radii);
+  const spectra = new InstancedBufferAttribute(new Float32Array(8), 2);
+  geometry.setAttribute("aSpectrum", spectra);
+  const smoothedPointer = new Vector2();
+  let pointerActivity = 0;
   const viewport = new Vector2();
   const material = new ShaderMaterial({
     blending: AdditiveBlending,
@@ -80,7 +86,23 @@ export function createHeroOpticalFlarePass() {
       sources: HeroOpticalFlareSources,
       width: number,
       height: number,
+      delta = 1 / 60,
+      pointer: Pick<PointerSnapshot, "inside" | "normalizedX" | "normalizedY"> | null = null,
     ) {
+      // Null disables motion immediately for reduced motion and compact screens.
+      // On exit, hold the last position while fading its influence so highlights
+      // cannot brighten as an invisible pointer returns across the model.
+      if (!pointer) {
+        smoothedPointer.set(0, 0);
+        pointerActivity = 0;
+      } else {
+        const smoothing = 1 - Math.exp(-8 * resolveSceneFrameDelta(delta));
+        const targetX = pointer.inside ? Math.max(-1, Math.min(1, pointer.normalizedX)) : smoothedPointer.x;
+        const targetY = pointer.inside ? Math.max(-1, Math.min(1, pointer.normalizedY)) : smoothedPointer.y;
+        smoothedPointer.x += (targetX - smoothedPointer.x) * smoothing;
+        smoothedPointer.y += (targetY - smoothedPointer.y) * smoothing;
+        pointerActivity += ((pointer.inside ? 1 : 0) - pointerActivity) * smoothing;
+      }
       viewport.set(width, height);
       camera.getWorldPosition(cameraPosition);
       const radius = resolveOpticalFlareRadius(width);
@@ -98,12 +120,23 @@ export function createHeroOpticalFlarePass() {
         const facing = Math.max(0, Math.min(1, (normal.dot(viewDirection) - 0.1) / 0.5));
         if (projected.z < -1 || projected.z > 1 || facing === 0) continue;
         centers.setXY(index, projected.x, projected.y);
-        gains.setX(index, anchor.gain * facing);
-        radii.setX(index, radius * (anchor.source === "pointer" ? 0.7 : 1));
+        // Pixel distance keeps the response circular at every aspect ratio.
+        const distanceX = ((smoothedPointer.x - projected.x) * width) / 2;
+        const distanceY = ((smoothedPointer.y - projected.y) * height) / 2;
+        const reach = Math.max(180, width * 0.28);
+        const proximity = Math.exp(-(distanceX * distanceX + distanceY * distanceY) / (reach * reach));
+        const response = pointerActivity * (0.15 + proximity * 0.85);
+        gains.setX(index, anchor.gain * facing * (1 + response * 0.95));
+        radii.setX(index, radius * (anchor.source === "pointer" ? 0.7 : 1) * (1 + response * 0.65));
+        spectra.setXY(
+          index,
+          (smoothedPointer.x * 0.75 + smoothedPointer.y * 0.4) * pointerActivity,
+          0, // Identical spatial palette at every anchor; never cycle its hue.
+        );
         visible = true;
       }
       if (!visible) return;
-      centers.needsUpdate = gains.needsUpdate = radii.needsUpdate = true;
+      centers.needsUpdate = gains.needsUpdate = radii.needsUpdate = spectra.needsUpdate = true;
       const previousAutoClear = gl.autoClear;
       const previousTarget = gl.getRenderTarget();
       try {

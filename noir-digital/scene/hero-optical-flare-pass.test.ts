@@ -131,6 +131,100 @@ describe("createHeroOpticalFlarePass", () => {
     pass.dispose();
   });
 
+  it("strengthens and rotates nearby highlights while keeping their shared palette fixed", () => {
+    const camera = createCamera();
+    const sources = createSources(createSource());
+    const { renderer, render } = createRenderer();
+    const pass = createHeroOpticalFlarePass();
+    pass.render(renderer, camera, sources, 800, 600);
+    const [renderedScene] = render.mock.calls[0] as [Scene];
+    const mesh = renderedScene.children[0] as Mesh;
+    const centers = mesh.geometry.getAttribute("aCenter");
+    const radii = mesh.geometry.getAttribute("aRadius");
+    const gains = mesh.geometry.getAttribute("aGain");
+    const spectra = mesh.geometry.getAttribute("aSpectrum");
+    const centerX = centers.getX(0);
+    const centerY = centers.getY(0);
+    const restingRadius = radii.getX(0);
+    const restingGain = gains.getX(0);
+    const near = { inside: true, normalizedX: centerX, normalizedY: centerY };
+    for (let frame = 0; frame < 120; frame++) {
+      pass.render(renderer, camera, sources, 800, 600, 1 / 60, near);
+    }
+    const nearbyRadius = radii.getX(0);
+    const nearbyGain = gains.getX(0);
+    const nearbyAngle = spectra.getX(0);
+    const nearbyHue = spectra.getY(0);
+    expect(nearbyRadius).toBeGreaterThan(restingRadius * 1.5);
+    expect(nearbyGain).toBeGreaterThan(restingGain * 1.8);
+
+    const far = { inside: true, normalizedX: 1, normalizedY: 1 };
+    for (let frame = 0; frame < 120; frame++) {
+      pass.render(renderer, camera, sources, 800, 600, 1 / 60, far);
+    }
+    expect(radii.getX(0)).toBeLessThan(nearbyRadius);
+    expect(gains.getX(0)).toBeLessThan(nearbyGain);
+    expect(spectra.getX(0) - nearbyAngle).toBeGreaterThan(0.5);
+    expect(spectra.getY(0)).toBe(nearbyHue);
+    for (let index = 0; index < HERO_OPTICAL_FLARE_ANCHORS.length; index++) {
+      expect(spectra.getY(index)).toBe(0);
+    }
+    // Mouse response changes only light, never the projected model attachment.
+    expect(centers.getX(0)).toBe(centerX);
+    expect(centers.getY(0)).toBe(centerY);
+    pass.dispose();
+  });
+
+  it("eases back on pointer exit and immediately rests when interaction is disabled", () => {
+    const camera = createCamera();
+    const sources = createSources(createSource());
+    const { renderer, render } = createRenderer();
+    const pass = createHeroOpticalFlarePass();
+    pass.render(renderer, camera, sources, 800, 600);
+    const [renderedScene] = render.mock.calls[0] as [Scene];
+    const mesh = renderedScene.children[0] as Mesh;
+    const radii = mesh.geometry.getAttribute("aRadius");
+    const spectra = mesh.geometry.getAttribute("aSpectrum");
+    const restingRadius = radii.getX(0);
+    const pointer = { inside: true, normalizedX: 0.6, normalizedY: 0.4 };
+    for (let frame = 0; frame < 120; frame++) {
+      pass.render(renderer, camera, sources, 800, 600, 1 / 60, pointer);
+    }
+    const activeRadius = radii.getX(0);
+    pass.render(renderer, camera, sources, 800, 600, 1 / 60, { ...pointer, inside: false });
+    expect(radii.getX(0)).toBeLessThan(activeRadius);
+    expect(radii.getX(0)).toBeGreaterThan(restingRadius);
+    for (let frame = 0; frame < 120; frame++) {
+      pass.render(renderer, camera, sources, 800, 600, 1 / 60, { ...pointer, inside: false });
+    }
+    expect(radii.getX(0)).toBeCloseTo(restingRadius, 4);
+    expect(spectra.getX(0)).toBeCloseTo(0, 4);
+
+    pass.render(renderer, camera, sources, 800, 600, 1 / 60, pointer);
+    expect(spectra.getX(0)).toBeGreaterThan(0);
+    pass.render(renderer, camera, sources, 800, 600, 1 / 60, null);
+    expect(radii.getX(0)).toBe(restingRadius);
+    expect(spectra.getX(0)).toBe(0);
+    expect(spectra.getY(0)).toBe(0);
+    pass.dispose();
+  });
+
+  it("caps interaction easing after a long paused frame", () => {
+    const camera = createCamera();
+    const sources = createSources(createSource());
+    const { renderer, render } = createRenderer();
+    const pass = createHeroOpticalFlarePass();
+    pass.render(renderer, camera, sources, 800, 600, 30, {
+      inside: true, normalizedX: 10, normalizedY: 10,
+    });
+    const [renderedScene] = render.mock.calls[0] as [Scene];
+    const mesh = renderedScene.children[0] as Mesh;
+    const angle = mesh.geometry.getAttribute("aSpectrum").getX(0);
+    expect(angle).toBeGreaterThan(0);
+    expect(angle).toBeLessThan(0.3);
+    pass.dispose();
+  });
+
   it("suppresses sources behind the camera or facing away from it", () => {
     const camera = createCamera();
     const { renderer, render } = createRenderer();

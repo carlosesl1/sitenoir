@@ -16,6 +16,7 @@ import {
   Vector2,
   WebGLRenderTarget,
 } from "three";
+import { pointerStore } from "@/features/pointer/pointer-store";
 import { useTheme } from "@/features/theme/ThemeProvider";
 import { resolveFlareSourceLayer } from "@/scene/contact-flare-layer";
 import { useHeroFluid } from "@/scene/HeroFluidProvider";
@@ -36,6 +37,7 @@ import { sceneTransitionStore } from "@/scene/scene-transition";
 
 interface HeroLensFlareProps {
   readonly active: boolean;
+  readonly reducedMotion: boolean;
   readonly resolutionScale: number;
 }
 
@@ -77,7 +79,7 @@ function readToken(name: string): Color {
   return new Color(value);
 }
 
-export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
+export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLensFlareProps) {
   const fluid = useHeroFluid();
   const opticalSources = useHeroOpticalFlareSources();
   const opticalPass = useMemo(createHeroOpticalFlarePass, []);
@@ -244,7 +246,7 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
   useEffect(() => () => flareMaterial.dispose(), [flareMaterial]);
   useEffect(() => () => geometry.dispose(), [geometry]);
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     const transition = sceneTransitionStore.getSnapshot();
     const flareEnabled =
       active && transition.sourceVisible && (!transition.solid || transition.contactVisible);
@@ -254,7 +256,15 @@ export function HeroLensFlare({ active, resolutionScale }: HeroLensFlareProps) {
     const legacyFlareEnabled = flareEnabled && !opticalEnabled;
     const renderOpticalFlares = () => {
       if (opticalEnabled && opticalSources) {
-        opticalPass.render(gl, camera, opticalSources, size.width, size.height);
+        opticalPass.render(
+          gl,
+          camera,
+          opticalSources,
+          size.width,
+          size.height,
+          delta,
+          reducedMotion || size.width < 768 ? null : pointerStore.getSnapshot(),
+        );
       }
     };
     const edgeSourceEnabled = legacyFlareEnabled && !transition.contactVisible;
