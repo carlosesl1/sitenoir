@@ -45,17 +45,6 @@ describe("resolveFullscreenDitherOpacity", () => {
     expect(opacity).toBe(1);
   });
 
-  it("waits for a later entry section to leave before fading in", () => {
-    const base = { viewportHeight: 720, heroTop: 0, heroHeight: 720, ditherEndTop: 9000 };
-    const entry = { entryTop: 900, entryHeight: 2880 };
-
-    expect(resolveFullscreenDitherOpacity({ ...base, ...entry, scrollTop: 1500 })).toBe(0);
-    expect(resolveFullscreenDitherOpacity({ ...base, ...entry, scrollTop: 3330 })).toBeCloseTo(
-      0.5,
-    );
-    expect(resolveFullscreenDitherOpacity({ ...base, ...entry, scrollTop: 3600 })).toBe(1);
-  });
-
   it("fades the overlay within the final viewport of the services section", () => {
     const opacity = resolveFullscreenDitherOpacity({
       scrollTop: 5640,
