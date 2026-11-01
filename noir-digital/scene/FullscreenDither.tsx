@@ -54,12 +54,17 @@ interface DitherMetrics {
   readonly contactHeight: number;
   readonly contactTop: number;
   readonly ditherEndTop: number;
+  readonly entryHeight: number;
+  readonly entryTop: number;
   readonly heroHeight: number;
   readonly heroTop: number;
 }
 
 interface DitherOpacityInput {
   readonly ditherEndTop: number;
+  /** Section whose exit fades the dither in; defaults to the hero. */
+  readonly entryHeight?: number;
+  readonly entryTop?: number;
   readonly heroHeight: number;
   readonly heroTop: number;
   readonly scrollTop: number;
@@ -83,9 +88,11 @@ export function resolveFullscreenDitherOpacity({
   heroTop,
   heroHeight,
   ditherEndTop,
+  entryTop = heroTop,
+  entryHeight = heroHeight,
 }: DitherOpacityInput): number {
   const safeViewportHeight = Math.max(1, viewportHeight);
-  const heroBottomInViewport = heroTop - scrollTop + heroHeight;
+  const heroBottomInViewport = entryTop - scrollTop + entryHeight;
   const entryDistance = Math.max(1, safeViewportHeight * 0.75);
   const entryProgress = clamp01((safeViewportHeight - heroBottomInViewport) / entryDistance);
   const exitProgress = clamp01((ditherEndTop - scrollTop) / safeViewportHeight);
@@ -106,6 +113,8 @@ export function FullscreenDither() {
     contactHeight: 1,
     contactTop: Number.POSITIVE_INFINITY,
     ditherEndTop: 1,
+    entryHeight: 1,
+    entryTop: 0,
     heroHeight: 1,
     heroTop: 0,
   });
@@ -138,16 +147,21 @@ export function FullscreenDither() {
     const aiServices = document.getElementById("ai-services");
     const contact = document.getElementById("contact");
     if (!hero || !aiServices || !contact) return;
+    // The mission story keeps the hero background visible, so the dither starts after it.
+    const entry = document.getElementById("missao") ?? hero;
 
     const measure = () => {
       const scrollTop = window.scrollY;
       const heroRect = hero.getBoundingClientRect();
       const aiServicesRect = aiServices.getBoundingClientRect();
       const contactRect = contact.getBoundingClientRect();
+      const entryRect = entry.getBoundingClientRect();
       metricsRef.current = {
         contactHeight: contactRect.height,
         contactTop: contactRect.top + scrollTop,
         ditherEndTop: aiServicesRect.bottom + scrollTop,
+        entryHeight: entryRect.height,
+        entryTop: entryRect.top + scrollTop,
         heroTop: heroRect.top + scrollTop,
         heroHeight: heroRect.height,
       };
@@ -156,6 +170,7 @@ export function FullscreenDither() {
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(hero);
+    observer.observe(entry);
     observer.observe(aiServices);
     observer.observe(contact);
     window.addEventListener("resize", measure, { passive: true });

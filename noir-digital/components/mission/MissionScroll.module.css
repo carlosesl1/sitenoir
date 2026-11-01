@@ -2,8 +2,14 @@
   position: relative;
   z-index: 2;
   height: var(--mission-story-height, 400svh);
-  background: var(--surface-primary);
+  /* Lets the persistent hero background show through, slightly dimmed. */
+  background: color-mix(in srgb, var(--surface-primary) 55%, transparent);
   color: var(--text-primary);
+}
+
+:global(html[data-effects="off"]) .story,
+:global(html[data-effects="failed"]) .story {
+  background: var(--surface-primary);
 }
 
 .stickyFrame {
