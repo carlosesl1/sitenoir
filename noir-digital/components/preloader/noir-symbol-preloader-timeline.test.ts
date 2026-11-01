@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  advanceNoirSymbolClock,
   NOIR_SYMBOL_DURATION_MS,
   NOIR_SYMBOL_FRONTS,
+  NOIR_SYMBOL_MAX_FRAME_DELTA_MS,
   resolveNoirSymbolFrame,
 } from "@/components/preloader/noir-symbol-preloader-timeline";
 
@@ -48,5 +50,12 @@ describe("NOIR symbol preloader timeline", () => {
         sample.fillOpacity,
       ].every((value) => value >= 0 && value <= 1),
     ).toBe(true);
+  });
+
+  it("pauses instead of skipping when the main thread stalls", () => {
+    expect(advanceNoirSymbolClock(0, null, 5_000)).toBe(0);
+    expect(advanceNoirSymbolClock(100, 1_000, 1_016)).toBe(116);
+    expect(advanceNoirSymbolClock(100, 1_000, 4_000)).toBe(100 + NOIR_SYMBOL_MAX_FRAME_DELTA_MS);
+    expect(advanceNoirSymbolClock(100, 1_000, 900)).toBe(100);
   });
 });

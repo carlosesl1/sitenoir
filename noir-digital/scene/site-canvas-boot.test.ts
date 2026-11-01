@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { SITE_CANVAS_BOOT_DELAY_MS, scheduleSiteCanvasBoot } from "@/scene/site-canvas-boot";
+import {
+  ENTRY_SYMBOL_WAIT_TIMEOUT_MS,
+  SITE_CANVAS_BOOT_DELAY_MS,
+  scheduleSiteCanvasBoot,
+  waitForEntrySymbol,
+} from "@/scene/site-canvas-boot";
 
 describe("site canvas boot", () => {
   beforeEach(() => {
@@ -49,6 +54,31 @@ describe("site canvas boot", () => {
     });
 
     vi.advanceTimersByTime(SITE_CANVAS_BOOT_DELAY_MS);
+    expect(activate).toHaveBeenCalledTimes(1);
+  });
+
+  it("mounts the entry scene only after the preloader symbol finishes", async () => {
+    const activate = vi.fn();
+    const cleanup = waitForEntrySymbol({ activate, root: document.documentElement });
+
+    await vi.advanceTimersByTimeAsync(ENTRY_SYMBOL_WAIT_TIMEOUT_MS - 1);
+    expect(activate).not.toHaveBeenCalled();
+
+    document.documentElement.dataset["entrySymbolComplete"] = "true";
+    await vi.advanceTimersByTimeAsync(0);
+    expect(activate).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(ENTRY_SYMBOL_WAIT_TIMEOUT_MS);
+    expect(activate).toHaveBeenCalledTimes(1);
+    cleanup();
+    delete document.documentElement.dataset["entrySymbolComplete"];
+  });
+
+  it("falls back to a timeout so the entry scene never stays blocked", async () => {
+    const activate = vi.fn();
+    waitForEntrySymbol({ activate, root: document.documentElement });
+
+    await vi.advanceTimersByTimeAsync(ENTRY_SYMBOL_WAIT_TIMEOUT_MS);
     expect(activate).toHaveBeenCalledTimes(1);
   });
 });

@@ -57,11 +57,27 @@ describe("NoirSymbolPreloaderMark", () => {
     expect(window.requestAnimationFrame).not.toHaveBeenCalled();
   });
 
+  it("pauses through a main-thread stall instead of jumping to the end", () => {
+    const onComplete = vi.fn();
+    const view = render(<NoirSymbolPreloaderMark reducedMotion={false} onComplete={onComplete} />);
+
+    act(() => frames.shift()?.(1_000));
+    act(() => frames.shift()?.(4_500));
+
+    expect(view.getByTestId("noir-symbol-preloader")).toHaveAttribute("data-symbol-phase", "void");
+    expect(onComplete).not.toHaveBeenCalled();
+    expect(frames).toHaveLength(1);
+  });
+
   it("completes once and leaves the solid mark visible", () => {
     const onComplete = vi.fn();
     const view = render(<NoirSymbolPreloaderMark reducedMotion={false} onComplete={onComplete} />);
 
-    act(() => frames.shift()?.(2_700));
+    let now = 1_000;
+    for (let frame = 0; frames.length > 0 && frame < 400; frame += 1) {
+      act(() => frames.shift()?.(now));
+      now += 16;
+    }
 
     expect(view.getByTestId("noir-symbol-preloader")).toHaveAttribute(
       "data-symbol-phase",

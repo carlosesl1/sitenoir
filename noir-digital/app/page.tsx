@@ -4,6 +4,7 @@ import { AiServicesSection } from "@/components/ai-services/AiServicesSection";
 import { ContactFooter } from "@/components/contact/ContactFooter";
 import { SiteHeader } from "@/components/header/SiteHeader";
 import { Hero } from "@/components/hero/Hero";
+import { MissionScroll } from "@/components/mission/MissionScroll";
 import { EntryPreloader } from "@/components/preloader/EntryPreloader";
 import { PrinciplesStory } from "@/components/principles/PrinciplesStory";
 import { TrustStrip } from "@/components/trust/TrustStrip";
@@ -28,6 +29,7 @@ export default function Page() {
           <main id="main-content">
             <Hero />
             <TrustStrip />
+            <MissionScroll />
             <SelectedWork />
             <AiServicesSection />
             <PrinciplesStory />

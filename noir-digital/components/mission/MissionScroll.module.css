@@ -1,0 +1,132 @@
+.story {
+  position: relative;
+  z-index: 2;
+  height: var(--mission-story-height, 400svh);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+.stickyFrame {
+  --track-x: 1;
+  --fill-statement: 0;
+  --fill-detail: 0;
+
+  position: sticky;
+  top: 0;
+  height: var(--mission-viewport-height, 100svh);
+  overflow: clip;
+}
+
+.track {
+  display: flex;
+  width: 200vw;
+  height: 100%;
+  transform: translate3d(calc(var(--track-x) * 100vw), 0, 0);
+  will-change: transform;
+}
+
+.panel {
+  box-sizing: border-box;
+  display: flex;
+  width: 100vw;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(24px, 4svh, 40px);
+  padding-inline: var(--site-grid-inset);
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: var(--type-label);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.statement,
+.detail {
+  max-width: 15em;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variation-settings:
+    "wght" 700,
+    "wdth" 120;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.statement {
+  --fill: var(--fill-statement);
+
+  font-size: clamp(2.5rem, 6.4vw, 7rem);
+  line-height: 0.98;
+}
+
+.detail {
+  --fill: var(--fill-detail);
+
+  max-width: 22em;
+  font-size: clamp(1.75rem, 4.2vw, 4.5rem);
+  line-height: 1.04;
+}
+
+/* Each word lights up once the fill passes its position in the reading order. */
+.word {
+  opacity: clamp(0.16, calc(var(--fill) * var(--word-count) - var(--word-index)), 1);
+}
+
+.story[data-mission-static="true"],
+:global(html[data-effects="off"]) .story,
+:global(html[data-effects="failed"]) .story {
+  height: auto;
+}
+
+.story[data-mission-static="true"] .stickyFrame,
+:global(html[data-effects="off"]) .stickyFrame,
+:global(html[data-effects="failed"]) .stickyFrame {
+  position: static;
+  height: auto;
+}
+
+.story[data-mission-static="true"] .track,
+:global(html[data-effects="off"]) .track,
+:global(html[data-effects="failed"]) .track {
+  width: auto;
+  flex-direction: column;
+  transform: none;
+}
+
+.story[data-mission-static="true"] .panel,
+:global(html[data-effects="off"]) .panel,
+:global(html[data-effects="failed"]) .panel {
+  width: auto;
+  padding-block: clamp(64px, 12svh, 120px) 0;
+}
+
+.story[data-mission-static="true"] .panel:last-child,
+:global(html[data-effects="off"]) .panel:last-child,
+:global(html[data-effects="failed"]) .panel:last-child {
+  padding-bottom: clamp(64px, 12svh, 120px);
+}
+
+.story[data-mission-static="true"] .word,
+:global(html[data-effects="off"]) .word,
+:global(html[data-effects="failed"]) .word {
+  opacity: 1;
+}
+
+@media (max-width: 767px) {
+  .statement {
+    max-width: none;
+    /* The longest word spans ~11em, so the size tracks the 16px-gutter column. */
+    font-size: clamp(1.75rem, 7.8vw, 3.5rem);
+  }
+
+  .detail {
+    max-width: none;
+    font-size: clamp(1.5rem, 7.2vw, 2.25rem);
+  }
+}

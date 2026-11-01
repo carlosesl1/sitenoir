@@ -35,7 +35,7 @@ describe("impeccable critique regressions", () => {
     const contactCss = read("components/contact/ContactPage.module.css");
 
     expect(heroCss).toMatch(
-      /@media \(min-width: 768px\)[\s\S]*\.description\s*\{[^}]*font-size:\s*1rem/,
+      /@media \(min-width: 768px\)[\s\S]*\.promise\s*\{[^}]*font-size:\s*clamp\(0\.75rem, 1vw, 0\.875rem\)/,
     );
     expect(workCss).toMatch(/\.statement p\s*\{[^}]*font-size:\s*var\(--type-micro\)/);
     expect(workCss).toMatch(/\.serviceHeading span\s*\{[^}]*font-size:\s*var\(--type-micro\)/);

@@ -1,4 +1,19 @@
 export const NOIR_SYMBOL_DURATION_MS = 2_600;
+export const NOIR_SYMBOL_MAX_FRAME_DELTA_MS = 34;
+
+/**
+ * Advances the symbol clock by the time since the previous frame, capped so a
+ * blocked main thread pauses the animation instead of skipping ahead.
+ */
+export function advanceNoirSymbolClock(
+  elapsedMs: number,
+  previousFrameAt: number | null,
+  now: number,
+): number {
+  if (previousFrameAt === null) return elapsedMs;
+  const delta = Math.max(0, now - previousFrameAt);
+  return elapsedMs + Math.min(delta, NOIR_SYMBOL_MAX_FRAME_DELTA_MS);
+}
 
 export const NOIR_SYMBOL_FRONTS = [
   { name: "upper-right", contour: 0, seed: 0, end: 0.1344, x: 141.536, y: 58.991 },

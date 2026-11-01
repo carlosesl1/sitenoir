@@ -14,7 +14,7 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: auto 1fr auto;
   grid-template-areas:
-    "disciplines disciplines disciplines . promise promise promise . description description description description"
+    "disciplines disciplines disciplines . promise promise promise . . . . ."
     ". . . . . . . . . . . ."
     "headline headline headline headline headline headline headline headline headline headline headline headline";
   column-gap: var(--grid-gutter);
@@ -24,7 +24,6 @@
 
 .disciplines,
 .promise,
-.description,
 .headline {
   margin: 0;
 }
@@ -46,20 +45,6 @@
   grid-area: promise;
   padding-inline: 8px;
   flex-direction: column;
-  font-family: var(--font-interface);
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  letter-spacing: 0;
-}
-
-.description {
-  display: flex;
-  grid-area: description;
-  flex-direction: column;
-  max-width: 34rem;
-  padding-inline: 8px;
-  color: var(--text-primary);
   font-family: var(--font-interface);
   font-size: 1rem;
   font-weight: 400;
@@ -115,41 +100,18 @@
     grid-template-areas:
       "headline headline"
       ". ."
-      "description description";
+      "action action";
     padding: 76px 16px 24px;
   }
 
   .actionRow {
     display: flex;
-    grid-area: description;
+    grid-area: action;
     align-self: end;
     flex-direction: column;
     gap: clamp(14px, 1.8svh, 18px);
     margin-bottom: 24px;
     padding-inline: 8px;
-  }
-
-  .description {
-    display: block;
-    align-self: start;
-    max-width: 28rem;
-    padding-inline: 0;
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-
-  .description > [data-hero-scramble="true"] {
-    display: inline;
-  }
-
-  .description > [data-hero-scramble="true"] [data-scramble-visual="true"] {
-    position: static;
-  }
-
-  .description
-    > [data-hero-scramble="true"][data-scramble-active="true"]
-    [data-scramble-measure="true"] {
-    display: none;
   }
 
   .heroCtaSlot {
@@ -243,29 +205,6 @@
     transform: translateX(-50%);
   }
 
-  .actionRow::before {
-    align-self: stretch;
-    grid-column: 2;
-    grid-row: 1;
-    width: 1px;
-    background: var(--border-default);
-    content: "";
-  }
-
-  .description {
-    display: flex;
-    grid-area: auto;
-    grid-column: 1;
-    max-width: none;
-    padding: 0;
-    padding-right: 0;
-    font-size: 1rem;
-    line-height: 1.55;
-    letter-spacing: 0;
-    text-align: right;
-    white-space: nowrap;
-  }
-
   .heroCtaSlot {
     box-sizing: border-box;
     display: block;
@@ -343,10 +282,5 @@
     max-width: 760px;
     grid-template-columns: minmax(0, 1fr) 1px minmax(200px, 220px);
     column-gap: 16px;
-  }
-
-  .description {
-    font-size: 0.875rem;
-    letter-spacing: -0.02em;
   }
 }

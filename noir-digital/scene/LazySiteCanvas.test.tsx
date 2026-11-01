@@ -21,6 +21,7 @@ describe("LazySiteCanvas", () => {
     vi.restoreAllMocks();
     window.history.replaceState({}, "", "/");
     delete document.documentElement.dataset["sceneReady"];
+    delete document.documentElement.dataset["entrySymbolComplete"];
     delete window.__NOIR_READY__;
     delete window.__NOIR_SCENE_STATUS__;
   });
@@ -52,10 +53,23 @@ describe("LazySiteCanvas", () => {
     expect(window.__NOIR_SCENE_STATUS__).toBe("disabled");
   });
 
+  it("waits for the entry symbol before mounting the scene", async () => {
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
+      getExtension: vi.fn(),
+    } as unknown as WebGLRenderingContext);
+
+    const view = render(<LazySiteCanvas preloadDuringEntry />);
+    expect(view.queryByTestId("mock-site-canvas")).not.toBeInTheDocument();
+
+    document.documentElement.dataset["entrySymbolComplete"] = "true";
+    await vi.waitFor(() => expect(view.getByTestId("mock-site-canvas")).toBeInTheDocument());
+  });
+
   it("passes the clean Canvas UI variant to the deferred scene by default", async () => {
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
       getExtension: vi.fn(),
     } as unknown as WebGLRenderingContext);
+    document.documentElement.dataset["entrySymbolComplete"] = "true";
 
     const view = render(<LazySiteCanvas preloadDuringEntry />);
 
