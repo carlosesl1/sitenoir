@@ -7,9 +7,7 @@
   padding: 140px 0 40px;
   margin-inline: auto;
   color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  line-height: 1.55;
+  font: var(--role-body);
 }
 .page[data-accent="together-yellow"] {
   --case-accent: #ffcc05;
@@ -41,8 +39,6 @@
 .page h1,
 .page h2,
 .page h3 {
-  font-family: var(--font-sans);
-  font-weight: 550;
   text-wrap: balance;
 }
 .page section[id] {
@@ -63,8 +59,8 @@
   justify-content: space-between;
   align-items: center;
   color: var(--case-muted);
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 .wayfinding > span {
@@ -90,9 +86,9 @@
 .closing h2 {
   max-width: 22ch;
   margin: 0;
-  font-size: clamp(2.5rem, 4.6vw, 4.5rem);
-  line-height: 1.04;
-  letter-spacing: -0.035em;
+  font: var(--role-display-m);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 .closingAction {
   width: 272px;
@@ -125,15 +121,15 @@
 }
 .nextCopy > span {
   color: var(--case-muted);
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 .nextCopy h2 {
   margin: 24px 0;
-  font-size: clamp(2rem, 3.3vw, 3.5rem);
-  line-height: 1.08;
-  letter-spacing: -0.025em;
+  font: var(--role-display-m);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 .nextCopy > svg {
   width: 32px;
@@ -147,7 +143,7 @@
   gap: 20px;
   justify-content: space-between;
   color: var(--case-muted);
-  font-size: 0.875rem;
+  font: var(--role-note);
 }
 @media (max-width: 1023px) {
   .page {
@@ -164,7 +160,7 @@
   }
   .wayfinding {
     margin-bottom: 28px;
-    font-size: 0.625rem;
+    flex-wrap: wrap;
     gap: 16px;
   }
   .wayfinding a {
@@ -184,18 +180,9 @@
     margin: 16px 0;
   }
   .navigationFooter {
+    flex-direction: column;
     align-items: start;
-  }
-  .navigationFooter a {
-    max-width: 47%;
-    font-size: 0.8125rem;
-    gap: 8px;
-  }
-  .navigationFooter a:last-child {
-    text-align: right;
-  }
-  .navigationFooter svg {
-    flex-shrink: 0;
+    gap: 12px;
   }
   .closingAction {
     width: min(100%, 300px);

@@ -8,17 +8,14 @@
 .details dt {
   margin-bottom: 8px;
   color: var(--case-muted, var(--text-secondary));
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  line-height: 1.5;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
 .details dd {
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.4;
-  font-weight: 500;
+  font: var(--role-body);
 }
 
 .back {

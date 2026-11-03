@@ -37,8 +37,8 @@ describe("impeccable critique regressions", () => {
     expect(workCss).toMatch(/\.statement p\s*\{[^}]*font:\s*var\(--role-label\)/);
     expect(workCss).toMatch(/\.serviceHeading span\s*\{[^}]*font:\s*var\(--role-label\)/);
     expect(workCss).toMatch(/\.projectMeta > span:last-child\s*\{[^}]*font:\s*var\(--role-label\)/);
-    expect(contactCss).toMatch(/\.feedback\s*\{[^}]*font-size:\s*0\.875rem/);
-    expect(contactCss).toMatch(/\.privacyNote\s*\{[^}]*font-size:\s*0\.8125rem/);
+    expect(contactCss).toMatch(/\.feedback\s*\{[^}]*font:\s*var\(--role-note\)/);
+    expect(contactCss).toMatch(/\.privacyNote\s*\{[^}]*font:\s*var\(--role-note\)/);
   });
 
   it("does not compress case and contact display type beyond the system floor", () => {

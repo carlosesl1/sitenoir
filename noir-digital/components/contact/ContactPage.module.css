@@ -70,27 +70,20 @@
 .recommended,
 .whatsAppSubtitle,
 .information {
-  font-family: var(--font-mono);
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
 .sectionLabel,
 .panelHeading {
-  font-size: var(--type-micro);
-  letter-spacing: 0.055em;
   color: var(--text-secondary);
 }
 
 .intro h1 {
-  max-width: 9.2ch;
   margin: clamp(28px, 3.4vh, 42px) 0 24px;
-  font-family: var(--font-sans);
-  font-size: clamp(1.5rem, 13.4cqi, 5.2rem);
-  font-stretch: 120%;
-  font-weight: var(--weight-display);
-  font-variation-settings: "wdth" 120;
-  line-height: 0.9;
-  letter-spacing: var(--tracking-display);
+  font: var(--role-display-m);
+  font-variation-settings: var(--wdth-wide);
   text-transform: uppercase;
   text-wrap: balance;
 }
@@ -102,9 +95,7 @@
 .intro > p {
   max-width: 34ch;
   margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
-  line-height: 1.65;
+  font: var(--role-body);
   color: var(--text-secondary);
 }
 
@@ -151,10 +142,8 @@
 
 .brandTagline {
   max-width: 27ch;
-  font-family: var(--font-mono);
-  font-size: clamp(0.5625rem, 0.62vw, 0.6875rem);
-  line-height: 1.45;
-  letter-spacing: 0.04em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   color: var(--text-secondary);
 }
 
@@ -192,11 +181,6 @@
   gap: 8px;
 }
 
-.field > span {
-  font-size: var(--type-micro);
-  letter-spacing: 0.035em;
-}
-
 .field input,
 .field select,
 .field textarea {
@@ -206,8 +190,7 @@
   outline: none;
   background: rgb(11 13 14 / 78%);
   color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 1rem;
+  font: var(--role-body);
   transition:
     border-color var(--duration-micro) var(--ease-standard),
     background var(--duration-micro) var(--ease-standard);
@@ -223,7 +206,6 @@
   min-height: 148px;
   resize: vertical;
   padding: 14px;
-  line-height: 1.55;
 }
 
 .field input:hover,
@@ -289,7 +271,6 @@
 
 .submit,
 .whatsAppAction {
-  font-family: var(--font-mono);
   cursor: pointer;
 }
 
@@ -324,15 +305,9 @@
 
 .feedback {
   margin: 0;
-  font-size: 0.875rem;
-  line-height: 1.55;
-  letter-spacing: 0.025em;
-}
-
-.feedback {
   padding-left: 12px;
   border-left: 3px solid currentColor;
-  font-family: var(--font-mono);
+  font: var(--role-note);
 }
 
 .success {
@@ -340,7 +315,7 @@
 }
 
 .error {
-  color: #ff8a72;
+  color: var(--color-spectral-red);
 }
 
 .privacyNote {
@@ -348,10 +323,7 @@
   align-items: flex-start;
   gap: 10px;
   margin: 0;
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  line-height: 1.45;
-  letter-spacing: 0.025em;
+  font: var(--role-note);
   color: var(--text-secondary);
 }
 
@@ -419,40 +391,31 @@
   display: none;
 }
 
+/* The same halftone light as the AI cards, at its own size so the faintest dots survive. */
 .whatsAppPanel::before {
   position: absolute;
-  top: -10%;
-  right: -9%;
+  top: -46px;
+  right: -46px;
   z-index: 0;
-  width: 49%;
-  aspect-ratio: 1;
-  background: radial-gradient(circle, rgb(192 254 4 / 22%) 0 0.9px, transparent 1.25px);
-  background-size: 5px 5px;
+  width: 280px;
+  height: 280px;
+  background-image: var(--spectrum-linear);
   content: "";
-  opacity: 0.52;
-  transform: rotate(16deg);
-  -webkit-mask-image: linear-gradient(145deg, #000 12%, rgb(0 0 0 / 92%) 50%, transparent 92%);
-  mask-image: linear-gradient(145deg, #000 12%, rgb(0 0 0 / 92%) 50%, transparent 92%);
+  -webkit-mask: url("/brand/ai-halftone.svg") center / contain no-repeat;
+  mask: url("/brand/ai-halftone.svg") center / contain no-repeat;
 }
 
 .recommended {
   position: relative;
   z-index: 1;
-  font-family: var(--font-sans);
-  font-size: clamp(0.6875rem, 0.62rem + 0.1vw, 0.75rem);
-  font-weight: 700;
-  letter-spacing: 0.065em;
   color: var(--text-primary);
 }
 
 .whatsAppPanel h3 {
   max-width: 100%;
   margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(2rem, 9.5cqi, 2.65rem);
-  font-weight: 720;
-  line-height: 0.9;
-  letter-spacing: var(--tracking-display);
+  font: var(--role-title);
+  font-variation-settings: var(--wdth-wide);
   overflow-wrap: anywhere;
 }
 
@@ -487,10 +450,6 @@
 
 .whatsAppSubtitle {
   margin: 7px 0 0;
-  font-family: var(--font-sans);
-  font-size: clamp(0.6875rem, 0.62rem + 0.1vw, 0.75rem);
-  font-weight: 700;
-  letter-spacing: 0.055em;
   color: rgb(244 244 240 / 84%);
 }
 
@@ -500,9 +459,7 @@
   min-width: 0;
   max-width: min(24ch, calc(100% - var(--whatsapp-mark-size) - 12px));
   margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(0.75rem, 0.7rem + 0.4cqi, 0.875rem);
-  line-height: 1.55;
+  font: var(--role-note);
   color: rgb(168 173 178 / 78%);
   overflow-wrap: break-word;
 }
@@ -550,13 +507,11 @@
 
 .information dl div {
   display: grid;
-  grid-template-columns: minmax(92px, 0.8fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(92px, 0.6fr) minmax(0, 1.4fr);
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   min-height: 38px;
   border-top: 1px solid var(--border-default);
-  font-size: var(--type-micro);
-  letter-spacing: 0.025em;
 }
 
 .information dt {
@@ -566,7 +521,8 @@
 .information dd {
   min-width: 0;
   margin: 0;
-  font-family: var(--font-sans);
+  font: var(--role-note);
+  letter-spacing: var(--tracking-none);
   text-align: right;
   text-transform: none;
 }
@@ -600,11 +556,9 @@
     color-mix(in srgb, var(--surface-elevated) 42%, transparent),
     transparent 74%
   );
-  font-family: var(--font-sans);
+  font: var(--role-note);
+  letter-spacing: var(--tracking-none);
   color: var(--text-secondary);
-  font-size: var(--type-micro);
-  line-height: 1.45;
-  letter-spacing: 0.025em;
   text-transform: none;
 }
 
@@ -647,8 +601,9 @@
 }
 
 @media (max-width: 1199px) {
+  /* The floor keeps the headline's longest word inside its column on small tablets. */
   .layout {
-    grid-template-columns: 34% 66%;
+    grid-template-columns: minmax(280px, 34%) minmax(0, 1fr);
   }
 
   .formPanel {
@@ -703,7 +658,6 @@
 
   .intro h1 {
     margin-top: 54px;
-    font-size: clamp(2.55rem, 11vw, 4.4rem);
   }
 
   .mobileWhatsAppPanel {
@@ -768,10 +722,6 @@
 }
 
 @media (max-width: 359px) {
-  .intro h1 {
-    font-size: 2.2rem;
-  }
-
   .information dl div {
     display: block;
     padding: 12px 0;

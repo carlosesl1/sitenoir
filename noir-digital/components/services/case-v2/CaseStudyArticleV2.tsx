@@ -66,7 +66,7 @@ export function CaseStudyArticleV2({
       <section className={styles["closing"]}>
         <h2>{t(study.cta.body)}</h2>
         <div className={styles["closingAction"]}>
-          <SpectrumContactCta href={contactHref} label={study.cta.label} />
+          <SpectrumContactCta emphasis href={contactHref} label={study.cta.label} />
         </div>
       </section>
 

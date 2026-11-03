@@ -14,12 +14,20 @@ const sourceFiles = SOURCE_GLOBS.flatMap((pattern) => globSync(pattern)).filter(
 const MIGRATED_CSS = [
   "components/ai-services/AiServicesSection.module.css",
   "components/contact/ContactFooter.module.css",
+  "components/contact/ContactPage.module.css",
   "components/contact/FloatingWhatsApp.module.css",
   "components/contact/SpectrumContactCta.module.css",
   "components/header/Header.module.css",
   "components/hero/Hero.module.css",
+  "components/legal/LegalDocument.module.css",
   "components/mission/MissionScroll.module.css",
   "components/principles/PrinciplesStory.module.css",
+  "components/services/case-v2/CaseDetails.module.css",
+  "components/services/case-v2/CaseMediaV2.module.css",
+  "components/services/case-v2/CaseStudyArticleV2.module.css",
+  "components/services/case-v2/GoogleCaseLayout.module.css",
+  "components/services/case-v2/SiteCaseLayout.module.css",
+  "components/services/case-v2/VideoCaseLayout.module.css",
   "components/trust/TrustStrip.module.css",
   "components/work/SelectedWork.module.css",
 ];
@@ -84,7 +92,8 @@ describe("brand system", () => {
   });
 
   it("keeps lime out of the palette: the brand is black, white light and spectrum", () => {
-    const lime = /#(c0fe04|d7ff21|d9ff3c|afe900|d6ff38|b7ef04|98ca00|dfff81|607f02)\b/i;
+    const lime =
+      /#(c0fe04|d7ff21|d9ff3c|afe900|d6ff38|b7ef04|98ca00|dfff81|607f02)\b|rgba?\(\s*192[ ,]+254[ ,]+4\b/i;
     expect(sourceFiles.filter((file) => lime.test(read(file)))).toEqual([]);
   });
 

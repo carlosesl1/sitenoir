@@ -47,20 +47,15 @@ afterEach(() => {
 });
 
 describe("ContactPage", () => {
-  it("sizes the long headline from the invitation column instead of the viewport", () => {
+  it("uses the type roles for the headline and the form fields", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/ContactPage.module.css"),
       "utf8",
     );
 
-    expect(css).toMatch(/\.intro\s*\{[^}]*container-type:\s*inline-size/);
-    expect(css).toMatch(/\.intro h1\s*\{[^}]*font-size:\s*clamp\(1\.5rem, 13\.4cqi, 5\.2rem\)/);
+    expect(css).toMatch(/\.intro h1\s*\{[^}]*font:\s*var\(--role-display-m\)/);
     expect(css).toMatch(
-      /@media \(max-width: 767px\)[\s\S]*\.intro h1\s*\{[^}]*font-size:\s*clamp\(2\.55rem, 11vw, 4\.4rem\)/,
-    );
-    expect(css).toMatch(/\.intro h1\s*\{[^}]*letter-spacing:\s*var\(--tracking-display\)/);
-    expect(css).toMatch(
-      /\.field input,[\s\S]*\.field select,[\s\S]*\.field textarea\s*\{[^}]*font-size:\s*1rem/,
+      /\.field input,[\s\S]*\.field select,[\s\S]*\.field textarea\s*\{[^}]*font:\s*var\(--role-body\)/,
     );
   });
 
@@ -158,30 +153,29 @@ describe("ContactPage", () => {
     expect(css).toMatch(/\.brandTagline\s*\{[^}]*max-width:\s*27ch/);
   });
 
-  it("uses TikTok Sans for the highlighted contact copy", () => {
+  it("gives each piece of contact copy its type role", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/ContactPage.module.css"),
       "utf8",
     );
 
-    expect(css).toMatch(/\.intro > p\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
-    expect(css).toMatch(/\.privacyNote\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
-    expect(css).toMatch(/\.information dd\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
-    expect(css).toMatch(/\.internationalTag\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
+    expect(css).toMatch(/\.intro > p\s*\{[^}]*font:\s*var\(--role-body\)/);
+    expect(css).toMatch(/\.privacyNote\s*\{[^}]*font:\s*var\(--role-note\)/);
+    expect(css).toMatch(/\.information dd\s*\{[^}]*font:\s*var\(--role-note\)/);
+    expect(css).toMatch(/\.internationalTag\s*\{[^}]*font:\s*var\(--role-note\)/);
     expect(css).toMatch(/\.internationalTag\s*\{[^}]*min-height:\s*62px/);
     expect(css).toMatch(
       /\.globalIcon\s*\{[^}]*right:\s*6px[^}]*bottom:\s*-26px[^}]*width:\s*132px[^}]*height:\s*auto[^}]*object-fit:\s*contain[^}]*opacity:\s*0\.58/,
     );
     expect(css).not.toMatch(/\.globalIcon\s*\{[^}]*mask-image:\s*radial-gradient/);
-    expect(css).toMatch(/\.recommended\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
-    expect(css).toMatch(/\.whatsAppSubtitle\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
-    expect(css).toMatch(/\.whatsAppPanel > p\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
+    expect(css).toMatch(
+      /\.recommended,\s*\.whatsAppSubtitle,\s*\.information\s*\{[^}]*font:\s*var\(--role-label\)/,
+    );
+    expect(css).toMatch(/\.whatsAppPanel > p\s*\{[^}]*font:\s*var\(--role-note\)/);
     expect(css).toMatch(
       /\.whatsAppPanel > p\s*\{[^}]*max-width:\s*min\(24ch, calc\(100% - var\(--whatsapp-mark-size\) - 12px\)\)/,
     );
-    expect(css).toMatch(
-      /\.whatsAppPanel h3\s*\{[^}]*font-size:\s*clamp\(2rem, 9\.5cqi, 2\.65rem\)/,
-    );
+    expect(css).toMatch(/\.whatsAppPanel h3\s*\{[^}]*font:\s*var\(--role-title\)/);
     expect(css).not.toMatch(/\.whatsAppActionSurface\s*\{[^}]*font-size/);
     expect(css).toMatch(/\.whatsAppActionSurface\s*\{[^}]*white-space:\s*nowrap/);
   });

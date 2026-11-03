@@ -8,24 +8,22 @@
 }
 .heroIntro {
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: clamp(32px, 6vw, 80px);
   align-items: end;
   margin-bottom: 16px;
 }
 .hero h1 {
-  max-width: 18ch;
   margin: 0;
-  font-size: clamp(3rem, 5.6vw, 6rem);
-  line-height: 1;
-  letter-spacing: -0.04em;
+  font: var(--role-display-l);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 .summary {
   max-width: 40ch;
   margin: 0 0 20px;
   color: var(--case-muted);
-  font-size: 1.125rem;
-  line-height: 1.6;
+  font: var(--role-lead);
 }
 .heroMedia figure > div {
   animation: reveal 900ms var(--ease-standard) both;
@@ -47,9 +45,9 @@
 .sectionHeading h2,
 .direction > h2 {
   margin: 0;
-  font-size: clamp(2rem, 3.6vw, 3.5rem);
-  line-height: 1.08;
-  letter-spacing: -0.03em;
+  font: var(--role-display-m);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 .sectionHeading h2 {
   max-width: 18ch;
@@ -57,7 +55,7 @@
 .sectionHeading > p {
   margin: 0;
   color: var(--case-muted);
-  font-size: 0.875rem;
+  font: var(--role-note);
   white-space: nowrap;
 }
 .campaign {
@@ -82,13 +80,12 @@
   padding-bottom: 16px;
   gap: 20px;
   align-items: start;
-  font-size: 0.8125rem;
-  line-height: 1.4;
+  font: var(--role-note);
 }
 .filmLabel > span:first-child {
   color: var(--case-muted);
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
 }
 .story {
   display: grid;
@@ -101,8 +98,7 @@
   max-width: 58ch;
   margin: 0;
   color: var(--case-muted);
-  font-size: 1.1875rem;
-  line-height: 1.7;
+  font: var(--role-lead);
 }
 .story div > p + p {
   margin-top: 20px;
@@ -124,14 +120,13 @@
 }
 .direction h3 {
   margin: 0 0 8px;
-  font-size: 1.5rem;
-  line-height: 1.2;
+  font: var(--role-subtitle);
+  letter-spacing: var(--tracking-tight);
 }
 .direction li p {
   max-width: 50ch;
   margin: 0;
   color: var(--case-muted);
-  font-size: 1rem;
 }
 .credit {
   display: grid;
@@ -155,22 +150,20 @@
 }
 .credit h2 {
   margin: 0;
-  font-size: clamp(3rem, 5vw, 5rem);
-  line-height: 1;
-  letter-spacing: -0.03em;
+  font: var(--role-display-m);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 .credit > div:last-child > p {
   max-width: 54ch;
   margin: 20px 0 0;
   color: var(--case-muted);
-  font-size: 1rem;
-  line-height: 1.6;
 }
 .credit > div:last-child > .creditLabel {
   margin-top: 12px;
   color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 .credit .creditRole {
@@ -194,14 +187,10 @@
   }
 }
 @media (max-width: 767px) {
-  .hero h1 {
-    font-size: clamp(2.625rem, 10.5vw, 4.5rem);
-  }
   .heroIntro {
     margin-bottom: 0;
   }
   .summary {
-    font-size: 1rem;
     margin-bottom: 16px;
   }
   .films {
@@ -232,9 +221,6 @@
   }
   .story {
     padding-top: 28px;
-  }
-  .story div > p {
-    font-size: 1.0625rem;
   }
   .credit {
     grid-template-columns: 1fr;
