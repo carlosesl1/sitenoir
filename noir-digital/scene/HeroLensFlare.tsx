@@ -74,16 +74,6 @@ function createFlareSourceTarget(): WebGLRenderTarget {
   });
 }
 
-const POINTER_SPECTRUM_TOKENS = [
-  "--color-noir-warm-white",
-  "--color-spectral-red",
-  "--color-spectral-orange",
-  "--color-spectral-yellow",
-  "--color-spectral-green",
-  "--color-spectral-blue",
-  "--color-spectral-violet",
-] as const;
-
 function readToken(name: string): Color {
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return new Color(value);
@@ -110,7 +100,7 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
     target.texture.generateMipmaps = false;
     return target;
   }, []);
-  const pointerSpectrum = useMemo(() => POINTER_SPECTRUM_TOKENS.map(readToken), []);
+  const pointerColor = useMemo(() => readToken("--color-noir-warm-white"), []);
   const tailColor = useMemo(
     () =>
       readToken(resolvedTheme === "dark" ? "--color-flare-tail-dark" : "--color-flare-tail-light"),
@@ -173,10 +163,10 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
           uDisplacementStrength: { value: HERO_FLUID_CONFIG.strength / 0.3 },
           uEffectEnabled: fluid.effectEnabled,
           uFlareEnabled: { value: 0 },
+          uPointerColor: { value: pointerColor },
           uPointerDotRadius: { value: 0.8 },
           uPointerOpacity: fluid.overlayEnabled,
           uPointerPixelSize: { value: 16 },
-          uPointerSpectrum: { value: pointerSpectrum },
           uResolution: fluid.resolution,
           uSimSize: fluid.simSize,
           uTrail: fluid.trail,
@@ -186,7 +176,7 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
         },
         vertexShader: HERO_POST_VERTEX_SHADER,
       }),
-    [baseTarget.texture, flareTarget.texture, fluid, pointerSpectrum],
+    [baseTarget.texture, flareTarget.texture, fluid, pointerColor],
   );
   const quad = useMemo(() => new Mesh(geometry, flareMaterial), [flareMaterial, geometry]);
 

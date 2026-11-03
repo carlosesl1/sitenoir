@@ -128,32 +128,9 @@
   transform: translate(-50%, -50%);
   overflow: visible;
   fill: none;
+  stroke: var(--text-primary);
   stroke-width: 2;
   vector-effect: non-scaling-stroke;
-}
-
-.principleOrbit ellipse:nth-child(6n + 1) {
-  stroke: var(--color-spectral-red);
-}
-
-.principleOrbit ellipse:nth-child(6n + 2) {
-  stroke: var(--color-spectral-orange);
-}
-
-.principleOrbit ellipse:nth-child(6n + 3) {
-  stroke: var(--color-spectral-yellow);
-}
-
-.principleOrbit ellipse:nth-child(6n + 4) {
-  stroke: var(--color-spectral-green);
-}
-
-.principleOrbit ellipse:nth-child(6n + 5) {
-  stroke: var(--color-spectral-blue);
-}
-
-.principleOrbit ellipse:nth-child(6n) {
-  stroke: var(--color-spectral-violet);
 }
 
 .statementGrid {

@@ -74,6 +74,7 @@
   inset: 0;
   z-index: -1;
   border-radius: 4px;
+  background-color: rgb(244 244 240 / 24%);
   background-position: 50% 50%;
   background-repeat: no-repeat;
   background-size: 100% 100%;
@@ -88,11 +89,7 @@
   content: "";
   opacity: 0;
   pointer-events: none;
-  background-image: conic-gradient(
-    from var(--optical-angle),
-    var(--spectrum-stops),
-    var(--color-spectral-red)
-  );
+  background-image: conic-gradient(from var(--optical-angle), var(--spectrum-glint));
   transition: opacity 180ms ease;
   -webkit-mask: var(--optical-contour-mask);
   mask: var(--optical-contour-mask);
@@ -133,11 +130,7 @@
   position: absolute;
   inset: -2px;
   z-index: -2;
-  background-image: conic-gradient(
-    from var(--optical-angle),
-    var(--spectrum-stops),
-    var(--color-spectral-red)
-  );
+  background-image: conic-gradient(from var(--optical-angle), var(--spectrum-glint));
   content: "";
   filter: blur(14px);
   opacity: 0.55;

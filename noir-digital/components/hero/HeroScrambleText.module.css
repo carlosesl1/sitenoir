@@ -24,43 +24,17 @@
   opacity: 0;
 }
 
-/* Letters break the light into the spectrum, then settle back to white. */
-.glyph:nth-child(6n + 1) {
-  --glyph-primary: var(--color-spectral-red);
-  --glyph-secondary: var(--color-spectral-orange);
-}
-
-.glyph:nth-child(6n + 2) {
-  --glyph-primary: var(--color-spectral-orange);
-  --glyph-secondary: var(--color-spectral-yellow);
-}
-
-.glyph:nth-child(6n + 3) {
-  --glyph-primary: var(--color-spectral-yellow);
-  --glyph-secondary: var(--color-spectral-green);
-}
-
-.glyph:nth-child(6n + 4) {
-  --glyph-primary: var(--color-spectral-green);
-  --glyph-secondary: var(--color-spectral-blue);
-}
-
-.glyph:nth-child(6n + 5) {
-  --glyph-primary: var(--color-spectral-blue);
-  --glyph-secondary: var(--color-spectral-violet);
-}
-
-.glyph:nth-child(6n) {
-  --glyph-primary: var(--color-spectral-violet);
-  --glyph-secondary: var(--color-spectral-red);
-}
-
+/* Letters stay white while decoding: the light only splits at their edges. */
 .glyph[data-phase="primary"] {
-  color: var(--glyph-primary);
+  text-shadow:
+    -0.05em 0 var(--fringe-warm),
+    0.05em 0 var(--fringe-cool);
 }
 
 .glyph[data-phase="secondary"] {
-  color: var(--glyph-secondary);
+  text-shadow:
+    -0.025em 0 var(--fringe-warm),
+    0.025em 0 var(--fringe-cool);
 }
 
 .screenReaderText {

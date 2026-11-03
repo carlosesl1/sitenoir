@@ -68,11 +68,16 @@ describe("brand system", () => {
     expect(sourceFiles.filter((file) => read(file).includes('data-theme="light"'))).toEqual([]);
   });
 
-  it("orders the spectrum like the prism, without cyan", () => {
+  it("treats the spectrum as light, never as flat colour side by side", () => {
     const tokens = read("styles/tokens.css");
     expect(tokens).not.toContain("--color-spectral-cyan");
-    expect(tokens.replace(/\s+/g, " ")).toContain(
-      "--spectrum-stops: var(--color-spectral-red), var(--color-spectral-orange), var(--color-spectral-yellow), var(--color-spectral-green), var(--color-spectral-blue), var(--color-spectral-violet);",
-    );
+    expect(tokens).not.toContain("--spectrum-stops");
+    expect(tokens.replace(/\s+/g, " ")).toMatch(/--spectrum-glint: transparent 0turn/);
+    expect(tokens).toContain("--selection-background: var(--color-noir-warm-white);");
+
+    const spectralByPosition = /:nth-child\([^)]*\)\s*\{[^}]*var\(--color-spectral-/;
+    expect(
+      globSync("components/**/*.css").filter((file) => spectralByPosition.test(read(file))),
+    ).toEqual([]);
   });
 });

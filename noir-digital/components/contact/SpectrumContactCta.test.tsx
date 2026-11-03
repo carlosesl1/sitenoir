@@ -27,7 +27,7 @@ describe("SpectrumContactCta", () => {
     );
   });
 
-  it("maps the moving one-pixel spectrum line around every clipped edge", () => {
+  it("maps the moving one-pixel glint around every clipped edge", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/SpectrumContactCta.module.css"),
       "utf8",
@@ -39,7 +39,7 @@ describe("SpectrumContactCta", () => {
     expect(css).toContain("background-image: conic-gradient(");
     expect(css).toContain("from var(--optical-angle)");
     expect(css).toContain("--optical-angle: -1turn;");
-    expect(css).toContain("var(--spectrum-stops)");
+    expect(css).toContain("var(--spectrum-glint)");
     expect(css).toContain("--contour-cut: 14px;");
     expect(css).toContain("--contour-width: 1px;");
     expect(css).toContain("--optical-contour-mask:");
