@@ -4,9 +4,6 @@ import { resolveShortcut } from "@/features/shortcuts/shortcuts";
 
 describe("resolveShortcut", () => {
   it.each([
-    ["l", { type: "theme", value: "light" }],
-    ["d", { type: "theme", value: "dark" }],
-    ["a", { type: "theme", value: "system" }],
     ["t", { type: "scroll", target: "home" }],
     ["b", { type: "scroll", target: "contact" }],
   ] as const)("maps %s to its homepage action", (key, action) => {
@@ -14,11 +11,12 @@ describe("resolveShortcut", () => {
   });
 
   it("normalizes letter casing", () => {
-    expect(resolveShortcut("L")).toEqual({ type: "theme", value: "light" });
+    expect(resolveShortcut("T")).toEqual({ type: "scroll", target: "home" });
   });
 
   it("returns a typed no-op for unsupported keys", () => {
     expect(resolveShortcut("Escape")).toEqual({ type: "none" });
     expect(resolveShortcut("s")).toEqual({ type: "none" });
+    expect(resolveShortcut("l")).toEqual({ type: "none" });
   });
 });

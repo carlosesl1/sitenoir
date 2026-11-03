@@ -123,11 +123,10 @@ describe("AiServicesSection", () => {
     );
     expect(css).not.toMatch(/\.signal::before\s*\{[^}]*mask-image/);
     expect(css).toMatch(/\.signalGlyph path\s*\{[^}]*fill:\s*currentColor/);
-    expect(css).toMatch(/\.number\s*\{[^}]*font-family:\s*var\(--font-display\)/);
-    expect(css).toMatch(/\.card h3\s*\{[^}]*font-family:\s*var\(--font-display\)/);
-    expect(css).toMatch(/\.description\s*\{[^}]*font-family:\s*var\(--font-display\)/);
-    expect(css).toMatch(/\.description\s*\{[^}]*font-size:\s*1rem/);
-    expect(css).toMatch(/\.cardFooter\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(/\.number\s*\{[^}]*font:\s*var\(--role-label\)/);
+    expect(css).toMatch(/\.card h3\s*\{[^}]*font:\s*var\(--role-subtitle\)/);
+    expect(css).toMatch(/\.description\s*\{[^}]*font:\s*var\(--role-body\)/);
+    expect(css).toMatch(/\.cardFooter\s*\{[^}]*font:\s*var\(--role-label\)/);
     expect(css).not.toContain("stroke-dasharray");
     expect(css).toContain("@media (prefers-reduced-motion: reduce)");
     expect(css).not.toContain("animation: infinite");

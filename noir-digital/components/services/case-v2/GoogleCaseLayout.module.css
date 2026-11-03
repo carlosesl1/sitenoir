@@ -68,7 +68,7 @@
 }
 .journey span {
   color: var(--case-muted);
-  font-family: var(--font-interface);
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
 }
 .journey h2 {

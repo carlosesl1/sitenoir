@@ -9,34 +9,34 @@
   --contour-width: 1px;
   --optical-contour-mask:
     linear-gradient(#000 0 0) left top /
-      calc(100% - var(--contour-cut)) var(--contour-width) no-repeat,
+    calc(100% - var(--contour-cut)) var(--contour-width) no-repeat,
     linear-gradient(
-        45deg,
-        transparent calc(50% - 0.75px),
-        #000 calc(50% - 0.75px) calc(50% + 0.75px),
-        transparent calc(50% + 0.75px)
-      )
-      right top / var(--contour-cut) var(--contour-cut) no-repeat,
+      45deg,
+      transparent calc(50% - 0.75px),
+      #000 calc(50% - 0.75px) calc(50% + 0.75px),
+      transparent calc(50% + 0.75px)
+    )
+    right top / var(--contour-cut) var(--contour-cut) no-repeat,
     linear-gradient(#000 0 0) right bottom / var(--contour-width)
-      calc(100% - var(--contour-cut)) no-repeat,
+    calc(100% - var(--contour-cut)) no-repeat,
     linear-gradient(#000 0 0) right bottom /
-      calc(100% - var(--contour-cut)) var(--contour-width) no-repeat,
+    calc(100% - var(--contour-cut)) var(--contour-width) no-repeat,
     linear-gradient(
-        45deg,
-        transparent calc(50% - 0.75px),
-        #000 calc(50% - 0.75px) calc(50% + 0.75px),
-        transparent calc(50% + 0.75px)
-      )
-      left bottom / var(--contour-cut) var(--contour-cut) no-repeat,
+      45deg,
+      transparent calc(50% - 0.75px),
+      #000 calc(50% - 0.75px) calc(50% + 0.75px),
+      transparent calc(50% + 0.75px)
+    )
+    left bottom / var(--contour-cut) var(--contour-cut) no-repeat,
     linear-gradient(#000 0 0) left top / var(--contour-width)
-      calc(100% - var(--contour-cut)) no-repeat;
+    calc(100% - var(--contour-cut)) no-repeat;
 
   position: relative;
   isolation: isolate;
   display: block;
   width: 100%;
   height: 64px;
-  color: #0b0b0c;
+  color: var(--color-noir-black);
   text-decoration: none;
 }
 
@@ -49,7 +49,7 @@
   place-items: center;
   border: 1px solid rgb(255 255 255 / 58%);
   border-radius: 4px;
-  background: linear-gradient(180deg, #fff 0%, #f4f4f3 48%, #c6c6c4 100%);
+  background: var(--button-surface);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 95%),
     inset 0 -4px 7px rgb(0 0 0 / 12%),
@@ -62,14 +62,11 @@
     var(--contour-cut) 100%,
     0 calc(100% - var(--contour-cut))
   );
-  font-family: var(--font-display);
-  font-size: 0.875rem;
-  font-stretch: 108%;
-  font-weight: 700;
-  font-variation-settings: "wdth" 108;
-  letter-spacing: 0.035em;
-  text-transform: uppercase;
   transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  font: var(--role-button);
+  font-variation-settings: var(--wdth-button);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .root::before {
@@ -93,30 +90,12 @@
   pointer-events: none;
   background-image: conic-gradient(
     from var(--optical-angle),
-    var(--color-spectral-red) 0turn,
-    var(--color-spectral-green) 0.166turn,
-    var(--color-spectral-blue) 0.333turn,
-    var(--color-spectral-red) 0.5turn,
-    var(--color-spectral-green) 0.666turn,
-    var(--color-spectral-blue) 0.833turn,
-    var(--color-spectral-red) 1turn
+    var(--spectrum-stops),
+    var(--color-spectral-red)
   );
   transition: opacity 180ms ease;
   -webkit-mask: var(--optical-contour-mask);
   mask: var(--optical-contour-mask);
-}
-
-:global([data-theme="light"]) .root {
-  color: var(--color-noir-warm-white);
-}
-
-:global([data-theme="light"]) .surface {
-  border-color: rgb(255 255 255 / 18%);
-  background: linear-gradient(180deg, #242628 0%, #101112 50%, #030303 100%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 18%),
-    inset 0 -4px 8px rgb(0 0 0 / 58%),
-    0 10px 22px rgb(3 3 3 / 28%);
 }
 
 @keyframes opticalContourFlow {
@@ -140,6 +119,32 @@
   }
 }
 
+/* Emphasis: same button, with the spectrum always on and a soft glow behind it. */
+.root[data-emphasis="true"] .surface {
+  transform: translate(3px, -3px);
+}
+
+.root[data-emphasis="true"]::before {
+  animation: opticalContourFlow 3s linear infinite;
+  opacity: 1;
+}
+
+.root[data-emphasis="true"]::after {
+  position: absolute;
+  inset: -2px;
+  z-index: -2;
+  background-image: conic-gradient(
+    from var(--optical-angle),
+    var(--spectrum-stops),
+    var(--color-spectral-red)
+  );
+  content: "";
+  filter: blur(14px);
+  opacity: 0.55;
+  pointer-events: none;
+  animation: opticalContourFlow 3s linear infinite;
+}
+
 .root:focus-visible {
   outline: 2px solid rgb(255 255 255 / 85%);
   outline-offset: 3px;
@@ -148,6 +153,12 @@
 @media (prefers-reduced-motion: reduce) {
   .surface {
     transition-duration: 120ms;
+  }
+
+  .root[data-emphasis="true"]::before,
+  .root[data-emphasis="true"]::after {
+    animation: none;
+    --optical-angle: 0.18turn;
   }
 }
 

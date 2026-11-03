@@ -154,7 +154,7 @@ describe("Hero", () => {
     expect(css).toMatch(
       /@media \(min-width: 768px\) and \(max-height: 720px\)[\s\S]*\.headline\s*\{[^}]*top:\s*calc\(18\.5svh \+ 20px\)[^}]*left:\s*clamp\(56px, 8\.6vw, 176px\)/,
     );
-    expect(css).toMatch(/font-size:\s*clamp\(2\.75rem, 5\.75vw, 7\.4rem\)/);
+    expect(css).toMatch(/\.headline\s*\{[^}]*font:\s*var\(--role-display-l\)/);
     expect(css).toMatch(
       /@media \(min-width: 768px\) and \(max-height: 720px\)[\s\S]*\.actionRow\s*\{[^}]*top:\s*calc\(66\.8svh \+ 20px\)[^}]*right:\s*auto[^}]*left:\s*50%[^}]*width:\s*min\(calc\(100vw - 64px\), 840px\)[^}]*max-width:\s*840px[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 1px minmax\(220px, 260px\)[^}]*column-gap:\s*clamp\(24px, 3vw, 40px\)/,
     );

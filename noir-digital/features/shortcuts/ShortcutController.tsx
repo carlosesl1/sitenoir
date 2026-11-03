@@ -4,7 +4,6 @@ import { useEffect } from "react";
 
 import { useScroll } from "@/features/scroll/ScrollProvider";
 import { resolveShortcut } from "@/features/shortcuts/shortcuts";
-import { useTheme } from "@/features/theme/ThemeProvider";
 
 function isEditableTarget(target: EventTarget | null): boolean {
   return (
@@ -16,7 +15,6 @@ function isEditableTarget(target: EventTarget | null): boolean {
 
 export function ShortcutController() {
   const { scrollTo } = useScroll();
-  const { setTheme } = useTheme();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -27,9 +25,6 @@ export function ShortcutController() {
       event.preventDefault();
 
       switch (action.type) {
-        case "theme":
-          setTheme(action.value);
-          break;
         case "scroll":
           scrollTo(action.target);
           break;
@@ -38,7 +33,7 @@ export function ShortcutController() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [scrollTo, setTheme]);
+  }, [scrollTo]);
 
   return null;
 }

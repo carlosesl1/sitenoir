@@ -1,16 +1,10 @@
 .root {
-  --scramble-primary: #c0fe04;
-  --scramble-secondary: #dfff81;
   position: relative;
   display: inline-block;
 }
 
 .root[data-scramble-state="waiting"] {
   color: transparent;
-}
-
-:global([data-theme="light"]) .root {
-  --scramble-secondary: #607f02;
 }
 
 .measure {
@@ -30,12 +24,43 @@
   opacity: 0;
 }
 
+/* Letters break the light into the spectrum, then settle back to white. */
+.glyph:nth-child(6n + 1) {
+  --glyph-primary: var(--color-spectral-red);
+  --glyph-secondary: var(--color-spectral-orange);
+}
+
+.glyph:nth-child(6n + 2) {
+  --glyph-primary: var(--color-spectral-orange);
+  --glyph-secondary: var(--color-spectral-yellow);
+}
+
+.glyph:nth-child(6n + 3) {
+  --glyph-primary: var(--color-spectral-yellow);
+  --glyph-secondary: var(--color-spectral-green);
+}
+
+.glyph:nth-child(6n + 4) {
+  --glyph-primary: var(--color-spectral-green);
+  --glyph-secondary: var(--color-spectral-blue);
+}
+
+.glyph:nth-child(6n + 5) {
+  --glyph-primary: var(--color-spectral-blue);
+  --glyph-secondary: var(--color-spectral-violet);
+}
+
+.glyph:nth-child(6n) {
+  --glyph-primary: var(--color-spectral-violet);
+  --glyph-secondary: var(--color-spectral-red);
+}
+
 .glyph[data-phase="primary"] {
-  color: var(--scramble-primary);
+  color: var(--glyph-primary);
 }
 
 .glyph[data-phase="secondary"] {
-  color: var(--scramble-secondary);
+  color: var(--glyph-secondary);
 }
 
 .screenReaderText {

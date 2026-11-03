@@ -16,17 +16,6 @@
   pointer-events: none;
 }
 
-:global([data-theme="light"]) .atmosphere {
-  background:
-    radial-gradient(circle at 17% 74%, rgb(3 3 3 / 8%), transparent 29%),
-    linear-gradient(
-      90deg,
-      rgb(244 244 240 / 91%),
-      rgb(244 244 240 / 76%) 48%,
-      rgb(244 244 240 / 91%)
-    );
-}
-
 .layout {
   display: grid;
   min-height: 100dvh;
@@ -81,7 +70,7 @@
 .recommended,
 .whatsAppSubtitle,
 .information {
-  font-family: var(--font-pixel);
+  font-family: var(--font-mono);
   text-transform: uppercase;
 }
 
@@ -95,7 +84,7 @@
 .intro h1 {
   max-width: 9.2ch;
   margin: clamp(28px, 3.4vh, 42px) 0 24px;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: clamp(1.5rem, 13.4cqi, 5.2rem);
   font-stretch: 120%;
   font-weight: var(--weight-display);
@@ -107,13 +96,13 @@
 }
 
 .intro h1 span {
-  color: #c0fe04;
+  color: var(--text-primary);
 }
 
 .intro > p {
   max-width: 34ch;
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
   line-height: 1.65;
   color: var(--text-secondary);
@@ -162,16 +151,11 @@
 
 .brandTagline {
   max-width: 27ch;
-  font-family: var(--font-pixel);
+  font-family: var(--font-mono);
   font-size: clamp(0.5625rem, 0.62vw, 0.6875rem);
   line-height: 1.45;
   letter-spacing: 0.04em;
   color: var(--text-secondary);
-}
-
-:global([data-theme="light"]) .brandSymbol,
-:global([data-theme="light"]) .brandWordmark {
-  filter: brightness(0);
 }
 
 .formPanel,
@@ -222,17 +206,11 @@
   outline: none;
   background: rgb(11 13 14 / 78%);
   color: var(--text-primary);
-  font-family: var(--font-interface);
+  font-family: var(--font-mono);
   font-size: 1rem;
   transition:
     border-color var(--duration-micro) var(--ease-standard),
     background var(--duration-micro) var(--ease-standard);
-}
-
-:global([data-theme="light"]) .field input,
-:global([data-theme="light"]) .field select,
-:global([data-theme="light"]) .field textarea {
-  background: rgb(244 244 240 / 82%);
 }
 
 .field input,
@@ -311,7 +289,7 @@
 
 .submit,
 .whatsAppAction {
-  font-family: var(--font-pixel);
+  font-family: var(--font-mono);
   cursor: pointer;
 }
 
@@ -354,11 +332,11 @@
 .feedback {
   padding-left: 12px;
   border-left: 3px solid currentColor;
-  font-family: var(--font-interface);
+  font-family: var(--font-mono);
 }
 
 .success {
-  color: #c0fe04;
+  color: var(--color-spectral-green);
 }
 
 .error {
@@ -370,7 +348,7 @@
   align-items: flex-start;
   gap: 10px;
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   line-height: 1.45;
   letter-spacing: 0.025em;
@@ -460,17 +438,17 @@
 .recommended {
   position: relative;
   z-index: 1;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: clamp(0.6875rem, 0.62rem + 0.1vw, 0.75rem);
   font-weight: 700;
   letter-spacing: 0.065em;
-  color: #c0fe04;
+  color: var(--text-primary);
 }
 
 .whatsAppPanel h3 {
   max-width: 100%;
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: clamp(2rem, 9.5cqi, 2.65rem);
   font-weight: 720;
   line-height: 0.9;
@@ -498,19 +476,18 @@
   border-radius: 0;
   background: none;
   box-shadow: none;
-  color: #c0fe04;
+  color: var(--text-primary);
   transform: translateY(-50%);
 }
 
 .whatsAppMark svg {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 0 9px rgb(192 254 4 / 16%));
 }
 
 .whatsAppSubtitle {
   margin: 7px 0 0;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: clamp(0.6875rem, 0.62rem + 0.1vw, 0.75rem);
   font-weight: 700;
   letter-spacing: 0.055em;
@@ -523,7 +500,7 @@
   min-width: 0;
   max-width: min(24ch, calc(100% - var(--whatsapp-mark-size) - 12px));
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: clamp(0.75rem, 0.7rem + 0.4cqi, 0.875rem);
   line-height: 1.55;
   color: rgb(168 173 178 / 78%);
@@ -539,12 +516,6 @@
 }
 
 .whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
-  border-color: rgb(222 255 80 / 56%);
-  background: linear-gradient(180deg, #d9ff3c 0%, #c0fe04 56%, #afe900 100%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 48%),
-    inset 0 -3px 6px rgb(72 98 0 / 14%),
-    0 7px 16px rgb(0 0 0 / 22%);
   font-size: clamp(0.6875rem, 0.5rem + 1cqi, 0.875rem);
   font-stretch: 100%;
   font-variation-settings: "wdth" 100;
@@ -557,15 +528,6 @@
   width: clamp(14px, 4cqi, 18px);
   height: clamp(14px, 4cqi, 18px);
   flex: 0 0 auto;
-}
-
-:global([data-theme="light"]) .whatsAppAction {
-  color: var(--color-noir-black);
-}
-
-:global([data-theme="light"]) .whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
-  border-color: rgb(135 181 0 / 42%);
-  background: linear-gradient(180deg, #d6ff38 0%, #b7ef04 52%, #98ca00 100%);
 }
 
 .information {
@@ -594,7 +556,7 @@
 .information dd {
   min-width: 0;
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   text-align: right;
   text-transform: none;
 }
@@ -628,7 +590,7 @@
     color-mix(in srgb, var(--surface-elevated) 42%, transparent),
     transparent 74%
   );
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   color: var(--text-secondary);
   font-size: var(--type-micro);
   line-height: 1.45;
@@ -641,7 +603,7 @@
   z-index: 1;
   width: 7px;
   height: 7px;
-  color: #c0fe04;
+  color: var(--text-primary);
 }
 
 .internationalTag p {

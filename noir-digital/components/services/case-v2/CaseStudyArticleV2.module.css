@@ -7,7 +7,7 @@
   padding: 140px 0 40px;
   margin-inline: auto;
   color: var(--text-primary);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.55;
 }
@@ -21,7 +21,7 @@
   --case-accent: #ee2737;
 }
 .page[data-accent="strong-spectrum"] {
-  --case-accent: #d7ff21;
+  --case-accent: var(--text-primary);
 }
 .page[data-accent="together-blue"] {
   --case-accent: #2f67ff;
@@ -41,7 +41,7 @@
 .page h1,
 .page h2,
 .page h3 {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-weight: 550;
   text-wrap: balance;
 }
@@ -63,7 +63,7 @@
   justify-content: space-between;
   align-items: center;
   color: var(--case-muted);
-  font-family: var(--font-interface);
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
   text-transform: uppercase;
 }
@@ -138,7 +138,7 @@
 }
 .nextCopy > span {
   color: var(--case-muted);
-  font-family: var(--font-interface);
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
   text-transform: uppercase;
 }

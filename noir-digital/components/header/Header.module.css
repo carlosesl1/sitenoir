@@ -34,25 +34,18 @@
   padding-top: 0;
   gap: 3px;
   color: inherit;
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 700;
-  font-variation-settings:
-    "wght" 700,
-    "wdth" 120;
-  line-height: 1;
-  letter-spacing: 0;
   text-decoration: none;
   border: 2px dotted transparent;
+  font: var(--role-wordmark);
+  font-variation-settings: var(--wdth-wide);
 }
 
 .brandDescriptor {
   display: none;
-  font-family: var(--font-pixel);
-  font-size: 0.5625rem;
-  font-weight: 400;
-  letter-spacing: 0.05em;
   color: var(--text-secondary);
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .desktopNavigation {
@@ -69,7 +62,6 @@
   appearance: none;
   color: inherit;
   background: transparent;
-  font-family: var(--font-pixel);
   text-decoration: none;
   cursor: pointer;
   border: 2px dotted transparent;
@@ -82,12 +74,9 @@
   align-items: center;
   justify-content: center;
   padding: 8px;
-  font-size: 1rem;
-  font-weight: inherit;
-  line-height: 1;
-  letter-spacing: 0;
-  text-transform: uppercase;
   vertical-align: top;
+  font: var(--role-nav);
+  text-transform: uppercase;
 }
 
 .brand:focus-visible,
@@ -195,9 +184,7 @@
 .mobileUtilityControl {
   min-height: 44px;
   padding: 8px 2px;
-  font-size: 0.875rem;
-  line-height: 1;
-  letter-spacing: 0;
+  font: var(--role-nav);
   text-transform: uppercase;
 }
 
@@ -210,10 +197,9 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
-  font-family: var(--font-pixel);
-  font-size: 0.875rem;
-  text-transform: uppercase;
   transition: opacity var(--duration-micro) var(--ease-standard);
+  font: var(--role-nav);
+  text-transform: uppercase;
 }
 
 .hiddenStatus {
@@ -231,9 +217,9 @@
   width: 100%;
   padding: 12px 2px;
   text-align: left;
-  font-size: clamp(2.5rem, 13vw, 4.5rem);
-  line-height: 0.92;
-  letter-spacing: -0.06em;
+  font: var(--role-display-l);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 
 @media (min-width: 1024px) {
@@ -278,7 +264,6 @@
     bottom: 32px;
     left: 64px;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    font-size: 1rem;
   }
 
   .clock {
@@ -315,8 +300,9 @@
 
   .mobileLink {
     padding-block: 5px;
-    font-size: clamp(1.75rem, 10vh, 3rem);
-    line-height: 0.9;
+    font: var(--role-display-m);
+    font-variation-settings: var(--wdth-wide);
+    text-transform: uppercase;
   }
 
   .statusBar {

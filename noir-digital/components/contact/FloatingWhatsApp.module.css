@@ -18,11 +18,6 @@
     background-color var(--duration-standard) var(--ease-standard);
 }
 
-:global([data-theme="light"]) .root {
-  background: var(--color-noir-black);
-  color: var(--color-noir-warm-white);
-}
-
 .icon {
   width: 28px;
   height: 28px;
@@ -36,10 +31,6 @@
   border-radius: var(--radius-control);
   background: var(--surface-primary);
   color: var(--text-primary);
-  font-family: var(--font-pixel);
-  font-size: 0.6875rem;
-  line-height: 1;
-  text-transform: uppercase;
   white-space: nowrap;
   opacity: 0;
   visibility: hidden;
@@ -49,6 +40,9 @@
     opacity var(--duration-micro) var(--ease-standard),
     transform var(--duration-micro) var(--ease-standard),
     visibility var(--duration-micro);
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .root:focus-visible {

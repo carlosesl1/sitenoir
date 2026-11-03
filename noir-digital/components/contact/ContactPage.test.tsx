@@ -164,18 +164,18 @@ describe("ContactPage", () => {
       "utf8",
     );
 
-    expect(css).toMatch(/\.intro > p\s*\{[^}]*font-family:\s*var\(--font-display\)/);
-    expect(css).toMatch(/\.privacyNote\s*\{[^}]*font-family:\s*var\(--font-display\)/);
-    expect(css).toMatch(/\.information dd\s*\{[^}]*font-family:\s*var\(--font-display\)/);
-    expect(css).toMatch(/\.internationalTag\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(/\.intro > p\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
+    expect(css).toMatch(/\.privacyNote\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
+    expect(css).toMatch(/\.information dd\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
+    expect(css).toMatch(/\.internationalTag\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
     expect(css).toMatch(/\.internationalTag\s*\{[^}]*min-height:\s*62px/);
     expect(css).toMatch(
       /\.globalIcon\s*\{[^}]*right:\s*6px[^}]*bottom:\s*-26px[^}]*width:\s*132px[^}]*height:\s*auto[^}]*object-fit:\s*contain[^}]*opacity:\s*0\.58/,
     );
     expect(css).not.toMatch(/\.globalIcon\s*\{[^}]*mask-image:\s*radial-gradient/);
-    expect(css).toMatch(/\.recommended\s*\{[^}]*font-family:\s*var\(--font-display\)/);
-    expect(css).toMatch(/\.whatsAppSubtitle\s*\{[^}]*font-family:\s*var\(--font-display\)/);
-    expect(css).toMatch(/\.whatsAppPanel > p\s*\{[^}]*font-family:\s*var\(--font-display\)/);
+    expect(css).toMatch(/\.recommended\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
+    expect(css).toMatch(/\.whatsAppSubtitle\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
+    expect(css).toMatch(/\.whatsAppPanel > p\s*\{[^}]*font-family:\s*var\(--font-sans\)/);
     expect(css).toMatch(
       /\.whatsAppPanel > p\s*\{[^}]*max-width:\s*min\(24ch, calc\(100% - var\(--whatsapp-mark-size\) - 12px\)\)/,
     );

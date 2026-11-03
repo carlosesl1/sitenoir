@@ -7,19 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { SiteHeader } from "@/components/header/SiteHeader";
 
 const providerMocks = vi.hoisted(() => ({
-  cycleTheme: vi.fn(),
-  resolvedTheme: "dark",
   scrollTo: vi.fn(),
-  theme: "dark",
-}));
-
-vi.mock("@/features/theme/ThemeProvider", () => ({
-  useTheme: () => ({
-    theme: providerMocks.theme,
-    resolvedTheme: providerMocks.resolvedTheme,
-    setTheme: vi.fn(),
-    cycleTheme: providerMocks.cycleTheme,
-  }),
 }));
 
 vi.mock("@/features/scroll/ScrollProvider", () => ({
@@ -36,10 +24,7 @@ vi.mock("@/features/pointer/pointer-store", () => ({
 }));
 
 beforeEach(() => {
-  providerMocks.cycleTheme.mockClear();
-  providerMocks.resolvedTheme = "dark";
   providerMocks.scrollTo.mockClear();
-  providerMocks.theme = "dark";
 });
 
 afterEach(cleanup);
@@ -61,8 +46,8 @@ describe("SiteHeader", () => {
     const desktopNavigation = document.querySelector<HTMLElement>('nav[aria-label="Principal"]');
     expect(desktopNavigation).toBeInTheDocument();
     if (!desktopNavigation) return;
-    expect(within(desktopNavigation).getAllByRole("button", { hidden: true })).toHaveLength(3);
-    for (const label of ["Serviços", "Tema", "Switch to English"]) {
+    expect(within(desktopNavigation).getAllByRole("button", { hidden: true })).toHaveLength(2);
+    for (const label of ["Serviços", "Switch to English"]) {
       expect(
         within(desktopNavigation).getByRole("button", { name: label, hidden: true }),
       ).toBeInTheDocument();
@@ -72,10 +57,7 @@ describe("SiteHeader", () => {
     ).toHaveAttribute("href", "/contato");
     expect(screen.getByRole("link", { name: "NOIR DIGITAL" })).toHaveAttribute("href", "#home");
     expect(screen.getByRole("button", { name: "Serviços", hidden: true })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Tema", hidden: true })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    expect(screen.queryByRole("button", { name: "Tema", hidden: true })).toBeNull();
     expect(screen.queryByRole("button", { name: "Sound", hidden: true })).toBeNull();
     expect(screen.getByText("GMT-3 BR")).toBeInTheDocument();
     expect(screen.getByText("0640 X 0360 Y")).toBeInTheDocument();
@@ -111,12 +93,10 @@ describe("SiteHeader", () => {
     expect(screen.getByRole("link", { name: "Iniciar conversa no WhatsApp" })).toBeInTheDocument();
   });
 
-  it("operates the theme control without exposing sound", () => {
+  it("has no theme or sound controls", () => {
     render(<SiteHeader />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Tema", hidden: true }));
-
-    expect(providerMocks.cycleTheme).toHaveBeenCalledOnce();
+    expect(screen.queryByRole("button", { name: "Tema", hidden: true })).toBeNull();
     expect(screen.queryByRole("button", { name: "Sound", hidden: true })).toBeNull();
   });
 
@@ -141,7 +121,7 @@ describe("SiteHeader", () => {
     expect(within(mobileNavigation).queryByRole("button", { name: "Tema" })).toBeNull();
     expect(within(mobileNavigation).queryByRole("button", { name: "Sound" })).toBeNull();
     const dialog = screen.getByRole("dialog", { name: "Menu" });
-    expect(within(dialog).getByRole("button", { name: "Tema" })).toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: "Tema" })).toBeNull();
     expect(within(dialog).queryByRole("button", { name: "Sound" })).toBeNull();
     expect(within(mobileNavigation).getByRole("button", { name: "Início" })).toHaveFocus();
 
@@ -169,26 +149,13 @@ describe("SiteHeader", () => {
     fireEvent.click(screen.getByRole("button", { name: "Abrir menu" }));
     const dialog = screen.getByRole("dialog", { name: "Menu" });
     const home = within(dialog).getByRole("button", { name: "Início" });
-    const theme = within(dialog).getByRole("button", { name: "Tema" });
+    const language = within(dialog).getByRole("button", { name: "Switch to English" });
 
     expect(home).toHaveFocus();
     fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
-    expect(theme).toHaveFocus();
+    expect(language).toHaveFocus();
 
     fireEvent.keyDown(dialog, { key: "Tab" });
     expect(home).toHaveFocus();
-  });
-
-  it("announces the inactive theme state", () => {
-    providerMocks.theme = "system";
-    providerMocks.resolvedTheme = "light";
-
-    render(<SiteHeader />);
-
-    expect(screen.getByRole("button", { name: "Tema", hidden: true })).toHaveAttribute(
-      "aria-pressed",
-      "false",
-    );
-    expect(screen.queryByRole("button", { name: "Sound", hidden: true })).toBeNull();
   });
 });

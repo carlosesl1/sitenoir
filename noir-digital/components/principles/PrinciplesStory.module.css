@@ -54,12 +54,8 @@
   margin: 0;
   flex-direction: column;
   text-align: center;
-  font-size: 6.8svw;
-  font-stretch: 120%;
-  font-weight: 700;
-  font-variation-settings: "wdth" 120;
-  line-height: 1;
-  letter-spacing: 0;
+  font: var(--role-display-l);
+  font-variation-settings: var(--wdth-wide);
   text-transform: uppercase;
 }
 
@@ -132,9 +128,32 @@
   transform: translate(-50%, -50%);
   overflow: visible;
   fill: none;
-  stroke: #d7ff21;
   stroke-width: 2;
   vector-effect: non-scaling-stroke;
+}
+
+.principleOrbit ellipse:nth-child(6n + 1) {
+  stroke: var(--color-spectral-red);
+}
+
+.principleOrbit ellipse:nth-child(6n + 2) {
+  stroke: var(--color-spectral-orange);
+}
+
+.principleOrbit ellipse:nth-child(6n + 3) {
+  stroke: var(--color-spectral-yellow);
+}
+
+.principleOrbit ellipse:nth-child(6n + 4) {
+  stroke: var(--color-spectral-green);
+}
+
+.principleOrbit ellipse:nth-child(6n + 5) {
+  stroke: var(--color-spectral-blue);
+}
+
+.principleOrbit ellipse:nth-child(6n) {
+  stroke: var(--color-spectral-violet);
 }
 
 .statementGrid {
@@ -158,9 +177,8 @@
   flex-direction: column;
   justify-self: start;
   padding: 8px;
-  font-size: 1.875rem;
-  font-weight: 500;
-  line-height: 1.25;
+  font: var(--role-title);
+  letter-spacing: var(--tracking-tight);
 }
 
 .statementGrid p[data-contrast-surface="diffuse"]::before {
@@ -209,21 +227,12 @@
     padding: 72px 16px;
   }
 
-  .stageCopy {
-    font-size: 7.2vw;
-  }
-
   .principleOrbit {
     width: min(58vw, 300px);
   }
 
   .statementGrid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
-  }
-
-  .statementGrid p {
-    font-size: 5.6svw;
-    line-height: 1.25;
   }
 
   .statementGrid p:nth-child(1) {
@@ -250,8 +259,8 @@
 
   .statementGrid p {
     padding: 4px 6px;
-    font-size: clamp(1rem, 2.6vw, 1.25rem);
-    line-height: 1.15;
+    font: var(--role-subtitle);
+    letter-spacing: var(--tracking-tight);
   }
 }
 

@@ -17,7 +17,6 @@
   --color-optical-light-background: #ffead6;
   --color-optical-light-vignette: #6196ff;
   --color-optical-light-output: #acffb9;
-  --color-pointer-stain: #c0fe04;
   --color-flare-tail-dark: #1600ff;
   --color-flare-tail-light: #ffa300;
   --color-spectral-red: #f2383a;
@@ -25,7 +24,6 @@
   --color-spectral-yellow: #f7d94a;
   --color-spectral-green: #55d86a;
   --color-chapada-green: #55d86a;
-  --color-spectral-cyan: #22d6d6;
   --color-spectral-blue: #2f80ff;
   --color-spectral-violet: #a855f7;
   --surface-primary: var(--color-noir-black);
@@ -39,9 +37,8 @@
   --focus-color: var(--color-noir-warm-white);
   --selection-background: var(--color-spectral-red);
   --selection-foreground: var(--color-noir-black);
-  --font-display: "TikTok Sans", Arial, sans-serif;
-  --font-interface: "Departure Mono", "Courier New", monospace;
-  --font-pixel: "Departure Mono", "Courier New", monospace;
+  --font-sans: "TikTok Sans", Arial, sans-serif;
+  --font-mono: "Departure Mono", "Courier New", monospace;
   --page-inline: 56px;
   --page-block: 24px;
   --site-grid-inset: 56px;
@@ -69,10 +66,39 @@
   --leading-heading: 1;
   --leading-body: 1.55;
   --leading-label: 1.2;
-  --tracking-tight: -0.025em;
+  --tracking-tight: -0.02em;
   --tracking-display: -0.035em;
   --tracking-heading: -0.025em;
   --tracking-label: 0.08em;
+  /* Brand type roles: every text on the site picks one of these. */
+  --type-display-l: clamp(2.5rem, 5.4vw, 5.75rem);
+  --type-display-m: clamp(1.75rem, 3vw, 3rem);
+  --type-title: clamp(1.5rem, 2.2vw, 2rem);
+  --type-subtitle: 1.25rem;
+  --type-lead: clamp(1.125rem, 1.4vw, 1.25rem);
+  --type-note: 0.875rem;
+  --type-nav: 1rem;
+  --type-button: 0.875rem;
+  --tracking-none: 0;
+  --tracking-wide: 0.04em;
+  --wdth-wide: "wdth" 120;
+  --wdth-button: "wdth" 108;
+  --role-display-l: 700 var(--type-display-l) / 0.98 var(--font-sans);
+  --role-display-m: 700 var(--type-display-m) / 1 var(--font-sans);
+  --role-title: 600 var(--type-title) / 1.1 var(--font-sans);
+  --role-subtitle: 600 var(--type-subtitle) / 1.25 var(--font-sans);
+  --role-lead: 450 var(--type-lead) / 1.45 var(--font-sans);
+  --role-body: 450 var(--type-body) / 1.55 var(--font-sans);
+  --role-note: 450 var(--type-note) / 1.45 var(--font-sans);
+  --role-nav: 450 var(--type-nav) / 1.2 var(--font-mono);
+  --role-label: 450 var(--type-label) / 1.3 var(--font-mono);
+  --role-button: 700 var(--type-button) / 1 var(--font-sans);
+  --role-wordmark: 700 var(--type-body) / 1 var(--font-sans);
+  /* Black, white light and the six spectrum colours, in prism order. */
+  --spectrum-stops:
+    var(--color-spectral-red), var(--color-spectral-orange), var(--color-spectral-yellow),
+    var(--color-spectral-green), var(--color-spectral-blue), var(--color-spectral-violet);
+  --button-surface: linear-gradient(180deg, #fff 0%, #f4f4f3 48%, #c6c6c4 100%);
   --space-0: 0;
   --space-1: 4px;
   --space-2: 8px;
@@ -106,22 +132,6 @@
   --layer-face: 1;
 }
 
-[data-theme="light"] {
-  color-scheme: light;
-  --surface-primary: var(--color-noir-warm-white);
-  --surface-elevated: var(--color-noir-light-elevated);
-  --surface-active: var(--color-noir-paper);
-  --text-primary: rgb(3 3 3 / 96%);
-  --text-secondary: rgb(21 23 25 / 68%);
-  --text-disabled: rgb(21 23 25 / 38%);
-  --border-default: rgb(3 3 3 / 14%);
-  --border-strong: rgb(3 3 3 / 48%);
-  --focus-color: var(--color-noir-black);
-  --selection-background: var(--color-noir-black);
-  --selection-foreground: var(--color-noir-warm-white);
-  --color-chapada-green: #116329;
-}
-
 @media (min-width: 1024px) {
   :root {
     --header-brand-text-inset: 66px;
@@ -130,6 +140,7 @@
 
 @media (max-width: 1023px) {
   :root {
+    --type-nav: 0.875rem;
     --page-inline: 16px;
     --page-block: 20px;
     --grid-columns: 6;
@@ -140,6 +151,8 @@
 
 @media (max-width: 767px) {
   :root {
+    --type-display-l: 7.6vw;
+    --type-display-m: 6.6vw;
     --site-grid-inset: 16px;
   }
 }

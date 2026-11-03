@@ -10,7 +10,7 @@ uniform float uFlareEnabled;
 uniform vec2 uTrail[16];
 uniform float uTrailStrength[16];
 uniform float uTrailCount;
-uniform vec3 uPointerColor;
+uniform vec3 uPointerSpectrum[7];
 uniform float uPointerOpacity;
 uniform float uPointerDotRadius;
 uniform float uPointerPixelSize;
@@ -68,11 +68,16 @@ vec4 applyPointerOverlay(vec2 uv, vec4 baseColor) {
   vec2 cellId = floor(uv / safePixelSize);
   vec2 cellUv = fract(uv / safePixelSize);
   float highlight = 0.0;
+  float highlightIndex = 0.0;
   for (int index = 0; index < 16; index++) {
     float enabled = step(float(index), uTrailCount - 1.0);
     vec2 pointerCell = floor(uTrail[index] / safePixelSize);
     float weight = clamp(uTrailStrength[index], 0.0, 1.0);
-    highlight = max(highlight, enabled * cellEquals(cellId, pointerCell) * weight);
+    float match = enabled * cellEquals(cellId, pointerCell) * weight;
+    if (match > highlight) {
+      highlight = match;
+      highlightIndex = float(index);
+    }
   }
   float distanceToCenter = distance(cellUv, vec2(0.5));
   float antialias = fwidth(distanceToCenter) * 1.5;
@@ -82,7 +87,10 @@ vec4 applyPointerOverlay(vec2 uv, vec4 baseColor) {
     distanceToCenter
   );
   float alpha = circle * highlight * clamp(uPointerOpacity, 0.0, 1.0);
-  baseColor.rgb = mix(baseColor.rgb, uPointerColor, alpha);
+  // White light at the pointer, breaking into the six spectrum colours along the tail.
+  float spectrumStep = ceil(highlightIndex * 6.0 / max(uTrailCount - 1.0, 1.0));
+  vec3 pointerColor = uPointerSpectrum[int(clamp(spectrumStep, 0.0, 6.0))];
+  baseColor.rgb = mix(baseColor.rgb, pointerColor, alpha);
   return baseColor;
 }
 

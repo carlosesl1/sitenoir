@@ -87,6 +87,7 @@ function WhatsAppPanel({ variant }: { readonly variant: "desktop" | "mobile" }) 
       <p>{t("Prefere falar diretamente? Abra uma conversa com a mensagem inicial já pronta.")}</p>
       <a
         className={`${spectrumStyles["root"]} ${styles["whatsAppAction"]}`}
+        data-emphasis="true"
         href={whatsAppHref}
         target="_blank"
         rel="noreferrer"

@@ -133,16 +133,9 @@ function installMatchMedia({ dark = false, reducedMotion = false } = {}) {
 }
 
 function ThemeHarness() {
-  const { resolvedTheme, setTheme, theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
-  return (
-    <div>
-      <output>{`${theme}:${resolvedTheme}`}</output>
-      <button type="button" onClick={() => setTheme("light")}>
-        Set light
-      </button>
-    </div>
-  );
+  return <output>{resolvedTheme}</output>;
 }
 
 function AudioHarness() {
@@ -203,98 +196,14 @@ afterEach(() => {
 });
 
 describe("ThemeProvider", () => {
-  it("continues in memory when browser storage is blocked", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
-      throw new DOMException("Storage blocked", "SecurityError");
-    });
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
-      throw new DOMException("Storage full", "QuotaExceededError");
-    });
-
+  it("always resolves to the single black appearance", () => {
     render(
       <ThemeProvider>
         <ThemeHarness />
       </ThemeProvider>,
     );
 
-    expect(screen.getByText("system:light")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Set light" }));
-    expect(screen.getByText("light:light")).toBeInTheDocument();
-  });
-
-  it("keeps its server snapshot deterministic when browser storage differs", () => {
-    localStorage.setItem("theme", "light");
-
-    expect(
-      renderToString(
-        <ThemeProvider>
-          <ThemeHarness />
-        </ThemeProvider>,
-      ),
-    ).toContain("system:dark");
-  });
-
-  it("resolves the stored mode and synchronizes the document root", () => {
-    localStorage.setItem("theme", "dark");
-
-    render(
-      <ThemeProvider>
-        <ThemeHarness />
-      </ThemeProvider>,
-    );
-
-    expect(screen.getByText("dark:dark")).toBeInTheDocument();
-    expect(document.documentElement).toHaveClass("dark");
-    expect(document.documentElement).toHaveAttribute("data-theme", "dark");
-
-    fireEvent.click(screen.getByRole("button", { name: "Set light" }));
-
-    expect(screen.getByText("light:light")).toBeInTheDocument();
-    expect(localStorage.getItem("theme")).toBe("light");
-    expect(document.documentElement).toHaveClass("light");
-  });
-
-  it("does not overwrite the bootstrapped theme with the server default during hydration", () => {
-    localStorage.setItem("theme", "light");
-    document.documentElement.dataset["theme"] = "light";
-    document.documentElement.className = "light";
-    const setItem = vi.spyOn(Storage.prototype, "setItem");
-
-    render(
-      <ThemeProvider>
-        <ThemeHarness />
-      </ThemeProvider>,
-    );
-
-    expect(screen.getByText("light:light")).toBeInTheDocument();
-    expect(setItem).not.toHaveBeenCalledWith("theme", "system");
-  });
-
-  it("resolves system mode through the color-scheme preference", () => {
-    installMatchMedia({ dark: true });
-    localStorage.setItem("theme", "system");
-
-    render(
-      <ThemeProvider>
-        <ThemeHarness />
-      </ThemeProvider>,
-    );
-
-    expect(screen.getByText("system:dark")).toBeInTheDocument();
-  });
-
-  it("observes color-scheme changes while system mode is active", () => {
-    const media = installMatchMedia();
-    render(
-      <ThemeProvider>
-        <ThemeHarness />
-      </ThemeProvider>,
-    );
-
-    act(() => media.setMatches("(prefers-color-scheme: dark)", true));
-
-    expect(screen.getByText("system:dark")).toBeInTheDocument();
-    expect(document.documentElement).toHaveAttribute("data-theme", "dark");
+    expect(screen.getByText("dark")).toBeInTheDocument();
   });
 });
 

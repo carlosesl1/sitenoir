@@ -21,7 +21,7 @@
   padding: 0 12px;
   border-bottom: 1px solid #3a3a3a;
   color: #f4f4f0;
-  font-family: var(--font-pixel);
+  font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
 }
@@ -48,7 +48,7 @@
   margin: 0;
   place-items: center;
   color: #a8a8a8;
-  font-family: var(--font-pixel);
+  font-family: var(--font-mono);
   font-size: 11px;
 }
 

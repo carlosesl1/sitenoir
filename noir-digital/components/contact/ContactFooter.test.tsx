@@ -68,8 +68,6 @@ describe("ContactFooter", () => {
       join(process.cwd(), "components/contact/ContactFooter.module.css"),
       "utf8",
     );
-    expect(css).toContain(':global([data-theme="light"]) .brandSymbol');
-    expect(css).toContain(':global([data-theme="light"]) .brandWordmark');
     expect(css).toMatch(/--brand-name-height:\s*clamp\(/);
     expect(css).toMatch(/--brand-symbol-height:\s*calc\(var\(--brand-name-height\)\s*\*\s*1\.2\)/);
     expect(css).toMatch(/\.brandSymbol\s*\{[^}]*height:\s*var\(--brand-symbol-height\)/);

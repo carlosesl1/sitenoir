@@ -3,6 +3,12 @@ import { describe, expect, it } from "vitest";
 import { HERO_EFFECT_COMPOSITE_FRAGMENT_SHADER } from "@/scene/hero-fluid-display-shader";
 
 describe("hero effect composite shader", () => {
+  it("paints the pixel trail white at the pointer and in spectrum along the tail", () => {
+    expect(HERO_EFFECT_COMPOSITE_FRAGMENT_SHADER).toContain("uniform vec3 uPointerSpectrum[7];");
+    expect(HERO_EFFECT_COMPOSITE_FRAGMENT_SHADER).toContain("uPointerSpectrum[int(");
+    expect(HERO_EFFECT_COMPOSITE_FRAGMENT_SHADER).not.toContain("uPointerColor");
+  });
+
   it("gates independent fullscreen effects without coupling their visibility", () => {
     expect(HERO_EFFECT_COMPOSITE_FRAGMENT_SHADER).toContain("if (uEffectEnabled >= 0.5)");
     expect(HERO_EFFECT_COMPOSITE_FRAGMENT_SHADER).toContain("if (uPointerOpacity > 0.0)");

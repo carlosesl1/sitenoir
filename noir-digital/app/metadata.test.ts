@@ -19,7 +19,7 @@ afterEach(() => {
 });
 
 describe("production metadata", () => {
-  it("preserves approved copy, local icons, and responsive theme colors", async () => {
+  it("preserves approved copy, local icons, and the black theme color", async () => {
     // Given
     const { metadata, viewport } = await loadLayout("");
 
@@ -36,11 +36,8 @@ describe("production metadata", () => {
     expect(publicMetadata.viewport).toMatchObject({
       width: "device-width",
       initialScale: 1,
-      colorScheme: "light dark",
-      themeColor: [
-        { media: "(prefers-color-scheme: light)", color: "#f3fbf9" },
-        { media: "(prefers-color-scheme: dark)", color: "#030303" },
-      ],
+      colorScheme: "dark",
+      themeColor: "#030303",
     });
   });
 

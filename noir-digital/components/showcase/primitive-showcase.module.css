@@ -30,7 +30,7 @@
 
 .intro h1 {
   max-width: var(--measure-display);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--type-display);
   font-weight: var(--weight-display);
   letter-spacing: var(--tracking-display);
@@ -45,7 +45,7 @@
 .specimenLabel,
 .stateGuide {
   color: var(--text-secondary);
-  font-family: var(--font-interface);
+  font-family: var(--font-mono);
   font-size: var(--type-label);
   font-weight: var(--weight-label);
   letter-spacing: var(--tracking-label);
@@ -78,7 +78,7 @@
 .stateGuide dt {
   flex: none;
   color: var(--text-primary);
-  font-family: var(--font-pixel);
+  font-family: var(--font-mono);
 }
 
 .stateGuide dd {
@@ -110,7 +110,7 @@
 
 .surfaceHeader h2 {
   max-width: var(--measure-display);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: var(--type-heading);
   font-weight: var(--weight-heading);
   letter-spacing: var(--tracking-heading);
