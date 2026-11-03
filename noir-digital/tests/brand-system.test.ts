@@ -63,10 +63,9 @@ describe("brand system", () => {
     }
   });
 
-  it("renders stickers in the same glass family as the other 3D objects", () => {
+  it("keeps the stickers in their original colours", () => {
     const stickers = read("scene/sticker-rendering.ts");
-    expect(stickers).toContain("vec3 glass =");
-    expect(stickers).not.toContain("vec4(color.rgb,");
+    expect(stickers).toContain("gl_FragColor = vec4(color.rgb, color.a * vOpacity);");
   });
 
   it("uses two font families", () => {
