@@ -182,9 +182,7 @@ describe("ContactPage", () => {
     expect(css).toMatch(
       /\.whatsAppPanel h3\s*\{[^}]*font-size:\s*clamp\(2rem, 9\.5cqi, 2\.65rem\)/,
     );
-    expect(css).toMatch(
-      /\.whatsAppActionSurface\s*\{[^}]*font-size:\s*clamp\(0\.6875rem, 0\.5rem \+ 1cqi, 0\.875rem\)/,
-    );
+    expect(css).not.toMatch(/\.whatsAppActionSurface\s*\{[^}]*font-size/);
     expect(css).toMatch(/\.whatsAppActionSurface\s*\{[^}]*white-space:\s*nowrap/);
   });
 
