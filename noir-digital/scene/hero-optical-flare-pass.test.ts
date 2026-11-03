@@ -31,10 +31,17 @@ function createCamera() {
   return camera;
 }
 
-function createSources(wordmark: Mesh | null, pointer: Mesh | null = null) {
+function createSources(
+  wordmark: Mesh | null,
+  pointer: Mesh | null = null,
+  principlePointer: Mesh | null = null,
+  contact: Mesh | null = null,
+) {
   return {
     wordmark: { current: wordmark },
     pointer: { current: pointer },
+    principlePointer: { current: principlePointer },
+    contact: { current: contact },
   };
 }
 
@@ -104,10 +111,19 @@ describe("createHeroOpticalFlarePass", () => {
     const camera = createCamera();
     const wordmark = createSource(new Vector3(1.5, -0.5, 0));
     const pointer = createSource(new Vector3(-2, 1, 0));
+    const principlePointer = createSource(new Vector3(0.5, 2, 0));
+    const contact = createSource(new Vector3(-1, -1.5, 0));
+    const sources = { wordmark, pointer, principlePointer, contact };
     const { renderer, render } = createRenderer();
     const pass = createHeroOpticalFlarePass();
 
-    pass.render(renderer, camera, createSources(wordmark, pointer), 800, 600);
+    pass.render(
+      renderer,
+      camera,
+      createSources(wordmark, pointer, principlePointer, contact),
+      800,
+      600,
+    );
 
     expect(render).toHaveBeenCalledOnce();
     const [renderedScene] = render.mock.calls[0] as [Scene];
@@ -120,15 +136,26 @@ describe("createHeroOpticalFlarePass", () => {
     for (let index = 0; index < HERO_OPTICAL_FLARE_ANCHORS.length; index++) {
       const anchor = HERO_OPTICAL_FLARE_ANCHORS[index];
       if (!anchor) continue;
-      const source = anchor.source === "wordmark" ? wordmark : pointer;
+      const source = sources[anchor.source];
       projected.fromArray(anchor.position).applyMatrix4(source.matrixWorld).project(camera);
       expect(centers.getX(index)).toBeCloseTo(projected.x, 5);
       expect(centers.getY(index)).toBeCloseTo(projected.y, 5);
       expect(gains.getX(index)).toBeGreaterThan(0);
-      expect(radii.getX(index)).toBeCloseTo(20.8 * (anchor.source === "pointer" ? 0.7 : 1), 5);
+      const compact = anchor.source === "pointer" || anchor.source === "principlePointer";
+      expect(radii.getX(index)).toBeCloseTo(20.8 * (compact ? 0.7 : 1), 5);
     }
 
     pass.dispose();
+  });
+
+  it("gives both cursors the same flare at the same point of the model", () => {
+    const anchors = HERO_OPTICAL_FLARE_ANCHORS;
+    const hero = anchors.find((anchor) => anchor.source === "pointer");
+    const principle = anchors.find((anchor) => anchor.source === "principlePointer");
+
+    expect(principle?.position).toEqual(hero?.position);
+    expect(principle?.gain).toBe(hero?.gain);
+    expect(anchors.filter((anchor) => anchor.source === "contact")).toHaveLength(3);
   });
 
   it("strengthens and rotates nearby highlights while keeping their shared palette fixed", () => {

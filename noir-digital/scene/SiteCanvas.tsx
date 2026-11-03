@@ -239,28 +239,26 @@ export function SiteCanvas({
             {ambientOnly ? (
               <AmbientSceneReadyMarker />
             ) : (
-              <>
-                <HeroRefractionBuffer
-                  active={!principleScene.active}
-                  resolutionScale={qualityConfig.refractionResolutionScale}
-                >
+              <HeroRefractionBuffer
+                active={!principleScene.fullscreen}
+                resolutionScale={qualityConfig.refractionResolutionScale}
+              >
+                <Suspense fallback={null}>
+                  <HeroSceneContent
+                    heroGlassVariant={heroGlassVariant}
+                    onReady={markHeroSceneReady}
+                    reducedMotion={deterministicMotion}
+                    scrollProgress={scrollYProgress}
+                  />
+                </Suspense>
+                {progressiveSceneEnabled ? (
                   <Suspense fallback={null}>
-                    <HeroSceneContent
-                      heroGlassVariant={heroGlassVariant}
-                      onReady={markHeroSceneReady}
+                    <ProgressiveSceneContent
                       reducedMotion={deterministicMotion}
                       scrollProgress={scrollYProgress}
                     />
                   </Suspense>
-                  {progressiveSceneEnabled ? (
-                    <Suspense fallback={null}>
-                      <ProgressiveSceneContent
-                        reducedMotion={deterministicMotion}
-                        scrollProgress={scrollYProgress}
-                      />
-                    </Suspense>
-                  ) : null}
-                </HeroRefractionBuffer>
+                ) : null}
                 <Suspense fallback={null}>
                   <PrinciplePointerModel
                     reducedMotion={deterministicMotion}
@@ -269,7 +267,7 @@ export function SiteCanvas({
                     setFullscreen={principleScene.setFullscreen}
                   />
                 </Suspense>
-              </>
+              </HeroRefractionBuffer>
             )}
             <FullscreenDither />
             <HeroFluidProvider reducedMotion={deterministicMotion}>

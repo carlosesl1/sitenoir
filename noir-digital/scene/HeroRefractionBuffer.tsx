@@ -3,7 +3,9 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { createContext, type ReactNode, useContext, useEffect, useMemo } from "react";
 import { HalfFloatType, LinearFilter, type Texture, Vector2, WebGLRenderTarget } from "three";
+import { useHeroOpticalFlareSources } from "@/scene/HeroOpticalFlareSources";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
+import { isOpticalSourceVisible } from "@/scene/hero-optical-flare-pass";
 import { createRefractionVisibility } from "@/scene/refraction-visibility";
 import { sceneTransitionStore } from "@/scene/scene-transition";
 
@@ -35,6 +37,7 @@ export function HeroRefractionBuffer({
   const gl = useThree((state) => state.gl);
   const scene = useThree((state) => state.scene);
   const size = useThree((state) => state.size);
+  const opticalSources = useHeroOpticalFlareSources();
   const screenResolution = useMemo(() => new Vector2(1, 1), []);
   const contactVisibility = useMemo(createRefractionVisibility, []);
   const target = useMemo(
@@ -70,7 +73,10 @@ export function HeroRefractionBuffer({
 
   useFrame(() => {
     const transition = sceneTransitionStore.getSnapshot();
-    if (!active || !transition.sourceVisible || transition.refractive) return;
+    const glassOnScreen =
+      transition.sourceVisible ||
+      isOpticalSourceVisible(opticalSources?.principlePointer.current ?? null);
+    if (!active || !glassOnScreen || transition.refractive) return;
     const previousLayerMask = camera.layers.mask;
     const previousTarget = gl.getRenderTarget();
     const previousAutoClear = gl.autoClear;

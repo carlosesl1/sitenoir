@@ -1,5 +1,7 @@
 const REFERENCE_MARGIN = 120;
 const PRELOAD_RANGE = 480;
+const PORTAL_FADE_START = 0.05;
+const PORTAL_FADE_END = 0.45;
 
 export interface PrinciplePointerRect {
   readonly bottom: number;
@@ -36,6 +38,17 @@ function clamp01(value: number): number {
 function smoothstep(value: number): number {
   const normalized = clamp01(value);
   return normalized * normalized * (3 - 2 * normalized);
+}
+
+// At rest the cursor is the hero's glass; the hyperspace portal fades in only as it opens.
+export function resolvePrinciplePortalOpacity(reveal: number): number {
+  return smoothstep((reveal - PORTAL_FADE_START) / (PORTAL_FADE_END - PORTAL_FADE_START));
+}
+
+// Half the view angle keeps the flat glass mirroring the same spot as it travels; otherwise the
+// whole face turns white as it passes the overhead reflector.
+export function resolvePrincipleGlassTilt(positionY: number, cameraZ: number): number {
+  return Math.atan2(positionY, cameraZ) / 2;
 }
 
 export function resolvePrinciplePointerRectMotion({

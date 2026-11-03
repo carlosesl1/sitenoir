@@ -21,22 +21,21 @@ describe("Canvas UI contact glass", () => {
     );
     expect(assetSource).toContain("const { texture } = useHeroRefraction();");
     expect(assetSource).toContain("buffer={texture}");
-    expect(assetSource).toContain('const CONTACT_CURSOR_DARK = "#242a30";');
-    expect(assetSource).toContain(
-      "resolveThreeDimensionalColor(resolvedTheme, CONTACT_CURSOR_DARK)",
-    );
+    expect(assetSource).toContain('resolveThreeDimensionalColor(resolvedTheme, "#ffffff")');
     expect(assetSource).toContain("color={materialColor}");
-    expect(assetSource).toContain("const CONTACT_GLASS_CONFIG = {");
-    expect(assetSource).toContain("envMapIntensity={CONTACT_GLASS_CONFIG.environmentIntensity}");
-    expect(assetSource).toContain("transmission={CONTACT_GLASS_CONFIG.transmission}");
+    expect(assetSource).toContain("transmission={glassConfig.transmission}");
+    expect(assetSource).toContain("roughness={glassConfig.roughness}");
+    expect(assetSource).toContain("anisotropicBlur={glassConfig.anisotropicBlur}");
+    expect(assetSource).toContain("envMapIntensity={CONTACT_REFLECTION.environmentIntensity}");
     expect(assetSource).toContain("resolveHeroCanvasUiThickness(sceneScale)");
     expect(assetSource).toContain("resolveContactCanvasUiGeometryScale()");
     expect(assetSource).toContain("new Float32BufferAttribute(positions, 3)");
     expect(assetSource).toContain("reverseIndexedWinding");
     expect(assetSource).toContain("userData={{ contactRefractiveObject: true }}");
-    expect(assetSource).toContain("CONTACT_FLARE_LAYER");
+    expect(assetSource).toContain("ref={opticalSources?.contact ?? null}");
+    expect(assetSource).not.toContain("CONTACT_FLARE_LAYER");
     expect(assetSource.match(/<MeshTransmissionMaterial\b/g)).toHaveLength(1);
-    expect(assetSource.match(/<shaderMaterial\b/g)).toHaveLength(2);
+    expect(assetSource.match(/<shaderMaterial\b/g)).toHaveLength(1);
     expect(assetSource).not.toContain("pointerStore");
 
     expect(modelSource).toContain(

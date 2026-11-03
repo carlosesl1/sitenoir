@@ -32,6 +32,7 @@ interface HeroCanvasUiPointerAssetProps {
 
 interface HeroCanvasUiPointerMeshProps {
   readonly geometry: BufferGeometry;
+  readonly opticalSource?: "pointer" | "principlePointer";
   readonly renderOrder?: number;
   readonly sceneScale: number;
 }
@@ -49,6 +50,7 @@ export function HeroCanvasUiPointerAsset({ sceneScale }: HeroCanvasUiPointerAsse
 
 export function HeroCanvasUiPointerMesh({
   geometry,
+  opticalSource = "pointer",
   renderOrder = 1,
   sceneScale,
 }: HeroCanvasUiPointerMeshProps) {
@@ -77,7 +79,7 @@ export function HeroCanvasUiPointerMesh({
   return (
     <>
       <mesh
-        ref={opticalSources?.pointer ?? null}
+        ref={opticalSources?.[opticalSource] ?? null}
         geometry={geometry}
         onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
         renderOrder={renderOrder}

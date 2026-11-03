@@ -32,7 +32,10 @@ import {
   HERO_POST_VERTEX_SHADER,
 } from "@/scene/hero-lens-flare-shaders";
 import { resolveLensFlareTuning } from "@/scene/hero-lens-flare-tuning";
-import { createHeroOpticalFlarePass } from "@/scene/hero-optical-flare-pass";
+import {
+  createHeroOpticalFlarePass,
+  isOpticalSourceVisible,
+} from "@/scene/hero-optical-flare-pass";
 import { sceneTransitionStore } from "@/scene/scene-transition";
 
 interface HeroLensFlareProps {
@@ -260,10 +263,11 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
   useFrame((_, delta) => {
     const transition = sceneTransitionStore.getSnapshot();
     const flareEnabled =
-      active && transition.sourceVisible && (!transition.solid || transition.contactVisible);
-    const opticalEnabled =
-      flareEnabled && !transition.contactVisible && !!opticalSources?.wordmark.current;
-    // Contact and the legacy glass preview retain their isolated extraction.
+      active &&
+      ((transition.sourceVisible && (!transition.solid || transition.contactVisible)) ||
+        isOpticalSourceVisible(opticalSources?.principlePointer.current ?? null));
+    const opticalEnabled = flareEnabled && !!opticalSources?.wordmark.current;
+    // The legacy glass preview retains its isolated extraction.
     const legacyFlareEnabled = flareEnabled && !opticalEnabled;
     const renderOpticalFlares = () => {
       if (opticalEnabled && opticalSources) {
