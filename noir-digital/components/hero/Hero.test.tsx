@@ -105,6 +105,14 @@ describe("Hero", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("gives its contact action the emphasis style", () => {
+    render(<Hero />);
+    expect(screen.getByRole("link", { name: "Entrar em contato", hidden: true })).toHaveAttribute(
+      "data-emphasis",
+      "true",
+    );
+  });
+
   it("uses a CSS-only mobile contract for desktop supporting labels", () => {
     const css = readFileSync(join(process.cwd(), "components/hero/Hero.module.css"), "utf8");
     const tokens = readFileSync(join(process.cwd(), "styles/tokens.css"), "utf8");

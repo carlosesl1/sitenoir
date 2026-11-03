@@ -37,6 +37,14 @@ describe("ContactFooter", () => {
     expect(css).not.toMatch(/\.headline\s*\{[^}]*color:\s*var\(--color-noir-warm-white\)/);
   });
 
+  it("gives its contact action the emphasis style", () => {
+    render(<ContactFooter />);
+    expect(screen.getByRole("link", { name: "Entrar em contato" })).toHaveAttribute(
+      "data-emphasis",
+      "true",
+    );
+  });
+
   it("preserves the email action, approved social links, and the 3D anchor", () => {
     const view = render(<ContactFooter />);
 

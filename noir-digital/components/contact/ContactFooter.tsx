@@ -26,7 +26,7 @@ export function ContactFooter() {
           </h2>
 
           <div className={styles["contactCtaSlot"]}>
-            <SpectrumContactCta />
+            <SpectrumContactCta emphasis />
           </div>
         </div>
 
