@@ -52,15 +52,29 @@ describe("AiServicesSection", () => {
       expect(signal).toHaveAttribute("aria-hidden", "true");
       const icon = signal?.querySelector(`svg[data-ai-glyph-icon="${service.glyph}"]`);
       expect(icon).toBeInTheDocument();
-      const dotCount = [...(icon?.querySelectorAll('[data-ai-glyph-dots="true"]') ?? [])].reduce(
-        (total, path) => total + Number(path.getAttribute("data-ai-glyph-dot-count") ?? 0),
-        0,
-      );
-      expect(dotCount).toBeGreaterThan(20);
-      if (service.glyph !== "copilots") {
-        expect(icon?.querySelector('[data-ai-glyph-emphasis="true"]')).toBeInTheDocument();
-      }
+      expect(icon).toHaveAttribute("fill", "none");
+      expect(icon).toHaveAttribute("stroke", "currentColor");
+      expect(card.querySelector('[data-ai-halo="true"]')).toHaveAttribute("aria-hidden", "true");
     });
+  });
+
+  it("draws a different line icon for each service", () => {
+    const { container } = render(<AiServicesSection />);
+    const drawings = [...container.querySelectorAll("svg[data-ai-glyph-icon]")].map((icon) =>
+      [...icon.querySelectorAll("path")].map((path) => path.getAttribute("d")).join(" "),
+    );
+
+    expect(drawings.every((drawing) => drawing.length > 0)).toBe(true);
+    expect(new Set(drawings).size).toBe(aiServices.length);
+  });
+
+  it("masks the spectrum with one colourless halftone of shrinking dots", () => {
+    const svg = readFileSync(join(process.cwd(), "public/brand/ai-halftone.svg"), "utf8");
+    const radii = [...svg.matchAll(/<circle [^>]*r="([\d.]+)"/g)].map((match) => Number(match[1]));
+
+    expect(radii.length).toBeGreaterThan(500);
+    expect(Math.max(...radii)).toBeGreaterThan(Math.min(...radii) * 5);
+    expect(svg.match(/(?:fill|stroke)="[^"]+"/g)).toEqual(['fill="#000"']);
   });
 
   it("contains no wave, image, canvas, disclosure, or section CTA", () => {
@@ -116,14 +130,17 @@ describe("AiServicesSection", () => {
     expect(css).toMatch(
       /@media \(max-width:\s*767px\)[\s\S]*\.servicesGrid\s*\{[\s\S]*grid-template-columns:\s*1fr/,
     );
-    expect(css).toContain("radial-gradient(");
     expect(css).toContain("--service-accent");
-    expect(css).toMatch(/\.signal::before\s*\{[^}]*inset:\s*6%/);
-    expect(css).toMatch(/\.signal::before,\s*\.signal::after\s*\{[^}]*var\(--spectrum-linear\)/);
+    expect(css).toMatch(/\.halo\s*\{[^}]*var\(--spectrum-linear\)/);
+    expect(css).toMatch(
+      /\.halo\s*\{[^}]*calc\(var\(--service-index\) \* 20%\)[^}]*background-size:\s*500% 100%/,
+    );
+    expect(css).toMatch(/\.halo\s*\{[^}]*mask:\s*url\("\/brand\/ai-halftone\.svg"\)/);
+    expect(css).toMatch(/\.halo\s*\{[^}]*width:\s*280px;\s*height:\s*280px/);
+    expect(css).not.toMatch(/\.signal::(?:before|after)/);
+    expect(css).toMatch(/\.cardMain\s*\{[^}]*z-index:\s*1/);
     expect(css).toMatch(/\.description\s*\{[^}]*margin:\s*0;/);
     expect(css).toMatch(/\.card h3\s*\{[^}]*min-height:\s*2\.5em/);
-    expect(css).not.toMatch(/\.signal::before\s*\{[^}]*mask-image/);
-    expect(css).toMatch(/\.signalGlyph path\s*\{[^}]*fill:\s*currentColor/);
     expect(css).toMatch(/\.number\s*\{[^}]*font:\s*var\(--role-label\)/);
     expect(css).toMatch(/\.card h3\s*\{[^}]*font:\s*var\(--role-subtitle\)/);
     expect(css).toMatch(/\.description\s*\{[^}]*font:\s*var\(--role-body\)/);

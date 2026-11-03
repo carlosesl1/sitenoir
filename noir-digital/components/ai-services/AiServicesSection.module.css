@@ -103,6 +103,7 @@
   --card-text-secondary: rgb(168 173 178 / 72%);
 
   position: relative;
+  container-type: inline-size;
   display: grid;
   grid-template-rows: 1fr auto;
   min-width: 0;
@@ -140,6 +141,8 @@
 }
 
 .cardMain {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(5.75rem, 7.5vw, 7.5rem);
   gap: clamp(1rem, 1.4vw, 1.5rem);
@@ -179,8 +182,6 @@
 }
 
 .signal {
-  position: relative;
-  isolation: isolate;
   display: grid;
   align-self: start;
   width: 100%;
@@ -189,7 +190,8 @@
   color: var(--service-accent);
 }
 
-/* Each icon is a window onto one continuous spectrum, so colour runs across the grid. */
+/* The site's dither as a round light from the corner: one dot mask over one continuous spectrum,
+   with each card showing the next stretch of it, so colour runs across the grid. */
 .card:nth-child(1) {
   --service-index: 0;
 }
@@ -214,46 +216,44 @@
   --service-index: 5;
 }
 
-.signal::before,
-.signal::after {
+/* Always at the mask's own size: scaling it down blurs the smallest dots away. */
+.halo {
   position: absolute;
+  z-index: 0;
+  top: -46px;
+  right: -46px;
+  width: 280px;
+  height: 280px;
   background-image: var(--spectrum-linear);
   background-position: calc(var(--service-index) * 20%) 0;
-  background-size: 400% 100%;
-  content: "";
+  background-size: 500% 100%;
+  -webkit-mask: url("/brand/ai-halftone.svg") center / contain no-repeat;
+  mask: url("/brand/ai-halftone.svg") center / contain no-repeat;
+  pointer-events: none;
+  transform-origin: 68% 32%;
+  transition: transform 420ms ease;
 }
 
-.signal::before {
-  inset: 6%;
-  -webkit-mask: radial-gradient(circle, #000 0 0.85px, transparent 1.15px) center / 4px 4px;
-  mask: radial-gradient(circle, #000 0 0.85px, transparent 1.15px) center / 4px 4px;
-}
-
-.signal::after {
-  z-index: -1;
-  inset: 20%;
-  filter: blur(22px);
-  opacity: 0.28;
-  transition: opacity 260ms ease;
+/* On narrow cards the icon would land on the largest dots, so the light moves into the corner. */
+@container (max-width: 379px) {
+  .halo {
+    top: -72px;
+    right: -72px;
+  }
 }
 
 .signalGlyph {
-  position: relative;
-  z-index: 1;
-  width: 40%;
+  width: 62%;
   height: auto;
   aspect-ratio: 1;
   overflow: visible;
   shape-rendering: geometricPrecision;
-  filter: drop-shadow(0 0 0.22rem color-mix(in srgb, currentColor 28%, transparent));
   transition: transform 260ms ease;
 }
 
-.signalGlyph path {
-  fill: currentColor;
-}
-
 .cardFooter {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   gap: 1rem;
@@ -279,8 +279,8 @@
     transform: translateY(-0.18rem);
   }
 
-  .card:hover .signal::after {
-    opacity: 0.5;
+  .card:hover .halo {
+    transform: scale(1.08);
   }
 }
 
@@ -386,6 +386,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .card,
+  .halo,
   .signalGlyph {
     transition: none;
   }
@@ -396,5 +397,9 @@
   .signalGlyph,
   .focusMark {
     border-color: CanvasText;
+  }
+
+  .halo {
+    display: none;
   }
 }
