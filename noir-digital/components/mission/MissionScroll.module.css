@@ -39,7 +39,8 @@
   flex-direction: column;
   justify-content: center;
   gap: clamp(24px, 4svh, 40px);
-  padding-inline: var(--site-grid-inset);
+  padding-right: var(--site-grid-inset);
+  padding-left: var(--text-axis);
 }
 
 .eyebrow {

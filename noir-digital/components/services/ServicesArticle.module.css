@@ -61,7 +61,6 @@
 }
 
 .toc a:focus-visible,
-.footerLinks a:focus-visible,
 .chapter a:focus-visible {
   border-color: currentColor;
   outline: none;
@@ -289,14 +288,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-.footerLinks a {
-  min-height: 36px;
-  padding: 4px;
-  border: 2px dotted transparent;
-  color: inherit;
-  text-decoration: none;
+  gap: 0.5rem;
 }
 
 @media (max-width: 767px) {

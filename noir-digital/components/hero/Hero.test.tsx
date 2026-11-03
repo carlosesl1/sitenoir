@@ -116,10 +116,10 @@ describe("Hero", () => {
     }
     expect(css).toContain("@media (max-width: 767px)");
     expect(css).toContain("@media (min-width: 768px)");
-    expect(tokens).toMatch(/--header-brand-text-inset:\s*26px/);
-    expect(tokens).toMatch(/@media \(min-width: 1024px\)[\s\S]*--header-brand-text-inset:\s*66px/);
+    expect(tokens).toMatch(/--text-axis:\s*26px/);
+    expect(tokens).toMatch(/@media \(min-width: 768px\)[\s\S]*--text-axis:\s*66px/);
     expect(css).toMatch(
-      /@media \(min-width: 768px\)[\s\S]*\.disciplines\s*\{[^}]*left:\s*var\(--header-brand-text-inset\)/,
+      /@media \(min-width: 768px\)[\s\S]*\.disciplines\s*\{[^}]*left:\s*var\(--text-axis\)/,
     );
     expect(css).toMatch(/\.desktopSupport[\s\S]*display:\s*none/);
     expect(css).toMatch(/\.heroCtaSlot[\s\S]*display:\s*none/);
@@ -152,7 +152,7 @@ describe("Hero", () => {
       /@media \(min-width: 768px\) and \(max-width: 1279px\)[\s\S]*\.actionRow\s*\{[^}]*top:\s*calc\(80\.5svh \+ 20px\)/,
     );
     expect(css).toMatch(
-      /@media \(min-width: 768px\) and \(max-height: 720px\)[\s\S]*\.headline\s*\{[^}]*top:\s*calc\(18\.5svh \+ 20px\)[^}]*left:\s*clamp\(56px, 8\.6vw, 176px\)/,
+      /@media \(min-width: 768px\) and \(max-height: 720px\)[\s\S]*\.headline\s*\{[^}]*top:\s*calc\(18\.5svh \+ 20px\)[^}]*left:\s*var\(--text-axis\)/,
     );
     expect(css).toMatch(/\.headline\s*\{[^}]*font:\s*var\(--role-display-l\)/);
     expect(css).toMatch(

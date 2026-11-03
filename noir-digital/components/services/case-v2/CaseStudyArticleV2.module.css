@@ -3,7 +3,7 @@
   --case-muted: color-mix(in srgb, var(--text-primary) 72%, var(--surface-primary));
   --case-space: clamp(80px, 9vw, 136px);
   position: relative;
-  width: min(1440px, calc(100% - 112px));
+  width: calc(100% - 2 * var(--text-axis));
   padding: 140px 0 40px;
   margin-inline: auto;
   color: var(--text-primary);
@@ -66,19 +66,6 @@
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   text-transform: uppercase;
-}
-.wayfinding a,
-.navigationFooter a {
-  display: inline-flex;
-  min-height: 44px;
-  gap: 12px;
-  align-items: center;
-  color: inherit;
-  text-decoration: none;
-}
-.wayfinding a:hover,
-.navigationFooter a:hover {
-  color: var(--text-primary);
 }
 .wayfinding > span {
   text-align: right;
@@ -164,7 +151,6 @@
 }
 @media (max-width: 1023px) {
   .page {
-    width: calc(100% - 48px);
     padding-top: 120px;
   }
   .closing {
@@ -174,7 +160,6 @@
 }
 @media (max-width: 767px) {
   .page {
-    width: calc(100% - 40px);
     padding-top: 108px;
   }
   .wayfinding {

@@ -1,6 +1,7 @@
 "use client";
 
 import type { MouseEvent } from "react";
+import { SpectrumContactCta } from "@/components/contact/SpectrumContactCta";
 import { useLanguage } from "@/features/i18n/LanguageProvider";
 
 import { useScroll } from "@/features/scroll/ScrollProvider";
@@ -214,9 +215,9 @@ export function ServicesArticle() {
             </dl>
           </div>
           <nav className={styles["footerLinks"]} aria-label={t("Links finais")}>
-            <a href="/">{t("Início")}</a>
-            <a href="/#selected-work">{t("Projetos")}</a>
-            <a href="/#contact">{t("Contato")}</a>
+            <SpectrumContactCta href="/" label="Início" variant="secondary" />
+            <SpectrumContactCta href="/#selected-work" label="Projetos" variant="secondary" />
+            <SpectrumContactCta href="/#contact" label="Contato" variant="secondary" />
           </nav>
         </footer>
       </article>

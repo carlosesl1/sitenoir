@@ -249,12 +249,12 @@ describe("SelectedWork", () => {
     expect(statement).toContainElement(screen.getByRole("heading", { level: 2 }));
     expect(css).toMatch(/\.selectedWork\s*\{[^}]*align-items:\s*start/);
     expect(css).toMatch(
-      /\.statement\s*\{[^}]*margin-left:\s*calc\(var\(--header-brand-text-inset\) - 56px\)/,
+      /\.statement\s*\{[^}]*margin-left:\s*calc\(var\(--text-axis\) - var\(--page-inline\)\)/,
     );
     expect(css).toMatch(/\.statement\s*\{[^}]*container-type:\s*inline-size/);
     expect(css).toMatch(/\.statement h2\s*\{[^}]*font:\s*var\(--role-display-m\)/);
     expect(css).toMatch(
-      /@media \(max-width: 767px\)[\s\S]*\.statement\s*\{[^}]*margin-left:\s*calc\(var\(--header-brand-text-inset\) - 16px\)/,
+      /@media \(max-width: 767px\)[\s\S]*\.statement\s*\{[^}]*margin-left:\s*calc\(var\(--text-axis\) - var\(--page-inline\)\)/,
     );
     expect(css).toMatch(
       /@media \(min-width: 1024px\)[\s\S]*\.selectedWork\s*\{[^}]*min-height:\s*180vh/,

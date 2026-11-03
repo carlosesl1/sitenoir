@@ -138,7 +138,7 @@ export function PrinciplePointerModel({
 
   useEffect(() => {
     const dark = resolvedTheme === "dark";
-    const baseColor = resolveThreeDimensionalColor(resolvedTheme, "#242a30");
+    const baseColor = resolveThreeDimensionalColor(resolvedTheme, "#17181a");
     uniforms.uDiffuseness.value = dark ? 0.05 : 0.1;
     uniforms.uShininess.value = dark ? 100 : 120;
     uniforms.uFresnelPower.value = dark ? 3 : 1;
@@ -147,8 +147,8 @@ export function PrinciplePointerModel({
     uniforms.uAccentColor.value.set(baseColor);
     uniforms.uBaseDarkening.value = dark ? 1 : 0.18;
     if (dark) {
-      uniforms.uStripeColorA.value.set("#1a2026");
-      uniforms.uStripeColorB.value.set("#77828c");
+      uniforms.uStripeColorA.value.set("#16171a");
+      uniforms.uStripeColorB.value.set("#a2a4a6");
     } else {
       uniforms.uStripeColorA.value.set(baseColor).multiplyScalar(0.52);
       uniforms.uStripeColorB.value.set(baseColor).lerp(new Color("#ffffff"), 0.28);

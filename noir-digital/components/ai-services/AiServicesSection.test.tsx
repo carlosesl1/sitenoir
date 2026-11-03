@@ -103,7 +103,7 @@ describe("AiServicesSection", () => {
       /\.card:nth-child\(3n \+ 2\)\s*\{[^}]*margin-right:\s*var\(--site-grid-line-clearance\)[^}]*margin-left:\s*calc\(var\(--site-grid-line-clearance\) \+ var\(--stroke-hairline\)\)/,
     );
     expect(css).toMatch(
-      /\.heading\s*\{[\s\S]*margin:[\s\S]*calc\(var\(--header-brand-text-inset\) - var\(--page-inline\)\)/,
+      /\.heading\s*\{[\s\S]*margin:[\s\S]*calc\(var\(--text-axis\) - var\(--page-inline\)\)/,
     );
     expect(css).toMatch(
       /\.card\s*\{[\s\S]*--card-border:\s*rgb\(168 173 178 \/ 22%\)[\s\S]*border:\s*1px solid var\(--card-border\)[\s\S]*background:\s*color-mix\(in srgb, var\(--color-noir-black\) 96%, transparent\)/,
@@ -118,9 +118,10 @@ describe("AiServicesSection", () => {
     );
     expect(css).toContain("radial-gradient(");
     expect(css).toContain("--service-accent");
-    expect(css).toMatch(
-      /\.signal::before\s*\{[^}]*inset:\s*6%[^}]*background-size:\s*4px 4px[^}]*opacity:\s*0\.42/,
-    );
+    expect(css).toMatch(/\.signal::before\s*\{[^}]*inset:\s*6%/);
+    expect(css).toMatch(/\.signal::before,\s*\.signal::after\s*\{[^}]*var\(--spectrum-linear\)/);
+    expect(css).toMatch(/\.description\s*\{[^}]*margin:\s*0;/);
+    expect(css).toMatch(/\.card h3\s*\{[^}]*min-height:\s*2\.5em/);
     expect(css).not.toMatch(/\.signal::before\s*\{[^}]*mask-image/);
     expect(css).toMatch(/\.signalGlyph path\s*\{[^}]*fill:\s*currentColor/);
     expect(css).toMatch(/\.number\s*\{[^}]*font:\s*var\(--role-label\)/);

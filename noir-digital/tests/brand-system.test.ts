@@ -44,6 +44,31 @@ describe("brand system", () => {
     }
   });
 
+  it("starts left-aligned text on one axis", () => {
+    const tokens = read("styles/tokens.css");
+    expect(tokens).toContain("--text-axis: 26px;");
+    expect(tokens).not.toContain("--header-brand-text-inset");
+    for (const file of [
+      "components/header/Header.module.css",
+      "components/hero/Hero.module.css",
+      "components/mission/MissionScroll.module.css",
+      "components/work/SelectedWork.module.css",
+      "components/ai-services/AiServicesSection.module.css",
+      "components/contact/ContactFooter.module.css",
+      "components/contact/ContactPage.module.css",
+      "components/legal/LegalDocument.module.css",
+      "components/services/case-v2/CaseStudyArticleV2.module.css",
+    ]) {
+      expect(read(file)).toContain("var(--text-axis)");
+    }
+  });
+
+  it("renders stickers in the same glass family as the other 3D objects", () => {
+    const stickers = read("scene/sticker-rendering.ts");
+    expect(stickers).toContain("vec3 glass =");
+    expect(stickers).not.toContain("vec4(color.rgb,");
+  });
+
   it("uses two font families", () => {
     const tokens = read("styles/tokens.css");
     expect(tokens).toContain("--font-sans:");

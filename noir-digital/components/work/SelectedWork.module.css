@@ -6,7 +6,7 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gutter);
   align-items: start;
-  padding: 160px 56px 192px;
+  padding: 160px var(--page-inline) 192px;
   color: var(--text-primary);
 }
 
@@ -36,7 +36,7 @@
 .statement {
   position: static;
   container-type: inline-size;
-  margin-left: calc(var(--header-brand-text-inset) - 56px);
+  margin-left: calc(var(--text-axis) - var(--page-inline));
   padding-right: 32px;
 }
 
@@ -74,7 +74,8 @@
 .serviceIndex a {
   position: relative;
   width: 100%;
-  padding: 4px 8px 4px 18px;
+  margin-left: -2px;
+  padding: 4px 8px 4px 0;
   border: 2px dotted transparent;
   color: var(--text-secondary);
   text-decoration: none;
@@ -87,7 +88,7 @@
 .serviceIndex a::before {
   position: absolute;
   top: 50%;
-  left: 2px;
+  left: -14px;
   width: 4px;
   height: 4px;
   border-radius: 50%;
@@ -361,7 +362,7 @@
 
   .statement {
     position: static;
-    margin-left: calc(var(--header-brand-text-inset) - 16px);
+    margin-left: calc(var(--text-axis) - var(--page-inline));
     padding-right: 0;
   }
 

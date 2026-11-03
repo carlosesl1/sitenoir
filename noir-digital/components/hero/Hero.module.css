@@ -101,7 +101,7 @@
     flex-direction: column;
     gap: clamp(14px, 1.8svh, 18px);
     margin-bottom: 24px;
-    padding-inline: 8px;
+    padding-inline: calc(var(--text-axis) - 16px);
   }
 
   .heroCtaSlot {
@@ -111,7 +111,7 @@
 
   .headline {
     display: block;
-    padding-inline: 8px;
+    padding-inline: calc(var(--text-axis) - 16px);
   }
 
   .headline > [data-hero-scramble="true"] {
@@ -152,7 +152,7 @@
 
   .disciplines {
     top: 15.5svh;
-    left: var(--header-brand-text-inset);
+    left: var(--text-axis);
     padding: 0;
   }
 
@@ -167,7 +167,7 @@
     z-index: 3;
     top: calc(55.5svh + 24px);
     right: 22vw;
-    left: clamp(32px, 10.8vw, 176px);
+    left: var(--text-axis);
     padding: 0;
   }
 
@@ -203,7 +203,7 @@
   .headline {
     top: calc(57svh + 20px);
     right: 32px;
-    left: 32px;
+    left: var(--text-axis);
   }
 
   .actionRow {
@@ -240,7 +240,7 @@
   .headline {
     top: calc(18.5svh + 20px);
     right: clamp(90px, 16.5vw, 338px);
-    left: clamp(56px, 8.6vw, 176px);
+    left: var(--text-axis);
   }
 
   .actionRow {

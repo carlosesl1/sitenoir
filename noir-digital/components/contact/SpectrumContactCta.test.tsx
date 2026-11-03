@@ -102,6 +102,24 @@ describe("SpectrumContactCta", () => {
     expect(css).not.toMatch(/\.root:focus-visible \.surface\s*\{[^}]*(?:transform|filter):/);
   });
 
+  it("keeps the shape and glint for secondary actions, without the white surface", () => {
+    render(
+      <SpectrumContactCta href="/#selected-work" label="Todos os cases" variant="secondary" />,
+    );
+    const css = readFileSync(
+      join(process.cwd(), "components/contact/SpectrumContactCta.module.css"),
+      "utf8",
+    );
+
+    expect(screen.getByRole("link", { name: "Todos os cases" })).toHaveAttribute(
+      "data-variant",
+      "secondary",
+    );
+    expect(css).toMatch(
+      /\.root\[data-variant="secondary"\] \.surface\s*\{[^}]*background:\s*transparent/,
+    );
+  });
+
   it("keeps the spectrum on only for the emphasis state", () => {
     const view = render(
       <>

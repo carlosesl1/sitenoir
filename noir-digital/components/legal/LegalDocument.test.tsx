@@ -16,7 +16,9 @@ describe("LegalDocument", () => {
     expect(screen.getAllByRole("heading", { level: 2 })).toHaveLength(13);
     expect(screen.getByText("31 de julho de 2026")).toBeVisible();
     expect(screen.getByText("A NOIR Digital não comercializa dados pessoais.")).toBeVisible();
-    expect(screen.getByRole("link", { name: "Termos de Uso" })).toHaveAttribute("href", "/termos");
+    for (const link of screen.getAllByRole("link", { name: /Termos de Uso/ })) {
+      expect(link).toHaveAttribute("href", "/termos");
+    }
   });
 
   it("renders the complete terms and links the privacy policy inside the document", () => {

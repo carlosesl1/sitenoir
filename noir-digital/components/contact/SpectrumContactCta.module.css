@@ -44,9 +44,11 @@
   position: absolute;
   inset: 0;
   isolation: isolate;
-  display: grid;
+  display: flex;
   overflow: hidden;
-  place-items: center;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
   border: 1px solid rgb(255 255 255 / 58%);
   border-radius: 4px;
   background: var(--button-surface);
@@ -140,6 +142,39 @@
   opacity: 0.65;
   pointer-events: none;
   animation: opticalContourFlow 3s linear infinite;
+}
+
+/* Secondary: same shape and glint, without the white surface. */
+.root[data-variant="secondary"] {
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
+  height: 48px;
+  color: var(--text-primary);
+}
+
+.root[data-variant="secondary"]::before {
+  background-color: var(--border-strong);
+  opacity: 1;
+}
+
+.root[data-variant="secondary"] .surface {
+  position: relative;
+  inset: auto;
+  height: 100%;
+  padding-inline: 1.25rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  white-space: nowrap;
+  transition: background-color 180ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .root[data-variant="secondary"]:hover .surface {
+    background: rgb(244 244 240 / 8%);
+    transform: none;
+  }
 }
 
 .root:focus-visible {
