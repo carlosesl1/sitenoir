@@ -95,13 +95,20 @@
   --role-button: 700 var(--type-button) / 1 var(--font-sans);
   --role-wordmark: 700 var(--type-body) / 1 var(--font-sans);
   /* The spectrum is light, never flat colour: split edges and a moving glint out of white. */
-  --fringe-warm: var(--color-spectral-red);
-  --fringe-cool: var(--color-spectral-blue);
+  --fringe-primary:
+    -0.02em 0 var(--color-spectral-yellow), 0.02em 0 var(--color-spectral-green),
+    -0.045em 0 var(--color-spectral-orange), 0.045em 0 var(--color-spectral-blue),
+    -0.07em 0 var(--color-spectral-red), 0.07em 0 var(--color-spectral-violet);
+  --fringe-secondary:
+    -0.01em 0 var(--color-spectral-yellow), 0.01em 0 var(--color-spectral-green),
+    -0.0225em 0 var(--color-spectral-orange), 0.0225em 0 var(--color-spectral-blue),
+    -0.035em 0 var(--color-spectral-red), 0.035em 0 var(--color-spectral-violet);
   --spectrum-glint:
-    transparent 0turn, transparent 0.6turn, var(--color-spectral-violet) 0.67turn,
-    var(--color-spectral-blue) 0.71turn, var(--color-noir-warm-white) 0.76turn,
-    var(--color-spectral-yellow) 0.81turn, var(--color-spectral-red) 0.85turn, transparent 0.92turn,
-    transparent 1turn;
+    transparent 0turn, transparent 0.56turn, var(--color-noir-warm-white) 0.6turn,
+    var(--color-spectral-red) 0.64turn, var(--color-spectral-orange) 0.68turn,
+    var(--color-spectral-yellow) 0.72turn, var(--color-spectral-green) 0.76turn,
+    var(--color-spectral-blue) 0.81turn, var(--color-spectral-violet) 0.86turn,
+    transparent 0.94turn, transparent 1turn;
   --button-surface: linear-gradient(180deg, #fff 0%, #f4f4f3 48%, #c6c6c4 100%);
   --space-0: 0;
   --space-1: 4px;

@@ -97,7 +97,7 @@ function WhatsAppPanel({ variant }: { readonly variant: "desktop" | "mobile" }) 
           className={`${spectrumStyles["surface"]} ${styles["actionSurface"]} ${styles["whatsAppActionSurface"]}`}
           data-spectrum-contact-surface
         >
-          <span>{t("Iniciar conversa no WhatsApp")}</span>
+          <span>{t("Conversar no WhatsApp")}</span>
           <Icon
             className={styles["ctaIcon"]}
             icon={arrowRightUpLinear}

@@ -516,10 +516,6 @@
 }
 
 .whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
-  font-size: clamp(0.6875rem, 0.5rem + 1cqi, 0.875rem);
-  font-stretch: 100%;
-  font-variation-settings: "wdth" 100;
-  letter-spacing: 0.02em;
   padding-inline: clamp(10px, 4cqi, 18px);
   white-space: nowrap;
 }
@@ -528,6 +524,20 @@
   width: clamp(14px, 4cqi, 18px);
   height: clamp(14px, 4cqi, 18px);
   flex: 0 0 auto;
+}
+
+/* Narrow panels: the label keeps the standard button size, the arrow gives way. */
+@container (max-width: 285px) {
+  .whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
+    justify-content: center;
+    padding-inline: 10px;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .whatsAppActionSurface .ctaIcon {
+    display: none;
+  }
 }
 
 .information {

@@ -26,15 +26,11 @@
 
 /* Letters stay white while decoding: the light only splits at their edges. */
 .glyph[data-phase="primary"] {
-  text-shadow:
-    -0.05em 0 var(--fringe-warm),
-    0.05em 0 var(--fringe-cool);
+  text-shadow: var(--fringe-primary);
 }
 
 .glyph[data-phase="secondary"] {
-  text-shadow:
-    -0.025em 0 var(--fringe-warm),
-    0.025em 0 var(--fringe-cool);
+  text-shadow: var(--fringe-secondary);
 }
 
 .screenReaderText {

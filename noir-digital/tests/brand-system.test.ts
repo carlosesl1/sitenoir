@@ -72,7 +72,13 @@ describe("brand system", () => {
     const tokens = read("styles/tokens.css");
     expect(tokens).not.toContain("--color-spectral-cyan");
     expect(tokens).not.toContain("--spectrum-stops");
-    expect(tokens.replace(/\s+/g, " ")).toMatch(/--spectrum-glint: transparent 0turn/);
+    const flatTokens = tokens.replace(/\s+/g, " ");
+    const glint = flatTokens.slice(flatTokens.indexOf("--spectrum-glint:"));
+    expect(glint).toMatch(/--spectrum-glint: transparent 0turn/);
+    for (const name of ["red", "orange", "yellow", "green", "blue", "violet"]) {
+      expect(glint.slice(0, glint.indexOf(";"))).toContain(`--color-spectral-${name}`);
+      expect(flatTokens).toMatch(new RegExp(`--fringe-primary:[^;]*--color-spectral-${name}`));
+    }
     expect(tokens).toContain("--selection-background: var(--color-noir-warm-white);");
 
     const spectralByPosition = /:nth-child\([^)]*\)\s*\{[^}]*var\(--color-spectral-/;

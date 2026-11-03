@@ -208,7 +208,7 @@ describe("ContactPage", () => {
     expect(honeypot).toHaveAttribute("tabindex", "-1");
     expect(honeypot).toHaveAttribute("autocomplete", "off");
 
-    expect(screen.getByRole("link", { name: "Iniciar conversa no WhatsApp" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Conversar no WhatsApp" })).toHaveAttribute(
       "href",
       contactWhatsAppHref,
     );
