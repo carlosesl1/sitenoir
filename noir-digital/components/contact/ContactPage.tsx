@@ -76,13 +76,14 @@ function WhatsAppPanel({ variant }: { readonly variant: "desktop" | "mobile" }) 
       className={`${styles["whatsAppPanel"]} ${variantClass}`}
       data-contact-whatsapp-panel={variant}
     >
+      <span className={styles["whatsAppLight"]} aria-hidden="true" />
       <span className={styles["recommended"]}>{t("RECOMENDADO")}</span>
+      <div className={styles["whatsAppMark"]} aria-hidden="true" data-contact-whatsapp-icon>
+        <Icon icon={whatsappIcon} />
+      </div>
       <div className={styles["whatsAppHeading"]}>
         <h3>{t("WHATSAPP")}</h3>
         <p className={styles["whatsAppSubtitle"]}>{t("RESPOSTA RÁPIDA")}</p>
-      </div>
-      <div className={styles["whatsAppMark"]} aria-hidden="true" data-contact-whatsapp-icon>
-        <Icon icon={whatsappIcon} />
       </div>
       <p>{t("Prefere falar diretamente? Abra uma conversa com a mensagem inicial já pronta.")}</p>
       <a

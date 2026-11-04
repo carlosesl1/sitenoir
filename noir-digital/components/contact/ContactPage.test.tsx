@@ -113,19 +113,17 @@ describe("ContactPage", () => {
     );
   });
 
-  it("presents the WhatsApp mark as a standalone balanced icon", () => {
+  it("gives the WhatsApp card the anatomy of the AI cards", () => {
     const css = readFileSync(
       join(process.cwd(), "components/contact/ContactPage.module.css"),
       "utf8",
     );
 
-    expect(css).toMatch(
-      /\.whatsAppPanel\s*\{[^}]*--whatsapp-mark-size:\s*clamp\(54px, 14cqi, 68px\)/,
-    );
-    expect(css).toMatch(
-      /\.whatsAppMark\s*\{[^}]*top:\s*35%[^}]*right:\s*clamp\(52px, 12cqi, 68px\)[^}]*border:\s*0[^}]*border-radius:\s*0[^}]*background:\s*none[^}]*box-shadow:\s*none[^}]*transform:\s*translateY\(-50%\)/,
-    );
+    expect(css).toMatch(/\.whatsAppPanel\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 56px/);
+    expect(css).not.toMatch(/\.whatsAppPanel\s*\{[^}]*clip-path/);
+    expect(css).not.toMatch(/\.whatsAppMark\s*\{[^}]*position:\s*absolute/);
     expect(css).toMatch(/\.whatsAppMark svg\s*\{[^}]*width:\s*100%[^}]*height:\s*100%/);
+    expect(css).toMatch(/\.whatsAppLight\s*\{[^}]*mask:\s*url\("\/brand\/ai-halftone\.svg"\)/);
     expect(css).not.toMatch(/@media \(max-width: 767px\)[\s\S]*\.whatsAppMark\s*\{/);
   });
 
@@ -172,9 +170,6 @@ describe("ContactPage", () => {
       /\.recommended,\s*\.whatsAppSubtitle,\s*\.information\s*\{[^}]*font:\s*var\(--role-label\)/,
     );
     expect(css).toMatch(/\.whatsAppPanel > p\s*\{[^}]*font:\s*var\(--role-note\)/);
-    expect(css).toMatch(
-      /\.whatsAppPanel > p\s*\{[^}]*max-width:\s*min\(24ch, calc\(100% - var\(--whatsapp-mark-size\) - 12px\)\)/,
-    );
     expect(css).toMatch(/\.whatsAppPanel h3\s*\{[^}]*font:\s*var\(--role-title\)/);
     expect(css).not.toMatch(/\.whatsAppActionSurface\s*\{[^}]*font-size/);
     expect(css).toMatch(/\.whatsAppActionSurface\s*\{[^}]*white-space:\s*nowrap/);

@@ -355,36 +355,44 @@
   flex-direction: column;
 }
 
+/* Same anatomy as the AI cards: plain border, corner marks, light from the corner, icon on top of it. */
 .whatsAppPanel {
-  --whatsapp-mark-size: clamp(54px, 14cqi, 68px);
-
-  display: grid;
   position: relative;
   isolation: isolate;
+  display: grid;
   overflow: hidden;
   container-type: inline-size;
-  min-height: 390px;
-  align-content: space-between;
-  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) 56px;
+  align-items: start;
   margin-top: 22px;
-  padding: clamp(26px, 2.5vw, 42px);
-  border: 1px solid rgb(168 173 178 / 32%);
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 2.5%), transparent 22%),
-    linear-gradient(135deg, rgb(18 20 21 / 98%), rgb(3 3 3 / 96%));
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 3%),
-    0 22px 60px rgb(0 0 0 / 18%);
+  padding: 1.75rem clamp(1.5rem, 2.2vw, 2.25rem) clamp(1.5rem, 2.2vw, 2.25rem);
+  border: 1px solid rgb(168 173 178 / 22%);
+  background: color-mix(in srgb, var(--color-noir-black) 96%, transparent);
   color: rgb(244 244 240 / 96%);
-  clip-path: polygon(
-    14px 0,
-    calc(100% - 20px) 0,
-    100% 20px,
-    100% calc(100% - 12px),
-    calc(100% - 12px) 100%,
-    0 100%,
-    0 14px
-  );
+}
+
+.whatsAppPanel::before,
+.whatsAppPanel::after {
+  position: absolute;
+  z-index: 2;
+  width: 0.42rem;
+  height: 0.42rem;
+  pointer-events: none;
+  content: "";
+}
+
+.whatsAppPanel::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid var(--text-primary);
+  border-left: 1px solid var(--text-primary);
+}
+
+.whatsAppPanel::after {
+  right: -1px;
+  bottom: -1px;
+  border-right: 1px solid var(--text-primary);
+  border-bottom: 1px solid var(--text-primary);
 }
 
 .mobileWhatsAppPanel {
@@ -392,7 +400,7 @@
 }
 
 /* The same halftone light as the AI cards, at its own size so the faintest dots survive. */
-.whatsAppPanel::before {
+.whatsAppLight {
   position: absolute;
   top: -46px;
   right: -46px;
@@ -400,9 +408,17 @@
   width: 280px;
   height: 280px;
   background-image: var(--spectrum-linear);
-  content: "";
   -webkit-mask: url("/brand/ai-halftone.svg") center / contain no-repeat;
   mask: url("/brand/ai-halftone.svg") center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* On narrow cards the icon would land on the largest dots, so the light moves into the corner. */
+@container (max-width: 379px) {
+  .whatsAppLight {
+    top: -72px;
+    right: -72px;
+  }
 }
 
 .recommended {
@@ -422,25 +438,19 @@
 .whatsAppHeading {
   position: relative;
   z-index: 1;
+  grid-column: 1 / -1;
   min-width: 0;
-  max-width: 100%;
+  margin-top: 2.5rem;
 }
 
 .whatsAppMark {
-  position: absolute;
+  position: relative;
   z-index: 1;
-  top: 35%;
-  right: clamp(52px, 12cqi, 68px);
   display: grid;
-  width: var(--whatsapp-mark-size);
+  width: 100%;
   aspect-ratio: 1;
   place-items: center;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
   color: var(--text-primary);
-  transform: translateY(-50%);
 }
 
 .whatsAppMark svg {
@@ -456,9 +466,11 @@
 .whatsAppPanel > p {
   position: relative;
   z-index: 1;
+  grid-column: 1 / -1;
   min-width: 0;
-  max-width: min(24ch, calc(100% - var(--whatsapp-mark-size) - 12px));
-  margin: 0;
+  max-width: 36ch;
+  margin: 1rem 0 0;
+  text-wrap: pretty;
   font: var(--role-note);
   color: rgb(168 173 178 / 78%);
   overflow-wrap: break-word;
@@ -467,8 +479,10 @@
 .whatsAppAction {
   position: relative;
   z-index: 1;
+  grid-column: 1 / -1;
   min-width: 0;
   max-width: 100%;
+  margin-top: 1.75rem;
   color: var(--color-noir-black);
 }
 
@@ -484,16 +498,22 @@
 }
 
 /* Narrow panels: the label keeps the standard button size, the arrow gives way. */
-@container (max-width: 285px) {
+@container (max-width: 276px) {
   .whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
     justify-content: center;
-    padding-inline: 10px;
+    padding-inline: 8px;
     text-align: center;
-    white-space: normal;
   }
 
   .whatsAppActionSurface .ctaIcon {
     display: none;
+  }
+}
+
+/* Only a label that still does not fit breaks into two lines. */
+@container (max-width: 240px) {
+  .whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
+    white-space: normal;
   }
 }
 
@@ -600,6 +620,13 @@
   }
 }
 
+/* A little less side padding keeps the WhatsApp label on one line in narrow panels. */
+@media (max-width: 1279px) {
+  .whatsAppPanel {
+    padding-inline: 1.25rem;
+  }
+}
+
 @media (max-width: 1199px) {
   /* The floor keeps the headline's longest word inside its column on small tablets. */
   .layout {
@@ -698,7 +725,6 @@
   }
 
   .whatsAppPanel {
-    min-height: 350px;
     margin-top: 28px;
   }
 
@@ -722,6 +748,10 @@
 }
 
 @media (max-width: 359px) {
+  .whatsAppPanel {
+    padding-inline: 1rem;
+  }
+
   .information dl div {
     display: block;
     padding: 12px 0;
