@@ -76,6 +76,15 @@ describe("brand system", () => {
     expect(stickers).toContain("gl_FragColor = vec4(color.rgb, color.a * vOpacity);");
   });
 
+  it("leaves no legacy type tokens or light-theme colours behind", () => {
+    const tokens = read("styles/tokens.css");
+    expect(tokens).not.toMatch(
+      /--(?:weight-|leading-|measure-|display-xl|type-(?:micro|heading|display:|display-xl|body-large)|tracking-(?:display|heading|label))/,
+    );
+    expect(tokens).not.toMatch(/--color-[\w-]*light/);
+    expect(read("styles/layout.css")).toContain("font: var(--role-body)");
+  });
+
   it("uses two font families", () => {
     const tokens = read("styles/tokens.css");
     expect(tokens).toContain("--font-sans:");

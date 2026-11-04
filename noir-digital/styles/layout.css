@@ -14,20 +14,11 @@ body {
   margin: var(--space-0);
   background: var(--surface-primary);
   color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: var(--type-body);
-  font-weight: var(--weight-body);
-  line-height: var(--leading-body);
+  font: var(--role-body);
 }
 
 * {
   box-sizing: border-box;
-}
-
-.technicalGrid {
-  display: grid;
-  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
-  column-gap: var(--grid-gutter);
 }
 
 .gridCross {
@@ -55,12 +46,6 @@ body {
 .gridCross::after {
   inline-size: var(--stroke-hairline);
   block-size: 100%;
-}
-
-.screenSection {
-  min-block-size: 100dvh;
-  padding-block: var(--page-block);
-  padding-inline: var(--page-inline);
 }
 
 .visuallyHidden {

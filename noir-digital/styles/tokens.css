@@ -3,22 +3,11 @@
   color-scheme: dark;
   --color-noir-black: #030303;
   --color-noir-graphite: #0b0d0e;
-  --color-noir-carbon: #151719;
   --color-noir-warm-white: #f4f4f0;
-  --color-noir-paper: #f3fbf9;
-  --color-noir-light-elevated: #e8e8e2;
-  --color-noir-soft-gray: #a8adb2;
-  --color-noir-optical-blue: #bfdff3;
-  --color-noir-optical-cream: #fff4da;
-  --color-noir-optical-white: #dde0e4;
-  --color-optical-dark-background: #030303;
-  --color-optical-dark-vignette: #a8adb2;
-  --color-optical-dark-output: #dde0e4;
-  --color-optical-light-background: #ffead6;
-  --color-optical-light-vignette: #6196ff;
-  --color-optical-light-output: #acffb9;
-  --color-flare-tail-dark: #1600ff;
-  --color-flare-tail-light: #ffa300;
+  --color-optical-background: #030303;
+  --color-optical-vignette: #a8adb2;
+  --color-optical-output: #dde0e4;
+  --color-flare-tail: #1600ff;
   --color-spectral-red: #f2383a;
   --color-spectral-orange: #ff8a2a;
   --color-spectral-yellow: #f7d94a;
@@ -28,7 +17,6 @@
   --color-spectral-violet: #a855f7;
   --surface-primary: var(--color-noir-black);
   --surface-elevated: var(--color-noir-graphite);
-  --surface-active: var(--color-noir-carbon);
   --text-primary: rgb(244 244 240 / 96%);
   --text-secondary: rgb(168 173 178 / 68%);
   --text-disabled: rgb(168 173 178 / 36%);
@@ -40,37 +28,15 @@
   --font-sans: "TikTok Sans", Arial, sans-serif;
   --font-mono: "Departure Mono", "Courier New", monospace;
   --page-inline: 56px;
-  --page-block: 24px;
   --site-grid-inset: 56px;
   /* Every left-aligned text starts here: brand, titles, labels and the status bar. */
   --text-axis: 26px;
-  --grid-columns: 12;
   --grid-gutter: var(--space-6);
   --line: color-mix(in srgb, currentColor 13%, transparent);
-  --display-xl: clamp(3.75rem, 5.1vw, 5rem);
-  --body: 1rem;
-  --mono: 0.875rem;
   --ease-noir: cubic-bezier(0.66, 0, 0.01, 1);
-  --type-display-xl: clamp(3rem, 8vw, 7rem);
-  --type-display: clamp(2.5rem, 6vw, 5rem);
-  --type-heading: clamp(1.75rem, 3vw, 3rem);
-  --type-body-large: 1.125rem;
   --type-body: 1rem;
   --type-label: 0.75rem;
-  --type-micro: 0.6875rem;
-  --weight-body: 450;
-  --weight-label: 500;
-  --weight-heading: 650;
-  --weight-display: 700;
-  --leading-solid: 1;
-  --leading-display: 0.92;
-  --leading-heading: 1;
-  --leading-body: 1.55;
-  --leading-label: 1.2;
   --tracking-tight: -0.02em;
-  --tracking-display: -0.035em;
-  --tracking-heading: -0.025em;
-  --tracking-label: 0.08em;
   /* Brand type roles: every text on the site picks one of these. */
   --type-display-l: clamp(2.5rem, 5.4vw, 5.75rem);
   --type-display-m: clamp(1.75rem, 3vw, 3rem);
@@ -134,23 +100,10 @@
   --space-20: 80px;
   --space-24: 96px;
   --stroke-hairline: 1px;
-  --focus-offset: var(--space-1);
-  --control-min-size: 44px;
-  --control-min-width: 192px;
-  --guide-min-height: 192px;
-  --intro-min-height: 320px;
-  --content-max: 1440px;
-  --measure-display: 16ch;
-  --measure-body: 60ch;
-  --radius-none: 0;
   --radius-control: 2px;
-  --duration-none: 0ms;
   --duration-micro: 120ms;
   --duration-standard: 240ms;
-  --duration-emphasis: 480ms;
   --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
-  --layer-plate: 0;
-  --layer-face: 1;
 }
 
 @media (min-width: 768px) {
@@ -162,10 +115,7 @@
 @media (max-width: 1023px) {
   :root {
     --type-nav: 0.875rem;
-    --page-block: 20px;
-    --grid-columns: 6;
     --grid-gutter: var(--space-4);
-    --display-xl: clamp(2.25rem, 10vw, 3.25rem);
   }
 }
 
@@ -175,12 +125,6 @@
     --type-display-m: 6.6vw;
     --site-grid-inset: 16px;
     --page-inline: 16px;
-  }
-}
-
-@media (max-width: 639px) {
-  :root {
-    --grid-columns: 2;
   }
 }
 

@@ -110,7 +110,7 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
   }, []);
   const pointerColor = useMemo(() => readToken("--color-noir-warm-white"), []);
   const pointerSpectrum = useMemo(() => POINTER_SPECTRUM_TOKENS.map(readToken), []);
-  const tailColor = useMemo(() => readToken("--color-flare-tail-dark"), []);
+  const tailColor = useMemo(() => readToken("--color-flare-tail"), []);
   const flareClearColor = useMemo(() => new Color().setScalar(0), []);
   const previousClearColor = useMemo(() => new Color(), []);
   const resolution = useMemo(() => new Vector2(1, 1), []);

@@ -62,11 +62,11 @@ export function HeroOpticalBackground({
 
   const colors = useMemo(
     () => ({
-      background: readOpticalToken("--color-optical-dark-background"),
+      background: readOpticalToken("--color-optical-background"),
       edgeIntensity: HERO_BACKGROUND_CONFIG.dark.edgeIntensity,
-      output: readOpticalToken("--color-optical-dark-output"),
+      output: readOpticalToken("--color-optical-output"),
       outputMix: HERO_BACKGROUND_CONFIG.dark.outputMix,
-      vignette: readOpticalToken("--color-optical-dark-vignette"),
+      vignette: readOpticalToken("--color-optical-vignette"),
     }),
     [],
   );
