@@ -19,7 +19,6 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import { pointerStore } from "@/features/pointer/pointer-store";
 import type { PrincipleSectionRect } from "@/features/principles/PrincipleSceneProvider";
-import { useTheme } from "@/features/theme/ThemeProvider";
 import { POINTER_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { HeroCanvasUiPointerMesh } from "@/scene/HeroCanvasUiPointerAsset";
 import { HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER } from "@/scene/hero-canvas-ui-edge-flare-config";
@@ -37,7 +36,6 @@ import {
   resolvePrinciplePortalOpacity,
 } from "@/scene/principle-pointer-motion";
 import { resolveSceneFrameDelta } from "@/scene/scene-frame";
-import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
 
 const REST_SCALE = 0.1;
 const AXIS_TILT = MathUtils.degToRad(45);
@@ -66,7 +64,6 @@ export function PrinciplePointerModel({
   const fullscreenRef = useRef(false);
   const lightAngleRef = useRef(DEFAULT_LIGHT_ANGLE);
   const renderViewport = useMemo(() => new Vector4(), []);
-  const { resolvedTheme } = useTheme();
   const source = useLoader(GLTFLoader, POINTER_MODEL_SOURCE);
   const geometry = useMemo(() => {
     const cursorGeometry = createHeroModelGeometry(source.scene);
@@ -86,21 +83,21 @@ export function PrinciplePointerModel({
   );
   const uniforms = useMemo(
     () => ({
-      uDiffuseness: { value: 0.1 },
-      uFresnelPower: { value: 6 },
-      uFresnelSideDir: { value: new Vector3(-1, 0.3, 1) },
-      uFresnelStrength: { value: 1 },
-      uAccentColor: { value: new Color("#242a30") },
+      uDiffuseness: { value: 0.05 },
+      uFresnelPower: { value: 3 },
+      uFresnelSideDir: { value: new Vector3(-1, 1, -1) },
+      uFresnelStrength: { value: 0.72 },
+      uAccentColor: { value: new Color("#17181a") },
       uBaseDarkening: { value: 1 },
       uLight: { value: new Vector3(4, 9, 0.5) },
       uOpacity: { value: 1 },
       uProgress: { value: 0 },
       uResolution: { value: new Vector2(1, 1) },
       uScaleReveal: { value: 0 },
-      uShininess: { value: 40 },
+      uShininess: { value: 100 },
       uSpecularStrength: { value: 1.2 },
-      uStripeColorA: { value: new Color("#1a2026") },
-      uStripeColorB: { value: new Color("#77828c") },
+      uStripeColorA: { value: new Color("#16171a") },
+      uStripeColorB: { value: new Color("#a2a4a6") },
     }),
     [],
   );
@@ -117,25 +114,6 @@ export function PrinciplePointerModel({
       }),
     [uniforms],
   );
-
-  useEffect(() => {
-    const dark = resolvedTheme === "dark";
-    const baseColor = resolveThreeDimensionalColor(resolvedTheme, "#17181a");
-    uniforms.uDiffuseness.value = dark ? 0.05 : 0.1;
-    uniforms.uShininess.value = dark ? 100 : 120;
-    uniforms.uFresnelPower.value = dark ? 3 : 1;
-    uniforms.uFresnelStrength.value = dark ? 0.72 : 0.24;
-    uniforms.uFresnelSideDir.value.set(-1, 1, -1);
-    uniforms.uAccentColor.value.set(baseColor);
-    uniforms.uBaseDarkening.value = dark ? 1 : 0.18;
-    if (dark) {
-      uniforms.uStripeColorA.value.set("#16171a");
-      uniforms.uStripeColorB.value.set("#a2a4a6");
-    } else {
-      uniforms.uStripeColorA.value.set(baseColor).multiplyScalar(0.52);
-      uniforms.uStripeColorB.value.set(baseColor).lerp(new Color("#ffffff"), 0.28);
-    }
-  }, [resolvedTheme, uniforms]);
 
   useEffect(
     () => () => {

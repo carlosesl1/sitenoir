@@ -21,8 +21,7 @@ describe("Canvas UI contact glass", () => {
     );
     expect(assetSource).toContain("const { texture } = useHeroRefraction();");
     expect(assetSource).toContain("buffer={texture}");
-    expect(assetSource).toContain('resolveThreeDimensionalColor(resolvedTheme, "#ffffff")');
-    expect(assetSource).toContain("color={materialColor}");
+    expect(assetSource).toContain('color="#ffffff"');
     expect(assetSource).toContain("transmission={glassConfig.transmission}");
     expect(assetSource).toContain("roughness={glassConfig.roughness}");
     expect(assetSource).toContain("anisotropicBlur={glassConfig.anisotropicBlur}");

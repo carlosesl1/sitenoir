@@ -17,7 +17,6 @@ import {
   WebGLRenderTarget,
 } from "three";
 import { pointerStore } from "@/features/pointer/pointer-store";
-import { useTheme } from "@/features/theme/ThemeProvider";
 import { useHeroFluid } from "@/scene/HeroFluidProvider";
 import { useHeroOpticalFlareSources } from "@/scene/HeroOpticalFlareSources";
 import {
@@ -95,7 +94,6 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
   const opticalSources = useHeroOpticalFlareSources();
   const opticalPass = useMemo(createHeroOpticalFlarePass, []);
   useEffect(() => () => opticalPass.dispose(), [opticalPass]);
-  const { resolvedTheme } = useTheme();
   const camera = useThree((state) => state.camera);
   const gl = useThree((state) => state.gl);
   const scene = useThree((state) => state.scene);
@@ -112,11 +110,7 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
   }, []);
   const pointerColor = useMemo(() => readToken("--color-noir-warm-white"), []);
   const pointerSpectrum = useMemo(() => POINTER_SPECTRUM_TOKENS.map(readToken), []);
-  const tailColor = useMemo(
-    () =>
-      readToken(resolvedTheme === "dark" ? "--color-flare-tail-dark" : "--color-flare-tail-light"),
-    [resolvedTheme],
-  );
+  const tailColor = useMemo(() => readToken("--color-flare-tail-dark"), []);
   const flareClearColor = useMemo(() => new Color().setScalar(0), []);
   const previousClearColor = useMemo(() => new Color(), []);
   const resolution = useMemo(() => new Vector2(1, 1), []);

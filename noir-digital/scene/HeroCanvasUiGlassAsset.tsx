@@ -6,7 +6,6 @@ import { useLayoutEffect, useMemo } from "react";
 import { Color, FrontSide, NormalBlending } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-import { useTheme } from "@/features/theme/ThemeProvider";
 import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { useHeroOpticalFlareSources } from "@/scene/HeroOpticalFlareSources";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
@@ -30,7 +29,6 @@ import {
 } from "@/scene/hero-canvas-ui-rim-shaders";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
-import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
 import { useSharedOpticalEnvironment } from "@/scene/use-shared-optical-environment";
 
 interface HeroCanvasUiGlassAssetProps {
@@ -38,14 +36,12 @@ interface HeroCanvasUiGlassAssetProps {
 }
 
 export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetProps) {
-  const { resolvedTheme } = useTheme();
   const opticalSources = useHeroOpticalFlareSources();
   const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
   const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
   const { texture } = useHeroRefraction();
   const geometry = useMemo(() => createHeroModelGeometry(source.scene), [source.scene]);
-  const materialColor = resolveThreeDimensionalColor(resolvedTheme, "#ffffff");
   const environment = useSharedOpticalEnvironment(gl);
   const rimUniforms = useMemo(
     () => ({
@@ -91,14 +87,13 @@ export function HeroCanvasUiGlassAsset({ sceneScale }: HeroCanvasUiGlassAssetPro
         renderOrder={1}
       >
         <MeshTransmissionMaterial
-          key={resolvedTheme}
           anisotropicBlur={glassConfig.anisotropicBlur}
           backside={glassConfig.backside}
           buffer={texture}
           chromaticAberration={glassConfig.chromaticAberration}
           clearcoat={glassConfig.clearcoat}
           clearcoatRoughness={glassConfig.clearcoatRoughness}
-          color={materialColor}
+          color="#ffffff"
           depthWrite
           envMap={environment.texture}
           envMapIntensity={glassConfig.environmentIntensity}

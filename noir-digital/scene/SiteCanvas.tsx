@@ -230,7 +230,6 @@ export function SiteCanvas({
             <HeroOpticalBackground
               active
               frameStride={qualityConfig.opticalFrameStride}
-              forceDark={principleScene.fullscreen}
               reducedMotion={deterministicMotion}
               resolutionScale={qualityConfig.opticalResolutionScale}
             />

@@ -17,7 +17,6 @@ import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.j
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { mergeGeometries, toCreasedNormals } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
-import { useTheme } from "@/features/theme/ThemeProvider";
 import { resolveContactCanvasUiGeometryScale } from "@/scene/contact-model-scale";
 import { useHeroOpticalFlareSources } from "@/scene/HeroOpticalFlareSources";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
@@ -32,7 +31,6 @@ import {
   HERO_CANVAS_UI_RIM_VERTEX_SHADER,
 } from "@/scene/hero-canvas-ui-rim-shaders";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
-import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
 import { useSharedOpticalEnvironment } from "@/scene/use-shared-optical-environment";
 
 interface ContactCanvasUiGlassAssetProps {
@@ -103,7 +101,6 @@ export function ContactCanvasUiGlassAsset({
   path,
   sceneScale,
 }: ContactCanvasUiGlassAssetProps) {
-  const { resolvedTheme } = useTheme();
   const opticalSources = useHeroOpticalFlareSources();
   const source = useLoader(GLTFLoader, path, (loader) => {
     loader.setMeshoptDecoder(MeshoptDecoder);
@@ -111,7 +108,6 @@ export function ContactCanvasUiGlassAsset({
   const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
   const { texture } = useHeroRefraction();
-  const materialColor = resolveThreeDimensionalColor(resolvedTheme, "#ffffff");
   const geometry = useMemo(() => {
     const scaledGeometry = createContactCanvasUiGeometry(source.scene);
     const geometryScale = resolveContactCanvasUiGeometryScale();
@@ -148,14 +144,13 @@ export function ContactCanvasUiGlassAsset({
         renderOrder={1}
       >
         <MeshTransmissionMaterial
-          key={resolvedTheme}
           anisotropicBlur={glassConfig.anisotropicBlur}
           backside={glassConfig.backside}
           buffer={texture}
           chromaticAberration={glassConfig.chromaticAberration}
           clearcoat={CONTACT_REFLECTION.clearcoat}
           clearcoatRoughness={glassConfig.clearcoatRoughness}
-          color={materialColor}
+          color="#ffffff"
           depthWrite
           envMap={environment.texture}
           envMapIntensity={CONTACT_REFLECTION.environmentIntensity}

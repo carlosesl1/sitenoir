@@ -7,7 +7,6 @@ import {
   usePointerSnapshot,
 } from "@/features/pointer/pointer-store";
 import { ScrollProvider, useScroll } from "@/features/scroll/ScrollProvider";
-import { ThemeProvider, useTheme } from "@/features/theme/ThemeProvider";
 
 const lenisMock = vi.hoisted(() => ({
   construct: vi.fn(),
@@ -89,12 +88,6 @@ function installMatchMedia({ dark = false, reducedMotion = false } = {}) {
   };
 }
 
-function ThemeHarness() {
-  const { resolvedTheme } = useTheme();
-
-  return <output>{resolvedTheme}</output>;
-}
-
 function ScrollHarness() {
   const { scrollTo } = useScroll();
   return (
@@ -117,7 +110,6 @@ function MissingProviderHarness({ hook }: { readonly hook: () => unknown }) {
 beforeEach(() => {
   localStorage.clear();
   document.documentElement.className = "";
-  delete document.documentElement.dataset["theme"];
   document.documentElement.dataset["entryReady"] = "true";
   lenisMock.construct.mockClear();
   lenisMock.destroy.mockClear();
@@ -134,18 +126,6 @@ afterEach(() => {
   delete document.documentElement.dataset["entryReady"];
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
-});
-
-describe("ThemeProvider", () => {
-  it("always resolves to the single black appearance", () => {
-    render(
-      <ThemeProvider>
-        <ThemeHarness />
-      </ThemeProvider>,
-    );
-
-    expect(screen.getByText("dark")).toBeInTheDocument();
-  });
 });
 
 describe("ScrollProvider", () => {
@@ -307,7 +287,6 @@ describe("pointer store", () => {
 
 describe("provider hooks", () => {
   it.each([
-    ["ThemeProvider", useTheme],
     ["ScrollProvider", useScroll],
   ] as const)("throws a named error outside %s", (providerName, hook) => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);

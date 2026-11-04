@@ -9,7 +9,6 @@ export const HERO_BACKGROUND_PASS_ORDER = [
 export const HERO_BACKGROUND_CONFIG = {
   resolutionScale: 0.3,
   dark: { edgeIntensity: -0.06, outputMix: 0.86 },
-  light: { edgeIntensity: -0.16, outputMix: 0.65 },
   vignette: {
     radius: 0.354,
     falloff: 1,

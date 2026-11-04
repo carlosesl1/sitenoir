@@ -7,7 +7,6 @@ import { type BufferGeometry, Color, FrontSide, NormalBlending } from "three";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-import { useTheme } from "@/features/theme/ThemeProvider";
 import { POINTER_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { useHeroOpticalFlareSources } from "@/scene/HeroOpticalFlareSources";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
@@ -23,7 +22,6 @@ import {
 } from "@/scene/hero-canvas-ui-rim-shaders";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
 import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
-import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
 import { useSharedOpticalEnvironment } from "@/scene/use-shared-optical-environment";
 
 interface HeroCanvasUiPointerAssetProps {
@@ -54,12 +52,10 @@ export function HeroCanvasUiPointerMesh({
   renderOrder = 1,
   sceneScale,
 }: HeroCanvasUiPointerMeshProps) {
-  const { resolvedTheme } = useTheme();
   const opticalSources = useHeroOpticalFlareSources();
   const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
   const { texture } = useHeroRefraction();
-  const materialColor = resolveThreeDimensionalColor(resolvedTheme, "#ffffff");
   const environment = useSharedOpticalEnvironment(gl);
   const rimUniforms = useMemo(
     () => ({
@@ -85,14 +81,13 @@ export function HeroCanvasUiPointerMesh({
         renderOrder={renderOrder}
       >
         <MeshTransmissionMaterial
-          key={resolvedTheme}
           anisotropicBlur={glassConfig.anisotropicBlur}
           backside={glassConfig.backside}
           buffer={texture}
           chromaticAberration={glassConfig.chromaticAberration}
           clearcoat={glassConfig.clearcoat}
           clearcoatRoughness={glassConfig.clearcoatRoughness}
-          color={materialColor}
+          color="#ffffff"
           depthWrite
           envMap={environment.texture}
           envMapIntensity={glassConfig.environmentIntensity}
