@@ -18,7 +18,6 @@ import {
 } from "three";
 import { pointerStore } from "@/features/pointer/pointer-store";
 import { useTheme } from "@/features/theme/ThemeProvider";
-import { resolveFlareSourceLayer } from "@/scene/contact-flare-layer";
 import { useHeroFluid } from "@/scene/HeroFluidProvider";
 import { useHeroOpticalFlareSources } from "@/scene/HeroOpticalFlareSources";
 import {
@@ -31,7 +30,7 @@ import {
   HERO_LENS_FLARE_FRAGMENT_SHADER,
   HERO_POST_VERTEX_SHADER,
 } from "@/scene/hero-lens-flare-shaders";
-import { resolveLensFlareTuning } from "@/scene/hero-lens-flare-tuning";
+import { HERO_FLARE_TUNING as flareTuning } from "@/scene/hero-lens-flare-tuning";
 import {
   createHeroOpticalFlarePass,
   isOpticalSourceVisible,
@@ -103,7 +102,6 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
   const size = useThree((state) => state.size);
   const frame = useRef(0);
   const baseTarget = useMemo(createTarget, []);
-  const contactFlareSourceTarget = useMemo(createFlareSourceTarget, []);
   const cursorNoFlareSourceTarget = useMemo(createFlareSourceTarget, []);
   const edgeFlareSourceTarget = useMemo(createFlareSourceTarget, []);
   const flareTarget = useMemo(() => {
@@ -214,7 +212,6 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
     );
     resolution.set(width, height);
     baseTarget.setSize(width, height);
-    contactFlareSourceTarget.setSize(width, height);
     cursorNoFlareSourceTarget.setSize(width, height);
     edgeFlareSourceTarget.setSize(width, height);
     flareTarget.setSize(
@@ -228,7 +225,6 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
     frame.current = 0;
   }, [
     baseTarget,
-    contactFlareSourceTarget,
     cursorNoFlareSourceTarget,
     edgeFlareSourceTarget,
     flareMaterial,
@@ -243,18 +239,11 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
   useEffect(
     () => () => {
       baseTarget.dispose();
-      contactFlareSourceTarget.dispose();
       cursorNoFlareSourceTarget.dispose();
       edgeFlareSourceTarget.dispose();
       flareTarget.dispose();
     },
-    [
-      baseTarget,
-      contactFlareSourceTarget,
-      cursorNoFlareSourceTarget,
-      edgeFlareSourceTarget,
-      flareTarget,
-    ],
+    [baseTarget, cursorNoFlareSourceTarget, edgeFlareSourceTarget, flareTarget],
   );
   useEffect(() => () => compositeMaterial.dispose(), [compositeMaterial]);
   useEffect(() => () => flareMaterial.dispose(), [flareMaterial]);
@@ -282,27 +271,26 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
         );
       }
     };
-    const edgeSourceEnabled = legacyFlareEnabled && !transition.contactVisible;
-    const tuning = resolveLensFlareTuning(transition.contactVisible);
+    const edgeSourceEnabled = legacyFlareEnabled;
     const enabledUniform = flareMaterial.uniforms["uEnabled"];
     if (enabledUniform) enabledUniform.value = legacyFlareEnabled ? 1 : 0;
     const gateUniform = flareMaterial.uniforms["uGate"];
-    if (gateUniform) gateUniform.value = tuning.gate;
+    if (gateUniform) gateUniform.value = flareTuning.gate;
     const hotspotPowerUniform = flareMaterial.uniforms["uHotspotPower"];
-    if (hotspotPowerUniform) hotspotPowerUniform.value = tuning.hotspotPower;
+    if (hotspotPowerUniform) hotspotPowerUniform.value = flareTuning.hotspotPower;
     const intensityUniform = flareMaterial.uniforms["uIntensity"];
-    if (intensityUniform) intensityUniform.value = tuning.intensity;
+    if (intensityUniform) intensityUniform.value = flareTuning.intensity;
     const spectrumUniform = flareMaterial.uniforms["uSpectrumMix"];
-    if (spectrumUniform) spectrumUniform.value = tuning.spectrumMix;
+    if (spectrumUniform) spectrumUniform.value = flareTuning.spectrumMix;
     const streakJitterUniform = flareMaterial.uniforms["uStreakJitter"];
-    if (streakJitterUniform) streakJitterUniform.value = tuning.streakJitter;
+    if (streakJitterUniform) streakJitterUniform.value = flareTuning.streakJitter;
     const edgeSourceEnabledUniform = flareMaterial.uniforms["uEdgeSourceEnabled"];
     if (edgeSourceEnabledUniform) edgeSourceEnabledUniform.value = edgeSourceEnabled ? 1 : 0;
     const thresholdUniform = flareMaterial.uniforms["uThreshold"];
-    if (thresholdUniform) thresholdUniform.value = tuning.threshold;
+    if (thresholdUniform) thresholdUniform.value = flareTuning.threshold;
     const streakScaleUniform = flareMaterial.uniforms["uStreakScale"];
     if (streakScaleUniform) {
-      streakScaleUniform.value = resolveStreakScale(size.width, tuning.streakScale);
+      streakScaleUniform.value = resolveStreakScale(size.width, flareTuning.streakScale);
     }
     const flareCompositeUniform = compositeMaterial.uniforms["uFlareEnabled"];
     if (flareCompositeUniform) flareCompositeUniform.value = legacyFlareEnabled ? 1 : 0;
@@ -321,7 +309,6 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
     gl.render(scene, camera);
 
     if (legacyFlareEnabled && frame.current % 2 === 0) {
-      const flareSourceLayer = resolveFlareSourceLayer(transition.contactVisible);
       const diffuseUniform = flareMaterial.uniforms["tDiffuse"];
       const previousLayerMask = camera.layers.mask;
       camera.layers.set(HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER);
@@ -333,33 +320,16 @@ export function HeroLensFlare({ active, reducedMotion, resolutionScale }: HeroLe
       gl.render(scene, camera);
       gl.setClearColor(previousClearColor, cursorMaskClearAlpha);
       camera.layers.mask = previousLayerMask;
-      if (flareSourceLayer !== null) {
-        const previousLayerMask = camera.layers.mask;
-        camera.layers.set(flareSourceLayer);
-        gl.setRenderTarget(contactFlareSourceTarget);
-        gl.getClearColor(previousClearColor);
-        const previousClearAlpha = gl.getClearAlpha();
-        gl.setClearColor(flareClearColor, 1);
-        gl.clear();
-        gl.render(scene, camera);
-        gl.setClearColor(previousClearColor, previousClearAlpha);
-        camera.layers.mask = previousLayerMask;
-        if (diffuseUniform) diffuseUniform.value = contactFlareSourceTarget.texture;
-      } else {
-        if (diffuseUniform) diffuseUniform.value = baseTarget.texture;
-        if (edgeSourceEnabled) {
-          const previousLayerMask = camera.layers.mask;
-          camera.layers.set(HERO_CANVAS_UI_EDGE_FLARE_LAYER);
-          gl.setRenderTarget(edgeFlareSourceTarget);
-          gl.getClearColor(previousClearColor);
-          const previousClearAlpha = gl.getClearAlpha();
-          gl.setClearColor(flareClearColor, 1);
-          gl.clear();
-          gl.render(scene, camera);
-          gl.setClearColor(previousClearColor, previousClearAlpha);
-          camera.layers.mask = previousLayerMask;
-        }
-      }
+      if (diffuseUniform) diffuseUniform.value = baseTarget.texture;
+      camera.layers.set(HERO_CANVAS_UI_EDGE_FLARE_LAYER);
+      gl.setRenderTarget(edgeFlareSourceTarget);
+      gl.getClearColor(previousClearColor);
+      const edgeClearAlpha = gl.getClearAlpha();
+      gl.setClearColor(flareClearColor, 1);
+      gl.clear();
+      gl.render(scene, camera);
+      gl.setClearColor(previousClearColor, edgeClearAlpha);
+      camera.layers.mask = previousLayerMask;
       quad.material = flareMaterial;
       gl.setRenderTarget(flareTarget);
       gl.getClearColor(previousClearColor);

@@ -26,7 +26,6 @@ const optimizedAssets = [
   { path: "assets/v1/model/contact.glb", signature: signatures.glb },
   { path: "assets/v1/stickers/atlas.webp", signature: signatures.webp },
   { path: "assets/v1/stickers/atlas-mobile.webp", signature: signatures.webp },
-  { path: "assets/v1/audio/bgm.mp3", signature: signatures.mp3 },
 ] as const;
 
 test.each(
@@ -157,7 +156,6 @@ test("uses only TikTok Sans and Departure Mono across the runtime typography sys
     "styles/tokens.css",
     "app/layout.tsx",
     "components/preloader/EntryPreloader.tsx",
-    "components/showcase/PrimitiveShowcase.tsx",
   ];
   const sources = await Promise.all(
     sourcePaths.map((sourcePath) => readFile(path.join(process.cwd(), sourcePath), "utf8")),

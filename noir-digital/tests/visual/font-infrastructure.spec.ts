@@ -37,7 +37,7 @@ test.beforeAll(async () => {
 for (const viewport of viewports) {
   test(`loads every self-hosted font without overflow at ${viewport.width}px`, async ({ page }) => {
     await page.setViewportSize(viewport);
-    await page.goto("/showcase");
+    await page.goto("/contato/");
 
     const fontResults = await page.evaluate(
       async (fonts) => {

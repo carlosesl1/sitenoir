@@ -18,7 +18,6 @@ DEFAULT_UNICODES = "U+0000-024F,U+1E00-1EFF,U+2000-214F"
 TIKTOK_UNICODES = "U+0000-024F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2122,U+2190-2199"
 TIKTOK_LAYOUT_FEATURES = "rvrn,ccmp,kern,liga,clig,calt,locl,mark,mkmk"
 GENERATED_ASSET_PATHS = (
-    Path("audio/bgm.mp3"),
     Path("fonts/DepartureMono.woff2"),
     Path("fonts/TikTokSans.woff2"),
     Path("model/contact.glb"),
@@ -130,12 +129,6 @@ def build_sticker_atlas() -> None:
         atlas.save(output, "WEBP", lossless=False, quality=94, method=6, exact=True)
 
 
-def build_audio() -> None:
-    output = OUTPUT / "audio" / "bgm.mp3"
-    output.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(SOURCES / "audio" / "bgm.mp3", output)
-
-
 def build_contact_model() -> None:
     output = OUTPUT / "model" / "contact.glb"
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -199,7 +192,6 @@ def write_manifest(relative_paths: tuple[Path, ...]) -> None:
 def main() -> None:
     build_fonts()
     build_sticker_atlas()
-    build_audio()
     build_contact_model()
     critical_models = build_critical_models()
     write_manifest((*GENERATED_ASSET_PATHS, *critical_models))
