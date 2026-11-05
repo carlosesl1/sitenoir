@@ -17,8 +17,6 @@ describe("hero effects source contract", () => {
     expect(HERO_BACKGROUND_CONFIG.leaveSmoothing).toBe(0.05);
     expect(HERO_BACKGROUND_CONFIG.dark.edgeIntensity).toBe(-0.06);
     expect(HERO_BACKGROUND_CONFIG.dark.outputMix).toBe(0.86);
-    expect(HERO_BACKGROUND_CONFIG.light.edgeIntensity).toBe(-0.16);
-    expect(HERO_BACKGROUND_CONFIG.light.outputMix).toBe(0.65);
     expect(HERO_BACKGROUND_CONFIG.sine.mixRadius).toBe(1);
     expect(HERO_BACKGROUND_CONFIG.shatter).toEqual({
       amount: 1,

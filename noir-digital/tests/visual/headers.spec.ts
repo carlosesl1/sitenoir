@@ -12,7 +12,6 @@ const versionedAssets = [
   "/assets/v1/fonts/TikTokSans.woff2",
   "/assets/v1/model/contact.glb",
   "/assets/v1/stickers/atlas.webp",
-  "/assets/v1/audio/bgm.mp3",
 ] as const;
 
 test("preserves production security headers", async ({ request }) => {

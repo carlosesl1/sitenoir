@@ -6,7 +6,6 @@ import { preload } from "react-dom";
 import { RouteTransition } from "@/components/transitions/RouteTransition";
 import { LanguageProvider } from "@/features/i18n/LanguageProvider";
 import { languageBootstrapScript } from "@/features/i18n/language-bootstrap";
-import { themeBootstrapScript } from "@/features/theme/theme-bootstrap";
 
 import "./globals.css";
 
@@ -89,11 +88,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  colorScheme: "light dark",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3fbf9" },
-    { media: "(prefers-color-scheme: dark)", color: "#030303" },
-  ],
+  colorScheme: "dark",
+  themeColor: "#030303",
 };
 
 type RootLayoutProps = {
@@ -115,8 +111,6 @@ export default function RootLayout({ children }: RootLayoutProps): ReactNode {
   return (
     <html lang="pt-BR" className="dark" data-theme="dark" suppressHydrationWarning>
       <head>
-        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: Static local bootstrap must run before the poster element is parsed. */}
-        <script id="theme-bootstrap" dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
         <script
           id="language-bootstrap"
           // biome-ignore lint/security/noDangerouslySetInnerHtml: Static local bootstrap resolves language before the first paint.

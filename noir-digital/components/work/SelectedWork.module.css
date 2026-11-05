@@ -6,7 +6,7 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gutter);
   align-items: start;
-  padding: 160px 56px 192px;
+  padding: 160px var(--page-inline) 192px;
   color: var(--text-primary);
 }
 
@@ -36,27 +36,25 @@
 .statement {
   position: static;
   container-type: inline-size;
-  margin-left: calc(var(--header-brand-text-inset) - 56px);
+  margin-left: calc(var(--text-axis) - var(--page-inline));
   padding-right: 32px;
 }
 
 .statement p {
   margin: 0 0 18px;
   color: var(--text-secondary);
-  font-family: var(--font-pixel);
-  font-size: var(--type-micro);
-  line-height: 1;
-  letter-spacing: 0.06em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
 .statement h2 {
   max-width: 21rem;
   margin: 0;
-  font-size: clamp(2.5rem, 3.75vw, 4rem);
-  font-weight: 560;
-  line-height: 0.98;
-  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+  font: var(--role-display-m);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 
 .statementLink {
@@ -76,20 +74,21 @@
 .serviceIndex a {
   position: relative;
   width: 100%;
-  padding: 4px 8px 4px 18px;
+  margin-left: -2px;
+  padding: 4px 8px 4px 0;
   border: 2px dotted transparent;
   color: var(--text-secondary);
-  font-family: var(--font-interface);
-  font-size: 0.875rem;
-  line-height: 1.25;
   text-decoration: none;
   transition: color var(--duration-micro) var(--ease-standard);
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .serviceIndex a::before {
   position: absolute;
   top: 50%;
-  left: 2px;
+  left: -14px;
   width: 4px;
   height: 4px;
   border-radius: 50%;
@@ -101,7 +100,6 @@
 
 .serviceIndex a[aria-current="location"] {
   color: var(--text-primary);
-  font-weight: 650;
 }
 
 .serviceIndex a[aria-current="location"]::before {
@@ -143,24 +141,19 @@
   gap: 12px;
   align-items: baseline;
   color: var(--text-secondary);
-  font-family: var(--font-pixel);
-  text-transform: uppercase;
 }
 
 .serviceHeading span {
-  font-size: var(--type-micro);
-  line-height: 1;
-  letter-spacing: 0.04em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .serviceHeading h3 {
   margin: 0;
   color: var(--text-primary);
-  font-family: var(--font-interface);
-  font-size: clamp(1.375rem, 2.05vw, 2rem);
-  font-weight: 650;
-  line-height: 1;
-  letter-spacing: -0.025em;
+  font: var(--role-title);
+  letter-spacing: var(--tracking-tight);
 }
 
 .projectCard {
@@ -286,22 +279,23 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 5px 16px;
   padding-top: 12px;
-  font-family: var(--font-interface);
-  font-size: 0.6875rem;
-  line-height: 1.2;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .projectMeta > span:last-child {
   grid-column: 1 / -1;
   color: var(--text-secondary);
-  font-family: var(--font-pixel);
-  font-size: var(--type-micro);
-  letter-spacing: 0.04em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .projectTitle {
-  font-weight: 650;
-  text-transform: uppercase;
+  font: var(--role-subtitle);
+  letter-spacing: var(--tracking-tight);
+  text-transform: none;
 }
 
 @media (min-width: 1024px) {
@@ -311,12 +305,6 @@
 
   .statement h2 {
     max-width: none;
-    font-size: clamp(2.5rem, 17cqi, 5rem);
-  }
-
-  .statement h2 span {
-    display: block;
-    white-space: nowrap;
   }
 
   .statement {
@@ -374,13 +362,12 @@
 
   .statement {
     position: static;
-    margin-left: calc(var(--header-brand-text-inset) - 16px);
+    margin-left: calc(var(--text-axis) - var(--page-inline));
     padding-right: 0;
   }
 
   .statement h2 {
     max-width: 22rem;
-    font-size: clamp(2.25rem, 10.5vw, 3.25rem);
   }
 
   .projectGrid {

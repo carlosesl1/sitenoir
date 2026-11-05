@@ -3,12 +3,11 @@
 import { useFrame, useLoader } from "@react-three/fiber";
 import { type MutableRefObject, useEffect, useMemo, useRef } from "react";
 import {
-  type BufferGeometry,
   Color,
   DoubleSide,
   type Group,
   MathUtils,
-  Mesh,
+  type Mesh,
   Plane,
   Raycaster,
   ShaderMaterial,
@@ -17,24 +16,26 @@ import {
   Vector4,
 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 import { pointerStore } from "@/features/pointer/pointer-store";
 import type { PrincipleSectionRect } from "@/features/principles/PrincipleSceneProvider";
-import { useTheme } from "@/features/theme/ThemeProvider";
 import { POINTER_MODEL_SOURCE } from "@/scene/critical-hero-preload";
+import { HeroCanvasUiPointerMesh } from "@/scene/HeroCanvasUiPointerAsset";
 import { HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER } from "@/scene/hero-canvas-ui-edge-flare-config";
+import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
+import { createHeroModelGeometry } from "@/scene/hero-model-geometry";
 import {
   principleCursorFragmentShader,
   principleCursorVertexShader,
 } from "@/scene/principle-hyperspace-shaders";
 import {
   resolveFullscreenCursorScale,
+  resolvePrincipleGlassTilt,
   resolvePrinciplePointerRectMotion,
   resolvePrinciplePointerRotation,
+  resolvePrinciplePortalOpacity,
 } from "@/scene/principle-pointer-motion";
 import { resolveSceneFrameDelta } from "@/scene/scene-frame";
-import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
 
 const REST_SCALE = 0.1;
 const AXIS_TILT = MathUtils.degToRad(45);
@@ -50,33 +51,6 @@ interface PrinciplePointerModelProps {
   readonly setFullscreen: (fullscreen: boolean) => void;
 }
 
-function mergeCursorGeometry(root: Group): BufferGeometry {
-  root.updateMatrixWorld(true);
-  const geometries: BufferGeometry[] = [];
-  root.traverse((object) => {
-    if (!(object instanceof Mesh)) return;
-    const geometry = object.geometry.clone();
-    geometry.applyMatrix4(object.matrixWorld);
-    geometries.push(geometry);
-  });
-
-  if (geometries.length === 0) {
-    throw new Error("The principle cursor model has no mesh geometry.");
-  }
-
-  const merged = geometries.length === 1 ? geometries[0] : mergeGeometries(geometries, true);
-  if (!merged) {
-    for (const geometry of geometries) geometry.dispose();
-    throw new Error("The principle cursor geometry could not be merged.");
-  }
-  for (const geometry of geometries) {
-    if (geometry !== merged) geometry.dispose();
-  }
-  merged.center();
-  merged.computeBoundingSphere();
-  return merged;
-}
-
 export function PrinciplePointerModel({
   reducedMotion,
   sectionRef,
@@ -85,12 +59,17 @@ export function PrinciplePointerModel({
 }: PrinciplePointerModelProps) {
   const containerRef = useRef<Group>(null);
   const spinRef = useRef<Group>(null);
+  const glassRef = useRef<Group>(null);
+  const portalRef = useRef<Mesh>(null);
   const fullscreenRef = useRef(false);
   const lightAngleRef = useRef(DEFAULT_LIGHT_ANGLE);
   const renderViewport = useMemo(() => new Vector4(), []);
-  const { resolvedTheme } = useTheme();
   const source = useLoader(GLTFLoader, POINTER_MODEL_SOURCE);
-  const geometry = useMemo(() => mergeCursorGeometry(source.scene), [source.scene]);
+  const geometry = useMemo(() => {
+    const cursorGeometry = createHeroModelGeometry(source.scene);
+    cursorGeometry.computeBoundingSphere();
+    return cursorGeometry;
+  }, [source.scene]);
   const modelRadius = geometry.boundingSphere?.radius ?? 1;
   const lightController = useMemo(
     () => ({
@@ -104,21 +83,21 @@ export function PrinciplePointerModel({
   );
   const uniforms = useMemo(
     () => ({
-      uDiffuseness: { value: 0.1 },
-      uFresnelPower: { value: 6 },
-      uFresnelSideDir: { value: new Vector3(-1, 0.3, 1) },
-      uFresnelStrength: { value: 1 },
-      uAccentColor: { value: new Color("#242a30") },
+      uDiffuseness: { value: 0.05 },
+      uFresnelPower: { value: 3 },
+      uFresnelSideDir: { value: new Vector3(-1, 1, -1) },
+      uFresnelStrength: { value: 0.72 },
+      uAccentColor: { value: new Color("#17181a") },
       uBaseDarkening: { value: 1 },
       uLight: { value: new Vector3(4, 9, 0.5) },
       uOpacity: { value: 1 },
       uProgress: { value: 0 },
       uResolution: { value: new Vector2(1, 1) },
       uScaleReveal: { value: 0 },
-      uShininess: { value: 40 },
+      uShininess: { value: 100 },
       uSpecularStrength: { value: 1.2 },
-      uStripeColorA: { value: new Color("#1a2026") },
-      uStripeColorB: { value: new Color("#77828c") },
+      uStripeColorA: { value: new Color("#16171a") },
+      uStripeColorB: { value: new Color("#a2a4a6") },
     }),
     [],
   );
@@ -135,25 +114,6 @@ export function PrinciplePointerModel({
       }),
     [uniforms],
   );
-
-  useEffect(() => {
-    const dark = resolvedTheme === "dark";
-    const baseColor = resolveThreeDimensionalColor(resolvedTheme, "#242a30");
-    uniforms.uDiffuseness.value = dark ? 0.05 : 0.1;
-    uniforms.uShininess.value = dark ? 100 : 120;
-    uniforms.uFresnelPower.value = dark ? 3 : 1;
-    uniforms.uFresnelStrength.value = dark ? 0.72 : 0.24;
-    uniforms.uFresnelSideDir.value.set(-1, 1, -1);
-    uniforms.uAccentColor.value.set(baseColor);
-    uniforms.uBaseDarkening.value = dark ? 1 : 0.18;
-    if (dark) {
-      uniforms.uStripeColorA.value.set("#1a2026");
-      uniforms.uStripeColorB.value.set("#77828c");
-    } else {
-      uniforms.uStripeColorA.value.set(baseColor).multiplyScalar(0.52);
-      uniforms.uStripeColorB.value.set(baseColor).lerp(new Color("#ffffff"), 0.28);
-    }
-  }, [resolvedTheme, uniforms]);
 
   useEffect(
     () => () => {
@@ -212,6 +172,7 @@ export function PrinciplePointerModel({
 
     container.scale.setScalar(MathUtils.damp(container.scale.x, targetScale, 32, frameDelta));
     container.position.y = targetY;
+    container.rotation.x = resolvePrincipleGlassTilt(targetY, state.camera.position.z);
     const actualReveal = MathUtils.clamp(
       (container.scale.x - REST_SCALE) / Math.max(0.001, fullscreenScale - REST_SCALE),
       0,
@@ -250,6 +211,14 @@ export function PrinciplePointerModel({
       0.5,
     );
     uniforms.uScaleReveal.value = actualReveal;
+    const portalOpacity = resolvePrinciplePortalOpacity(actualReveal);
+    uniforms.uOpacity.value = portalOpacity;
+    if (portalRef.current) portalRef.current.visible = portalOpacity > 0;
+    if (glassRef.current) {
+      // Hidden while it waits below the fold, so the scene is not captured for nothing.
+      glassRef.current.visible =
+        portalOpacity < 1 && motion.targetViewportY < state.size.height + exitPadding;
+    }
 
     const fullscreen = actualReveal >= 0.5;
     if (fullscreen !== fullscreenRef.current) {
@@ -263,7 +232,16 @@ export function PrinciplePointerModel({
       <group rotation={[0, 0, AXIS_TILT]}>
         <group ref={spinRef}>
           <group rotation={[0, 0, -AXIS_TILT]}>
+            <group ref={glassRef}>
+              <HeroCanvasUiPointerMesh
+                geometry={geometry}
+                opticalSource="principlePointer"
+                renderOrder={11}
+                sceneScale={REST_SCALE}
+              />
+            </group>
             <mesh
+              ref={portalRef}
               geometry={geometry}
               material={material}
               frustumCulled={false}
@@ -274,13 +252,15 @@ export function PrinciplePointerModel({
                 uniforms.uResolution.value.set(renderViewport.z, renderViewport.w);
                 material.uniformsNeedUpdate = true;
               }}
-              renderOrder={12}
+              onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
+              renderOrder={13}
+              visible={false}
             />
             <mesh
               geometry={geometry}
               frustumCulled={false}
               onUpdate={(mesh) => mesh.layers.set(HERO_CANVAS_UI_CURSOR_NO_FLARE_LAYER)}
-              renderOrder={13}
+              renderOrder={14}
             >
               <meshBasicMaterial
                 color="#ffffff"

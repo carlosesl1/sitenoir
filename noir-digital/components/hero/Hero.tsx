@@ -112,7 +112,7 @@ export function Hero() {
 
         <div className={styles["actionRow"]} data-hero-action-row="true">
           <div className={styles["heroCtaSlot"]}>
-            <SpectrumContactCta />
+            <SpectrumContactCta emphasis />
           </div>
         </div>
       </div>

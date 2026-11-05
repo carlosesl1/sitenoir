@@ -12,7 +12,6 @@ import { SelectedWork } from "@/components/work/SelectedWork";
 import { PrincipleSceneProvider } from "@/features/principles/PrincipleSceneProvider";
 import { ScrollProvider } from "@/features/scroll/ScrollProvider";
 import { ShortcutController } from "@/features/shortcuts/ShortcutController";
-import { ThemeProvider } from "@/features/theme/ThemeProvider";
 import { preloadCriticalHeroModels } from "@/scene/critical-hero-preload";
 import { LazySiteCanvas } from "@/scene/LazySiteCanvas";
 
@@ -20,24 +19,22 @@ export default function Page() {
   preloadCriticalHeroModels(preload);
 
   return (
-    <ThemeProvider>
-      <ScrollProvider>
-        <PrincipleSceneProvider>
-          <EntryPreloader />
-          <ShortcutController />
-          <SiteHeader />
-          <main id="main-content">
-            <Hero />
-            <TrustStrip />
-            <MissionScroll />
-            <SelectedWork />
-            <AiServicesSection />
-            <PrinciplesStory />
-            <ContactFooter />
-          </main>
-          <LazySiteCanvas preloadDuringEntry />
-        </PrincipleSceneProvider>
-      </ScrollProvider>
-    </ThemeProvider>
+    <ScrollProvider>
+      <PrincipleSceneProvider>
+        <EntryPreloader />
+        <ShortcutController />
+        <SiteHeader />
+        <main id="main-content">
+          <Hero />
+          <TrustStrip />
+          <MissionScroll />
+          <SelectedWork />
+          <AiServicesSection />
+          <PrinciplesStory />
+          <ContactFooter />
+        </main>
+        <LazySiteCanvas preloadDuringEntry />
+      </PrincipleSceneProvider>
+    </ScrollProvider>
   );
 }

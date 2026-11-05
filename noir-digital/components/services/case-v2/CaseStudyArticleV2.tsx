@@ -53,10 +53,12 @@ export function CaseStudyArticleV2({
       data-accent={study.accent}
     >
       <div className={styles["wayfinding"]}>
-        <a href="/#selected-work">
-          <CaseArrow direction="back" />
-          {t("Todos os cases")}
-        </a>
+        <SpectrumContactCta
+          href="/#selected-work"
+          label="Todos os cases"
+          leading={<CaseArrow direction="back" />}
+          variant="secondary"
+        />
         <span>{t(contactServiceByLayout[study.categoryLayout])}</span>
       </div>
       <Layout project={project} study={study} />
@@ -64,7 +66,7 @@ export function CaseStudyArticleV2({
       <section className={styles["closing"]}>
         <h2>{t(study.cta.body)}</h2>
         <div className={styles["closingAction"]}>
-          <SpectrumContactCta href={contactHref} label={study.cta.label} />
+          <SpectrumContactCta emphasis href={contactHref} label={study.cta.label} />
         </div>
       </section>
 
@@ -88,20 +90,22 @@ export function CaseStudyArticleV2({
           </a>
         )}
         <div className={styles["navigationFooter"]}>
-          <a
+          <SpectrumContactCta
             href={
               navigation.previous && navigation.next
                 ? `/services/${navigation.previous.slug}`
                 : "/#selected-work"
             }
-          >
-            <CaseArrow direction="back" />
-            {t(navigation.previous && navigation.next ? "Projeto anterior" : "Todos os cases")}
-          </a>
-          <a href="/#selected-work">
-            {t("Explorar todos os projetos")}
-            <CaseArrow />
-          </a>
+            label={navigation.previous && navigation.next ? "Projeto anterior" : "Todos os cases"}
+            leading={<CaseArrow direction="back" />}
+            variant="secondary"
+          />
+          <SpectrumContactCta
+            href="/#selected-work"
+            label="Explorar todos os projetos"
+            trailing={<CaseArrow />}
+            variant="secondary"
+          />
         </div>
       </nav>
     </article>

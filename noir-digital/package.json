@@ -8,6 +8,7 @@
     "assets:cases": "node scripts/build-case-assets.mjs",
     "assets:cases:v2": "node scripts/build-case-assets-v2.mjs",
     "assets:work": "node scripts/build-work-assets.mjs",
+    "assets:halftone": "node scripts/build-ai-halftone.mjs",
     "dev": "next dev --hostname 127.0.0.1",
     "build": "next build",
     "start": "next start --hostname 127.0.0.1",

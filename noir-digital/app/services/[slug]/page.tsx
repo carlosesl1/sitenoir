@@ -7,7 +7,6 @@ import { caseStudiesV2, getCaseStudyV2, getCaseStudyV2Navigation } from "@/data/
 import { projects } from "@/data/projects";
 import { PrincipleSceneProvider } from "@/features/principles/PrincipleSceneProvider";
 import { ScrollProvider } from "@/features/scroll/ScrollProvider";
-import { ThemeProvider } from "@/features/theme/ThemeProvider";
 
 type CasePageProps = {
   readonly params: Promise<{ readonly slug: string }>;
@@ -53,19 +52,17 @@ export default async function CasePage({ params }: CasePageProps) {
   }
 
   return (
-    <ThemeProvider>
-      <ScrollProvider>
-        <PrincipleSceneProvider>
-          <SiteHeader sectionLinksBase="/" />
-          <main id="main-content">
-            <CaseStudyArticleV2
-              project={project}
-              study={study}
-              navigation={getCaseStudyV2Navigation(study.slug)}
-            />
-          </main>
-        </PrincipleSceneProvider>
-      </ScrollProvider>
-    </ThemeProvider>
+    <ScrollProvider>
+      <PrincipleSceneProvider>
+        <SiteHeader sectionLinksBase="/" />
+        <main id="main-content">
+          <CaseStudyArticleV2
+            project={project}
+            study={study}
+            navigation={getCaseStudyV2Navigation(study.slug)}
+          />
+        </main>
+      </PrincipleSceneProvider>
+    </ScrollProvider>
   );
 }

@@ -47,7 +47,7 @@ describe("translated contact flow", () => {
     ).toBeInTheDocument();
     expect(
       new URL(
-        screen.getAllByRole("link", { name: "Start a WhatsApp chat" })[0]?.getAttribute("href") ??
+        screen.getAllByRole("link", { name: "Chat on WhatsApp" })[0]?.getAttribute("href") ??
           "",
       ).searchParams.get("text"),
     ).toMatch(/^Hello!/);

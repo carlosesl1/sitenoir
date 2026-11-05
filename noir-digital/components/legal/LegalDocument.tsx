@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { SpectrumContactCta } from "@/components/contact/SpectrumContactCta";
 import type { LegalBlock, LegalDocumentContent, LegalInlineSegment } from "@/data/legal-documents";
 import { useLanguage } from "@/features/i18n/LanguageProvider";
 
@@ -122,11 +123,15 @@ export function LegalDocument({ document }: { readonly document: LegalDocumentCo
             </ol>
           </nav>
 
-          <a className={styles["counterpartLink"]} href={document.counterpart.href}>
-            <span>{t("Outro documento")}</span>
-            <strong>{t(document.counterpart.label)}</strong>
-            <span aria-hidden="true">↗</span>
-          </a>
+          <div className={styles["counterpart"]}>
+            <span className={styles["counterpartLabel"]}>{t("Outro documento")}</span>
+            <SpectrumContactCta
+              href={document.counterpart.href}
+              label={document.counterpart.label}
+              trailing={<span aria-hidden="true">↗</span>}
+              variant="secondary"
+            />
+          </div>
         </aside>
 
         <div className={styles["documentBody"]}>

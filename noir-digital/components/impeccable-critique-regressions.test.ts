@@ -8,7 +8,7 @@ function read(relativePath: string) {
 }
 
 describe("impeccable critique regressions", () => {
-  it("keeps the Chapada accent readable in both themes", () => {
+  it("keeps the Chapada accent as a client colour", () => {
     const caseCss = read("components/services/case-v2/CaseStudyArticleV2.module.css");
     const tokens = read("styles/tokens.css");
 
@@ -16,7 +16,6 @@ describe("impeccable critique regressions", () => {
       /\.page\[data-accent="chapada-green"\]\s*\{[^}]*--case-accent:\s*var\(--color-chapada-green\)/,
     );
     expect(tokens).toMatch(/--color-chapada-green:\s*#55d86a/);
-    expect(tokens).toMatch(/\[data-theme="light"\]\s*\{[^}]*--color-chapada-green:\s*#116329/s);
   });
 
   it("uses 44px touch targets for footer and contact links", () => {
@@ -34,16 +33,12 @@ describe("impeccable critique regressions", () => {
     const workCss = read("components/work/SelectedWork.module.css");
     const contactCss = read("components/contact/ContactPage.module.css");
 
-    expect(heroCss).toMatch(
-      /@media \(min-width: 768px\)[\s\S]*\.promise\s*\{[^}]*font-size:\s*clamp\(0\.75rem, 1vw, 0\.875rem\)/,
-    );
-    expect(workCss).toMatch(/\.statement p\s*\{[^}]*font-size:\s*var\(--type-micro\)/);
-    expect(workCss).toMatch(/\.serviceHeading span\s*\{[^}]*font-size:\s*var\(--type-micro\)/);
-    expect(workCss).toMatch(
-      /\.projectMeta > span:last-child\s*\{[^}]*font-size:\s*var\(--type-micro\)/,
-    );
-    expect(contactCss).toMatch(/\.feedback\s*\{[^}]*font-size:\s*0\.875rem/);
-    expect(contactCss).toMatch(/\.privacyNote\s*\{[^}]*font-size:\s*0\.8125rem/);
+    expect(heroCss).toMatch(/\.promise\s*\{[^}]*font:\s*var\(--role-label\)/);
+    expect(workCss).toMatch(/\.statement p\s*\{[^}]*font:\s*var\(--role-label\)/);
+    expect(workCss).toMatch(/\.serviceHeading span\s*\{[^}]*font:\s*var\(--role-label\)/);
+    expect(workCss).toMatch(/\.projectMeta > span:last-child\s*\{[^}]*font:\s*var\(--role-label\)/);
+    expect(contactCss).toMatch(/\.feedback\s*\{[^}]*font:\s*var\(--role-note\)/);
+    expect(contactCss).toMatch(/\.privacyNote\s*\{[^}]*font:\s*var\(--role-note\)/);
   });
 
   it("does not compress case and contact display type beyond the system floor", () => {

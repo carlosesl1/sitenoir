@@ -6,6 +6,8 @@ import type { Mesh } from "three";
 export interface HeroOpticalFlareSources {
   readonly wordmark: RefObject<Mesh | null>;
   readonly pointer: RefObject<Mesh | null>;
+  readonly principlePointer: RefObject<Mesh | null>;
+  readonly contact: RefObject<Mesh | null>;
 }
 
 const Context = createContext<HeroOpticalFlareSources | null>(null);
@@ -13,7 +15,9 @@ const Context = createContext<HeroOpticalFlareSources | null>(null);
 export function HeroOpticalFlareProvider({ children }: { readonly children: ReactNode }) {
   const wordmark = useRef<Mesh>(null);
   const pointer = useRef<Mesh>(null);
-  const sources = useMemo(() => ({ wordmark, pointer }), []);
+  const principlePointer = useRef<Mesh>(null);
+  const contact = useRef<Mesh>(null);
+  const sources = useMemo(() => ({ wordmark, pointer, principlePointer, contact }), []);
   return <Context.Provider value={sources}>{children}</Context.Provider>;
 }
 

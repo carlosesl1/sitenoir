@@ -9,9 +9,9 @@
 .hero h1 {
   max-width: 20ch;
   margin: 0;
-  font-size: clamp(3rem, 5.6vw, 6rem);
-  line-height: 1;
-  letter-spacing: -0.04em;
+  font: var(--role-display-l);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 .heroStage {
   display: grid;
@@ -40,8 +40,7 @@
   margin: 0;
   max-width: 42ch;
   color: var(--case-muted);
-  font-size: 1.125rem;
-  line-height: 1.6;
+  font: var(--role-lead);
 }
 .journey {
   display: grid;
@@ -68,19 +67,18 @@
 }
 .journey span {
   color: var(--case-muted);
-  font-family: var(--font-interface);
-  font-size: 0.6875rem;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
 }
 .journey h2 {
   margin: 16px 0 12px;
-  font-size: clamp(1.5rem, 2vw, 2rem);
-  line-height: 1.1;
+  font: var(--role-subtitle);
+  letter-spacing: var(--tracking-tight);
 }
 .journey p {
   max-width: 26ch;
   margin: 0;
   color: var(--case-muted);
-  font-size: 1rem;
 }
 .context {
   display: grid;
@@ -94,16 +92,15 @@
 .insights > h2 {
   max-width: 22ch;
   margin: 0;
-  font-size: clamp(2rem, 3.6vw, 3.5rem);
-  line-height: 1.08;
-  letter-spacing: -0.03em;
+  font: var(--role-display-m);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 .context div > p {
   max-width: 58ch;
   margin: 0;
   color: var(--case-muted);
-  font-size: 1.1875rem;
-  line-height: 1.7;
+  font: var(--role-lead);
 }
 .context div > p + p {
   margin-top: 20px;
@@ -140,15 +137,13 @@
 }
 .insights dt {
   margin: 0 0 8px;
-  font-size: 1.5rem;
-  font-weight: 550;
-  line-height: 1.2;
+  font: var(--role-subtitle);
+  letter-spacing: var(--tracking-tight);
 }
 .insights dd {
   max-width: 50ch;
   margin: 0;
   color: var(--case-muted);
-  font-size: 1rem;
 }
 @keyframes reveal {
   from {
@@ -173,7 +168,6 @@
     gap: 28px;
   }
   .hero h1 {
-    font-size: clamp(2.625rem, 10.5vw, 4.5rem);
     max-width: 18ch;
   }
   .heroStage {
@@ -182,18 +176,9 @@
   .heroCopy {
     grid-template-columns: 1fr;
   }
-  .summary {
-    font-size: 1rem;
-  }
   .journey {
     grid-template-columns: 1fr 1fr;
     gap: 32px 24px;
-  }
-  .journey h2 {
-    font-size: 1.5rem;
-  }
-  .journey p {
-    font-size: 0.9375rem;
   }
   .context,
   .insights {
@@ -202,9 +187,6 @@
   }
   .context {
     padding-top: 28px;
-  }
-  .context div > p {
-    font-size: 1.0625rem;
   }
   .evidenceSection {
     gap: 28px;

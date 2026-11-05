@@ -39,15 +39,14 @@
   flex-direction: column;
   justify-content: center;
   gap: clamp(24px, 4svh, 40px);
-  padding-inline: var(--site-grid-inset);
+  padding-right: var(--site-grid-inset);
+  padding-left: var(--text-axis);
 }
 
 .eyebrow {
   margin: 0;
-  font-family: var(--font-pixel);
-  font-size: var(--type-label);
-  font-weight: 400;
-  letter-spacing: 0.04em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
@@ -55,28 +54,23 @@
 .detail {
   max-width: 15em;
   margin: 0;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-variation-settings:
-    "wght" 700,
-    "wdth" 120;
-  letter-spacing: 0;
-  text-transform: uppercase;
 }
 
 .statement {
   --fill: var(--fill-statement);
 
-  font-size: clamp(2.5rem, 6.4vw, 7rem);
-  line-height: 0.98;
+  font: var(--role-display-l);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 
 .detail {
   --fill: var(--fill-detail);
 
   max-width: 22em;
-  font-size: clamp(1.75rem, 4.2vw, 4.5rem);
-  line-height: 1.04;
+  font: var(--role-display-m);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 
 /* Each word lights up once the fill passes its position in the reading order. */
@@ -127,12 +121,9 @@
 @media (max-width: 767px) {
   .statement {
     max-width: none;
-    /* The longest word spans ~11em, so the size tracks the 16px-gutter column. */
-    font-size: clamp(1.75rem, 7.8vw, 3.5rem);
   }
 
   .detail {
     max-width: none;
-    font-size: clamp(1.5rem, 7.2vw, 2.25rem);
   }
 }

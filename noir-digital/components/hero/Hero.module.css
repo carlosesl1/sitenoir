@@ -33,11 +33,8 @@
   padding: 0;
   list-style: none;
   padding-inline: 8px;
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.35vw, 1.875rem);
-  font-weight: 520;
-  line-height: 1.22;
-  letter-spacing: -0.035em;
+  font: var(--role-subtitle);
+  letter-spacing: var(--tracking-tight);
 }
 
 .promise {
@@ -45,11 +42,9 @@
   grid-area: promise;
   padding-inline: 8px;
   flex-direction: column;
-  font-family: var(--font-interface);
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  letter-spacing: 0;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .headline {
@@ -59,13 +54,8 @@
   align-self: end;
   flex-direction: column;
   padding-inline: 8px;
-  font-size: 7.2svw;
-  font-weight: 700;
-  font-variation-settings:
-    "wght" 700,
-    "wdth" 120;
-  line-height: 1;
-  letter-spacing: 0;
+  font: var(--role-display-l);
+  font-variation-settings: var(--wdth-wide);
   text-transform: uppercase;
 }
 
@@ -111,7 +101,7 @@
     flex-direction: column;
     gap: clamp(14px, 1.8svh, 18px);
     margin-bottom: 24px;
-    padding-inline: 8px;
+    padding-inline: calc(var(--text-axis) - 16px);
   }
 
   .heroCtaSlot {
@@ -121,10 +111,7 @@
 
   .headline {
     display: block;
-    padding-inline: 8px;
-    font-size: 7.2vw;
-    line-height: 1;
-    letter-spacing: 0;
+    padding-inline: calc(var(--text-axis) - 16px);
   }
 
   .headline > [data-hero-scramble="true"] {
@@ -165,30 +152,23 @@
 
   .disciplines {
     top: 15.5svh;
-    left: var(--header-brand-text-inset);
+    left: var(--text-axis);
     padding: 0;
-    font-size: clamp(1rem, 1.35vw, 1.25rem);
-    line-height: 1.3;
   }
 
   .promise {
     top: 16.5svh;
     right: clamp(32px, 4.2vw, 64px);
     padding: 0;
-    font-size: clamp(0.75rem, 1vw, 0.875rem);
-    line-height: 1.45;
     text-align: right;
-    text-transform: uppercase;
   }
 
   .headline {
     z-index: 3;
     top: calc(55.5svh + 24px);
     right: 22vw;
-    left: clamp(32px, 10.8vw, 176px);
+    left: var(--text-axis);
     padding: 0;
-    font-size: clamp(3rem, 5.15vw, 5.25rem);
-    line-height: 0.96;
   }
 
   .actionRow {
@@ -223,8 +203,7 @@
   .headline {
     top: calc(57svh + 20px);
     right: 32px;
-    left: 32px;
-    font-size: clamp(2.75rem, 5.4vw, 4.3rem);
+    left: var(--text-axis);
   }
 
   .actionRow {
@@ -261,8 +240,7 @@
   .headline {
     top: calc(18.5svh + 20px);
     right: clamp(90px, 16.5vw, 338px);
-    left: clamp(56px, 8.6vw, 176px);
-    font-size: clamp(2.75rem, 5.75vw, 7.4rem);
+    left: var(--text-axis);
   }
 
   .actionRow {

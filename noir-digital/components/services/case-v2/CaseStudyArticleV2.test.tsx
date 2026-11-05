@@ -83,6 +83,7 @@ describe("CaseStudyArticleV2", () => {
       "/contato?service=Sites%20e%20experi%C3%AAncias%20digitais&case=together-site",
     );
     expect(contactAction).toHaveAttribute("data-spectrum-contact-cta", "true");
+    expect(contactAction).toHaveAttribute("data-emphasis", "true");
     expect(screen.getByRole("navigation", { name: "Navegação entre cases" })).toBeVisible();
   });
 });

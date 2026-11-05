@@ -38,13 +38,11 @@
   gap: 0.55rem;
   align-items: center;
   width: max-content;
-  margin: 0 0 clamp(0.75rem, 2vw, 1.5rem) calc(var(--header-brand-text-inset) - var(--page-inline));
+  margin: 0 0 clamp(0.75rem, 2vw, 1.5rem) calc(var(--text-axis) - var(--page-inline));
   color: var(--text-secondary);
-  font-family: var(--font-interface);
-  font-size: 0.68rem;
-  font-weight: 520;
-  line-height: 1;
-  letter-spacing: 0.08em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .focusMark {
@@ -61,7 +59,7 @@
   left: 50%;
   width: 0.22rem;
   height: 0.22rem;
-  background: var(--color-spectral-blue);
+  background: var(--text-primary);
   transform: translate(-50%, -50%);
   content: "";
 }
@@ -69,13 +67,11 @@
 .heading {
   grid-row: 2;
   grid-column: 1 / span 6;
-  margin: 0 0 0 calc(var(--header-brand-text-inset) - var(--page-inline));
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 5vw, 5.45rem);
-  font-weight: 540;
-  line-height: 0.94;
-  letter-spacing: -0.055em;
+  margin: 0 0 0 calc(var(--text-axis) - var(--page-inline));
   text-wrap: balance;
+  font: var(--role-display-m);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 
 .heading span {
@@ -88,10 +84,7 @@
   max-width: 34rem;
   margin: 0 0 0.4rem;
   color: #ebebeb;
-  font-family: var(--font-interface);
-  font-size: clamp(0.76rem, 0.9vw, 0.92rem);
-  line-height: 1.75;
-  letter-spacing: -0.015em;
+  font: var(--role-body);
 }
 
 .servicesGrid {
@@ -104,12 +97,13 @@
 }
 
 .card {
-  --service-accent: var(--color-spectral-blue);
+  --service-accent: var(--text-primary);
   --card-border: rgb(168 173 178 / 22%);
   --card-text-primary: rgb(244 244 240 / 96%);
   --card-text-secondary: rgb(168 173 178 / 72%);
 
   position: relative;
+  container-type: inline-size;
   display: grid;
   grid-template-rows: 1fr auto;
   min-width: 0;
@@ -120,27 +114,6 @@
   transition:
     border-color 220ms ease,
     background-color 220ms ease;
-}
-
-.card:nth-child(1) {
-  --service-accent: var(--color-spectral-green);
-}
-
-.card:nth-child(2),
-.card:nth-child(6) {
-  --service-accent: var(--color-spectral-blue);
-}
-
-.card:nth-child(3) {
-  --service-accent: var(--color-spectral-violet);
-}
-
-.card:nth-child(4) {
-  --service-accent: var(--color-spectral-orange);
-}
-
-.card:nth-child(5) {
-  --service-accent: var(--color-spectral-cyan);
 }
 
 .card::before,
@@ -168,6 +141,8 @@
 }
 
 .cardMain {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(5.75rem, 7.5vw, 7.5rem);
   gap: clamp(1rem, 1.4vw, 1.5rem);
@@ -183,40 +158,30 @@
 
 .number {
   margin: 0 0 0.7rem;
-  color: var(--service-accent);
-  font-family: var(--font-display);
-  font-size: clamp(0.9rem, 1vw, 1.05rem);
-  line-height: 1;
-  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .card h3 {
   max-width: 14ch;
   margin: 0;
   color: var(--card-text-primary);
-  font-family: var(--font-display);
-  font-size: clamp(1.1rem, 1.3vw, 1.35rem);
-  font-weight: 470;
-  line-height: 1.12;
-  letter-spacing: -0.025em;
-  text-transform: uppercase;
   text-wrap: balance;
+  font: var(--role-subtitle);
+  letter-spacing: var(--tracking-tight);
 }
 
 .description {
   max-width: 36ch;
-  margin: auto 0 0;
-  padding-top: 1.25rem;
+  margin: 0;
+  padding-top: 0.75rem;
   color: var(--card-text-secondary);
-  font-family: var(--font-display);
-  font-size: 1rem;
-  line-height: 1.55;
-  letter-spacing: -0.01em;
+  font: var(--role-body);
 }
 
 .signal {
-  position: relative;
-  isolation: isolate;
   display: grid;
   align-self: start;
   width: 100%;
@@ -225,48 +190,83 @@
   color: var(--service-accent);
 }
 
-.signal::before {
+/* The site's dither as a round light from the corner: one dot mask over one continuous spectrum,
+   with each card showing the next stretch of it, so colour runs across the grid. */
+.card:nth-child(1) {
+  --service-index: 0;
+}
+
+.card:nth-child(2) {
+  --service-index: 1;
+}
+
+.card:nth-child(3) {
+  --service-index: 2;
+}
+
+.card:nth-child(4) {
+  --service-index: 3;
+}
+
+.card:nth-child(5) {
+  --service-index: 4;
+}
+
+.card:nth-child(6) {
+  --service-index: 5;
+}
+
+/* Always at the mask's own size: scaling it down blurs the smallest dots away. */
+.halo {
   position: absolute;
-  inset: 6%;
-  background-image: radial-gradient(circle, currentColor 0 0.65px, transparent 0.9px);
-  background-position: center;
-  background-size: 4px 4px;
-  opacity: 0.42;
-  content: "";
+  z-index: 0;
+  top: -46px;
+  right: -46px;
+  width: 280px;
+  height: 280px;
+  background-image: var(--spectrum-linear);
+  background-position: calc(var(--service-index) * 20%) 0;
+  background-size: 500% 100%;
+  -webkit-mask: url("/brand/ai-halftone.svg") center / contain no-repeat;
+  mask: url("/brand/ai-halftone.svg") center / contain no-repeat;
+  pointer-events: none;
+  transform-origin: 68% 32%;
+  transition: transform 420ms ease;
+}
+
+/* On narrow cards the icon would land on the largest dots, so the light moves into the corner. */
+@container (max-width: 379px) {
+  .halo {
+    top: -72px;
+    right: -72px;
+  }
 }
 
 .signalGlyph {
-  position: relative;
-  z-index: 1;
-  width: 40%;
+  width: 62%;
   height: auto;
   aspect-ratio: 1;
   overflow: visible;
   shape-rendering: geometricPrecision;
-  filter: drop-shadow(0 0 0.22rem color-mix(in srgb, currentColor 28%, transparent));
   transition: transform 260ms ease;
 }
 
-.signalGlyph path {
-  fill: currentColor;
-}
-
 .cardFooter {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   gap: 1rem;
   border-top: 1px solid var(--card-border);
   padding: 0.8rem clamp(1.5rem, 2.2vw, 2.25rem);
   color: var(--card-text-secondary);
-  font-family: var(--font-display);
-  font-size: 0.59rem;
-  line-height: 1;
-  letter-spacing: 0.045em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
 .cardFooter span:last-child {
-  color: var(--service-accent);
+  color: var(--text-primary);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -277,6 +277,17 @@
 
   .card:hover .signalGlyph {
     transform: translateY(-0.18rem);
+  }
+
+  .card:hover .halo {
+    transform: scale(1.08);
+  }
+}
+
+/* Titles reserve two lines so every description starts at the same height. */
+@media (min-width: 768px) {
+  .card h3 {
+    min-height: 2.5em;
   }
 }
 
@@ -339,15 +350,10 @@
     margin-bottom: 2rem;
   }
 
-  .heading {
-    font-size: clamp(2.65rem, 13vw, 4rem);
-    line-height: 0.97;
-  }
-
   .introCopy {
+    margin-left: calc(var(--text-axis) - var(--page-inline));
     max-width: 42ch;
     margin-top: 2rem;
-    font-size: 0.76rem;
   }
 
   .servicesGrid {
@@ -372,10 +378,6 @@
 }
 
 @media (max-width: 390px) {
-  .heading {
-    font-size: 2.45rem;
-  }
-
   .cardMain {
     grid-template-columns: minmax(0, 1fr) 4.5rem;
     gap: 0.75rem;
@@ -384,6 +386,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .card,
+  .halo,
   .signalGlyph {
     transition: none;
   }
@@ -394,5 +397,9 @@
   .signalGlyph,
   .focusMark {
     border-color: CanvasText;
+  }
+
+  .halo {
+    display: none;
   }
 }

@@ -5,7 +5,6 @@ import { useLayoutEffect, useMemo, useRef } from "react";
 import { Color, type Mesh, ShaderMaterial, Vector2, Vector3, Vector4 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-import { useTheme } from "@/features/theme/ThemeProvider";
 import { HERO_MODEL_SOURCE } from "@/scene/critical-hero-preload";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
@@ -19,7 +18,6 @@ function colorVector(hex: string): Vector4 {
 
 export function HeroGlassAsset() {
   const source = useLoader(GLTFLoader, HERO_MODEL_SOURCE);
-  const { resolvedTheme } = useTheme();
   const { screenResolution, texture } = useHeroRefraction();
   const meshRef = useRef<Mesh>(null);
 
@@ -34,8 +32,7 @@ export function HeroGlassAsset() {
   }, [geometry]);
 
   const material = useMemo(() => {
-    const dark = resolvedTheme === "dark";
-    const theme = dark ? HERO_GLASS_CONFIG.dark : HERO_GLASS_CONFIG.light;
+    const theme = HERO_GLASS_CONFIG.dark;
     return new ShaderMaterial({
       fragmentShader: HERO_GLASS_FRAGMENT_SHADER,
       toneMapped: false,
@@ -44,7 +41,7 @@ export function HeroGlassAsset() {
         uBrightness: { value: theme.brightness },
         uChromaticAberration: { value: HERO_GLASS_CONFIG.chromaticAberration },
         uContrast: { value: theme.contrast },
-        uDark: { value: dark ? 1 : 0 },
+        uDark: { value: 1 },
         uDiffuseness: { value: theme.diffuseness },
         uFresnelPower: { value: theme.fresnelPower },
         uFresnelSideDir: { value: new Vector3(...HERO_GLASS_CONFIG.fresnelSideDirection) },
@@ -85,7 +82,7 @@ export function HeroGlassAsset() {
       },
       vertexShader: HERO_GLASS_VERTEX_SHADER,
     });
-  }, [localYRange, resolvedTheme, screenResolution, texture]);
+  }, [localYRange, screenResolution, texture]);
 
   useLayoutEffect(() => {
     meshRef.current?.layers.set(HERO_GLASS_CONFIG.renderLayer);
