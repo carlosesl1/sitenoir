@@ -6,16 +6,21 @@ import { useCallback, useEffect, useState } from "react";
 import { EntryRevealCanvas } from "@/components/preloader/EntryRevealCanvas";
 import { canRevealEntry } from "@/components/preloader/entry-preloader-state";
 import { NoirSymbolPreloaderMark } from "@/components/preloader/NoirSymbolPreloaderMark";
+import { NOIR_SCENE_SETTLED_EVENT } from "@/scene/scene-readiness";
 
 import styles from "./EntryPreloader.module.css";
 
 const REVEAL_DURATION_MS = 520;
+// The site opens with the 3D already drawn. Once the symbol is complete it waits for the scene this
+// long at most, so a slow device or a failed model never keeps the page covered.
+export const ENTRY_SCENE_WAIT_MAX_MS = 6_000;
 
 export function EntryPreloader() {
   const reducedMotion = useReducedMotion() ?? false;
   const [documentReady, setDocumentReady] = useState(false);
   const [fontsReady, setFontsReady] = useState(false);
   const [revealReady, setRevealReady] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
   const [symbolReady, setSymbolReady] = useState(reducedMotion);
   const [phase, setPhase] = useState<"loading" | "revealing" | "done">("loading");
   const markRevealReady = useCallback(() => setRevealReady(true), []);
@@ -31,10 +36,29 @@ export function EntryPreloader() {
   const entryCanReveal = canRevealEntry({
     documentReady,
     fontsReady,
+    sceneReady,
     symbolReady,
     revealReady,
     reducedMotion,
   });
+
+  useEffect(() => {
+    if (reducedMotion || document.documentElement.dataset["routeTransition"] === "true") return;
+
+    const synchronizeSceneReadiness = () => {
+      if (window.__NOIR_READY__ === true) setSceneReady(true);
+    };
+    synchronizeSceneReadiness();
+    window.addEventListener(NOIR_SCENE_SETTLED_EVENT, synchronizeSceneReadiness);
+    return () => window.removeEventListener(NOIR_SCENE_SETTLED_EVENT, synchronizeSceneReadiness);
+  }, [reducedMotion]);
+
+  useEffect(() => {
+    if (reducedMotion || !symbolReady || sceneReady) return;
+
+    const capTimer = window.setTimeout(() => setSceneReady(true), ENTRY_SCENE_WAIT_MAX_MS);
+    return () => window.clearTimeout(capTimer);
+  }, [reducedMotion, sceneReady, symbolReady]);
 
   useEffect(() => {
     if (document.documentElement.dataset["routeTransition"] === "true") {

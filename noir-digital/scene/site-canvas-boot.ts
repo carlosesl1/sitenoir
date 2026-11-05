@@ -43,7 +43,9 @@ export function scheduleSiteCanvasBoot({
   };
 }
 
-export const ENTRY_SYMBOL_WAIT_TIMEOUT_MS = 3_200;
+// Only a safety net: the symbol normally finishes first, and mounting the canvas while it still draws
+// makes the animation stutter on slow connections.
+export const ENTRY_SYMBOL_WAIT_TIMEOUT_MS = 6_000;
 
 interface EntrySymbolWaitOptions {
   readonly activate: () => void;
