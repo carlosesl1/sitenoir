@@ -108,6 +108,9 @@ jobs:
       # This FTP account is chrooted directly into Hostinger's public_html.
       FTP_TARGET: .
       PRODUCTION_URL: https://noirdigital.com.br
+      # Pages and files taken off the site. The mirror never deletes, so they would stay online;
+      # each release removes these on purpose. Add a path here when a page or asset is retired.
+      RETIRED_PATHS: showcase assets/v1/audio/bgm.mp3
     steps:
       - name: Download export artifact
         uses: actions/download-artifact@v4
@@ -128,6 +131,26 @@ jobs:
           [[ "${PRODUCTION_URL}" == "https://noirdigital.com.br" ]]
 
           echo "FTP_PORT=${FTP_PORT}" >>"${GITHUB_ENV}"
+
+      - name: Validate retired paths
+        # Checked before anything is published, so a bad entry stops the release without a rollback.
+        run: |
+          for path in ${RETIRED_PATHS}; do
+            if [[ ! "${path}" =~ ^[a-z0-9][a-z0-9._/-]*$ || "${path}" == *..* || "${path}" == wp-* || "${path}" == */ ]]; then
+              echo "::error::Refusing to remove '${path}': only plain site paths may be retired."
+              exit 1
+            fi
+            case "${path}" in
+              _next | _next/* | assets | assets/v1 | brand | cases | cases-v2 | index.html | index.php | xmlrpc.php)
+                echo "::error::Refusing to remove '${path}': it holds files the site still needs."
+                exit 1
+                ;;
+            esac
+            if [[ -e "out/${path}" ]]; then
+              echo "::error::'${path}' is part of this release, so it cannot be retired."
+              exit 1
+            fi
+          done
 
       - name: Install lftp
         run: |
@@ -433,6 +456,36 @@ jobs:
             --write-out '%{http_code}' \
             "${PRODUCTION_URL}/wp-json/noir/v1/contact")"
           [[ "${blocked_status}" == "403" ]]
+
+      - name: Remove retired paths
+        # Runs once the new release is verified. A failure here only warns: it must never roll back a
+        # good release.
+        continue-on-error: true
+        run: |
+          commands=""
+          for path in ${RETIRED_PATHS}; do
+            commands+="rm -r -f ${FTP_TARGET}/${path}; "
+          done
+
+          lftp -e "
+            set cmd:fail-exit no;
+            set net:max-retries 6;
+            set net:timeout 30;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate yes;
+            open -p ${FTP_PORT} ${FTP_HOST};
+            ${commands}
+            bye;
+          " || echo "::warning::Could not reach the server to remove the retired paths."
+
+          for path in ${RETIRED_PATHS}; do
+            status="$(curl --silent --output /dev/null --write-out '%{http_code}' --max-time 30 \
+              -H "Cache-Control: no-cache" "${PRODUCTION_URL}/${path}" || echo "000")"
+            if [[ "${status}" != "404" ]]; then
+              echo "::warning::${PRODUCTION_URL}/${path} still answers ${status}; remove it on Hostinger."
+            fi
+          done
 
       - name: Roll back entry files after a failed publication
         if: failure() && steps.publish.outcome != 'skipped'
