@@ -5,12 +5,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 
 import { SpectrumContactCta } from "@/components/contact/SpectrumContactCta";
 import { HeroScrambleText } from "@/components/hero/HeroScrambleText";
-import {
-  heroDescriptionLines,
-  heroHeadlineLines,
-  heroLabels,
-  heroSupportLines,
-} from "@/data/content";
+import { heroHeadlineLines, heroLabels, heroSupportLines } from "@/data/content";
 import { useLanguage } from "@/features/i18n/LanguageProvider";
 
 import styles from "./Hero.module.css";
@@ -116,23 +111,8 @@ export function Hero() {
         </h1>
 
         <div className={styles["actionRow"]} data-hero-action-row="true">
-          <p className={styles["description"]}>
-            {heroDescriptionLines.map((line, index) => (
-              <Fragment key={line}>
-                <HeroScrambleText
-                  active={scrambleActive}
-                  letterDelayMs={10}
-                  reducedMotion={reducedMotion}
-                  startDelayMs={0}
-                  text={t(line)}
-                />
-                {index < heroDescriptionLines.length - 1 ? " " : null}
-              </Fragment>
-            ))}
-          </p>
-
           <div className={styles["heroCtaSlot"]}>
-            <SpectrumContactCta />
+            <SpectrumContactCta emphasis />
           </div>
         </div>
       </div>

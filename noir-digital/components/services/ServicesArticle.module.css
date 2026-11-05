@@ -27,7 +27,7 @@
   padding: 4px 8px 4px 18px;
   border: 2px dotted transparent;
   color: var(--text-secondary);
-  font-family: var(--font-interface);
+  font-family: var(--font-mono);
   font-size: 0.875rem;
   line-height: 1.25;
   text-decoration: none;
@@ -61,7 +61,6 @@
 }
 
 .toc a:focus-visible,
-.footerLinks a:focus-visible,
 .chapter a:focus-visible {
   border-color: currentColor;
   outline: none;
@@ -96,14 +95,14 @@
   min-height: 100dvh;
   padding: 176px 24px 112px;
   margin: 0 auto;
-  font-family: var(--font-interface);
+  font-family: var(--font-mono);
   font-size: 1rem;
   line-height: 1.55;
 }
 
 .intro h1 {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: clamp(2.5rem, 4.2vw, 4rem);
   font-weight: 700;
   line-height: 0.95;
@@ -116,7 +115,7 @@
   display: block;
   margin: 0 0 16px;
   color: var(--text-secondary);
-  font-family: var(--font-pixel);
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -158,7 +157,7 @@
 
 .chapter h2 {
   margin-bottom: 28px;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 2rem;
   line-height: 1;
   letter-spacing: -0.025em;
@@ -172,7 +171,7 @@
 
 .chapter h3 {
   margin-bottom: 16px;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 1.35rem;
   line-height: 1;
 }
@@ -202,7 +201,7 @@
   grid-column: 1 / -1;
   justify-content: space-between;
   color: var(--text-secondary);
-  font-family: var(--font-pixel);
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -214,7 +213,7 @@
   max-width: 12ch;
   margin: 0;
   color: var(--text-primary);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: clamp(2.8rem, 5vw, 4.75rem);
   font-weight: 700;
   line-height: 0.9;
@@ -241,7 +240,7 @@
 .figure figcaption {
   padding-top: 10px;
   color: var(--text-secondary);
-  font-family: var(--font-pixel);
+  font-family: var(--font-mono);
   font-size: 0.75rem;
 }
 
@@ -289,14 +288,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-.footerLinks a {
-  min-height: 36px;
-  padding: 4px;
-  border: 2px dotted transparent;
-  color: inherit;
-  text-decoration: none;
+  gap: 0.5rem;
 }
 
 @media (max-width: 767px) {

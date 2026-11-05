@@ -31,10 +31,11 @@ export const heroLabels = ["Design", "Tecnologia", "Posicionamento"] as const;
 
 export const heroSupportLines = ["Visibilidade para vender.", "Tecnologia para crescer."] as const;
 
-export const heroDescriptionLines = [
-  "Unimos posicionamento, design e tecnologia para",
-  "tornar sua empresa mais fácil de encontrar, mais",
-  "confiável de escolher e mais eficiente para crescer.",
+export const missionEyebrow = "Nossa missão";
+
+export const missionStatement = [
+  "Ajudar empreendedores a crescer com as inovações mais recentes.",
+  "Unimos posicionamento, design e tecnologia para tornar sua empresa mais fácil de encontrar, mais confiável de escolher e mais eficiente para crescer.",
 ] as const;
 
 export const heroHeadlineLines = ["A estrutura digital", "para sua empresa", "crescer"] as const;

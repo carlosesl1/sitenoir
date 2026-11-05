@@ -4,7 +4,6 @@ import { domAnimation, LazyMotion, m, useIsPresent, useReducedMotion } from "mot
 import type { KeyboardEvent } from "react";
 import { useEffect, useRef } from "react";
 import { LanguageButton } from "@/components/controls/LanguageButton";
-import { ThemeButton } from "@/components/controls/ThemeButton";
 import { EntryRevealCanvas } from "@/components/preloader/EntryRevealCanvas";
 import { useLanguage } from "@/features/i18n/LanguageProvider";
 import type { SectionTarget } from "@/features/scroll/scroll-targets";
@@ -126,7 +125,6 @@ export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenu
 
           <div className={styles["mobileControls"]}>
             <LanguageButton className={styles["mobileUtilityControl"]} />
-            <ThemeButton className={styles["mobileUtilityControl"]} />
           </div>
         </div>
       </m.div>

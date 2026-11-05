@@ -19,7 +19,10 @@ export function EntryPreloader() {
   const [symbolReady, setSymbolReady] = useState(reducedMotion);
   const [phase, setPhase] = useState<"loading" | "revealing" | "done">("loading");
   const markRevealReady = useCallback(() => setRevealReady(true), []);
-  const markSymbolReady = useCallback(() => setSymbolReady(true), []);
+  const markSymbolReady = useCallback(() => {
+    document.documentElement.dataset["entrySymbolComplete"] = "true";
+    setSymbolReady(true);
+  }, []);
   const skipRevealInitialization =
     reducedMotion ||
     (typeof document !== "undefined" &&
@@ -71,6 +74,7 @@ export function EntryPreloader() {
     return () => {
       cancelled = true;
       delete document.documentElement.dataset["entryLoading"];
+      delete document.documentElement.dataset["entrySymbolComplete"];
     };
   }, []);
 

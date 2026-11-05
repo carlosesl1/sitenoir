@@ -1,16 +1,10 @@
 .root {
-  --scramble-primary: #c0fe04;
-  --scramble-secondary: #dfff81;
   position: relative;
   display: inline-block;
 }
 
 .root[data-scramble-state="waiting"] {
   color: transparent;
-}
-
-:global([data-theme="light"]) .root {
-  --scramble-secondary: #607f02;
 }
 
 .measure {
@@ -30,12 +24,13 @@
   opacity: 0;
 }
 
+/* Letters stay white while decoding: the light only splits at their edges. */
 .glyph[data-phase="primary"] {
-  color: var(--scramble-primary);
+  text-shadow: var(--fringe-primary);
 }
 
 .glyph[data-phase="secondary"] {
-  color: var(--scramble-secondary);
+  text-shadow: var(--fringe-secondary);
 }
 
 .screenReaderText {

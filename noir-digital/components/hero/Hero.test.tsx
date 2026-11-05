@@ -5,12 +5,7 @@ import { act, cleanup, render, screen, waitFor, within } from "@testing-library/
 import { afterEach, describe, expect, it } from "vitest";
 
 import { Hero } from "@/components/hero/Hero";
-import {
-  heroDescriptionLines,
-  heroHeadlineLines,
-  heroLabels,
-  heroSupportLines,
-} from "@/data/content";
+import { heroHeadlineLines, heroLabels, heroSupportLines } from "@/data/content";
 
 afterEach(() => {
   cleanup();
@@ -34,7 +29,6 @@ describe("Hero", () => {
 
     for (const label of heroLabels) expect(screen.getByText(label)).toBeInTheDocument();
     for (const line of heroSupportLines) expect(screen.getByText(line)).toBeInTheDocument();
-    for (const line of heroDescriptionLines) expect(screen.getByText(line)).toBeInTheDocument();
   });
 
   it("exposes the shared contact action in the desktop hero composition", () => {
@@ -53,12 +47,11 @@ describe("Hero", () => {
       view.container.querySelectorAll<HTMLElement>("[data-hero-scramble]"),
     );
 
-    expect(decodedLines).toHaveLength(11);
+    expect(decodedLines).toHaveLength(8);
     expect(decodedLines.map((line) => line.dataset["scrambleText"])).toEqual([
       ...heroLabels,
       ...heroSupportLines,
       ...heroHeadlineLines,
-      ...heroDescriptionLines,
     ]);
     expect(
       decodedLines
@@ -74,11 +67,6 @@ describe("Hero", () => {
       ["120", "50"],
       ["240", "50"],
     ]);
-    expect(
-      decodedLines
-        .slice(8)
-        .map((line) => [line.dataset["scrambleDelay"], line.dataset["scrambleLetterDelay"]]),
-    ).toEqual(Array.from({ length: 3 }, () => ["0", "10"]));
   });
 
   it("starts the decoder only after the entry reveal is complete", async () => {
@@ -110,26 +98,41 @@ describe("Hero", () => {
     expect(anchor).toHaveAttribute("aria-hidden", "true");
   });
 
+  it("keeps the positioning statement out of the hero", () => {
+    render(<Hero />);
+    expect(
+      screen.queryByText(/Unimos posicionamento, design e tecnologia/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("gives its contact action the emphasis style", () => {
+    render(<Hero />);
+    expect(screen.getByRole("link", { name: "Entrar em contato", hidden: true })).toHaveAttribute(
+      "data-emphasis",
+      "true",
+    );
+  });
+
   it("uses a CSS-only mobile contract for desktop supporting labels", () => {
     const css = readFileSync(join(process.cwd(), "components/hero/Hero.module.css"), "utf8");
     const tokens = readFileSync(join(process.cwd(), "styles/tokens.css"), "utf8");
 
     expect(css).toContain("grid-template-areas");
     expect(css).toMatch(/\.heroGrid\s*\{[^}]*z-index:\s*3/);
-    for (const area of ["disciplines", "promise", "description", "headline"]) {
+    for (const area of ["disciplines", "promise", "action", "headline"]) {
       expect(css).toContain(area);
     }
     expect(css).toContain("@media (max-width: 767px)");
     expect(css).toContain("@media (min-width: 768px)");
-    expect(tokens).toMatch(/--header-brand-text-inset:\s*26px/);
-    expect(tokens).toMatch(/@media \(min-width: 1024px\)[\s\S]*--header-brand-text-inset:\s*66px/);
+    expect(tokens).toMatch(/--text-axis:\s*26px/);
+    expect(tokens).toMatch(/@media \(min-width: 768px\)[\s\S]*--text-axis:\s*66px/);
     expect(css).toMatch(
-      /@media \(min-width: 768px\)[\s\S]*\.disciplines\s*\{[^}]*left:\s*var\(--header-brand-text-inset\)/,
+      /@media \(min-width: 768px\)[\s\S]*\.disciplines\s*\{[^}]*left:\s*var\(--text-axis\)/,
     );
     expect(css).toMatch(/\.desktopSupport[\s\S]*display:\s*none/);
     expect(css).toMatch(/\.heroCtaSlot[\s\S]*display:\s*none/);
     expect(css).toMatch(
-      /@media \(max-width: 767px\)[\s\S]*\.actionRow\s*\{[^}]*display:\s*flex[^}]*grid-area:\s*description[^}]*flex-direction:\s*column/,
+      /@media \(max-width: 767px\)[\s\S]*\.actionRow\s*\{[^}]*display:\s*flex[^}]*grid-area:\s*action[^}]*flex-direction:\s*column/,
     );
     expect(css).toMatch(
       /@media \(max-width: 767px\)[\s\S]*\.heroCtaSlot\s*\{[^}]*display:\s*block[^}]*width:\s*min\(100%, 260px\)/,
@@ -137,22 +140,12 @@ describe("Hero", () => {
     expect(css).toMatch(
       /@media \(max-width: 767px\)[\s\S]*\.heroGrid\s*\{[^}]*min-height:\s*100svh[^}]*grid-template-rows:\s*auto 1fr auto/,
     );
-    expect(css).toMatch(
-      /@media \(max-width: 767px\)[\s\S]*\.description\s*\{[^}]*display:\s*block/,
-    );
-    expect(css).toContain('.description > [data-hero-scramble="true"]');
     expect(css).toContain('.headline > [data-hero-scramble="true"]');
     expect(css).toContain('[data-scramble-visual="true"]');
     expect(css).toContain('[data-scramble-measure="true"]');
-    expect(css).toMatch(/@media \(min-width: 768px\)[\s\S]*\.description[\s\S]*grid-area:\s*auto/);
-    expect(css).toMatch(
-      /@media \(min-width: 768px\)[\s\S]*\.actionRow::before\s*\{[^}]*grid-column:\s*2[^}]*content:\s*""/,
-    );
+    expect(css).not.toContain(".actionRow::before");
     expect(css).toMatch(
       /@media \(min-width: 768px\)[\s\S]*\.actionRow\s*\{[^}]*top:\s*calc\(81\.5svh \+ 24px\)[^}]*right:\s*auto[^}]*left:\s*50%[^}]*width:\s*min\(calc\(100vw - 64px\), 840px\)[^}]*max-width:\s*840px[^}]*transform:\s*translateX\(-50%\)/,
-    );
-    expect(css).toMatch(
-      /@media \(min-width: 768px\)[\s\S]*\.description\s*\{[^}]*grid-column:\s*1[^}]*padding-right:\s*0[^}]*font-size:\s*1rem[^}]*letter-spacing:\s*0[^}]*white-space:\s*nowrap/,
     );
     expect(css).toMatch(
       /@media \(min-width: 768px\)[\s\S]*\.heroCtaSlot\s*\{[^}]*grid-column:\s*3[^}]*padding-left:\s*0[^}]*border-left:\s*0/,
@@ -167,14 +160,14 @@ describe("Hero", () => {
       /@media \(min-width: 768px\) and \(max-width: 1279px\)[\s\S]*\.actionRow\s*\{[^}]*top:\s*calc\(80\.5svh \+ 20px\)/,
     );
     expect(css).toMatch(
-      /@media \(min-width: 768px\) and \(max-height: 720px\)[\s\S]*\.headline\s*\{[^}]*top:\s*calc\(18\.5svh \+ 20px\)[^}]*left:\s*clamp\(56px, 8\.6vw, 176px\)/,
+      /@media \(min-width: 768px\) and \(max-height: 720px\)[\s\S]*\.headline\s*\{[^}]*top:\s*calc\(18\.5svh \+ 20px\)[^}]*left:\s*var\(--text-axis\)/,
     );
-    expect(css).toMatch(/font-size:\s*clamp\(2\.75rem, 5\.75vw, 7\.4rem\)/);
+    expect(css).toMatch(/\.headline\s*\{[^}]*font:\s*var\(--role-display-l\)/);
     expect(css).toMatch(
       /@media \(min-width: 768px\) and \(max-height: 720px\)[\s\S]*\.actionRow\s*\{[^}]*top:\s*calc\(66\.8svh \+ 20px\)[^}]*right:\s*auto[^}]*left:\s*50%[^}]*width:\s*min\(calc\(100vw - 64px\), 840px\)[^}]*max-width:\s*840px[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 1px minmax\(220px, 260px\)[^}]*column-gap:\s*clamp\(24px, 3vw, 40px\)/,
     );
     expect(css).toMatch(
-      /@media \(min-width: 768px\) and \(max-width: 899px\)[\s\S]*\.actionRow\s*\{[^}]*width:\s*calc\(100vw - 64px\)[^}]*max-width:\s*760px[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 1px minmax\(200px, 220px\)[^}]*column-gap:\s*16px[^}]*\}[\s\S]*\.description\s*\{[^}]*font-size:\s*0\.875rem[^}]*letter-spacing:\s*-0\.02em/,
+      /@media \(min-width: 768px\) and \(max-width: 899px\)[\s\S]*\.actionRow\s*\{[^}]*width:\s*calc\(100vw - 64px\)[^}]*max-width:\s*760px[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 1px minmax\(200px, 220px\)[^}]*column-gap:\s*16px/,
     );
   });
 });

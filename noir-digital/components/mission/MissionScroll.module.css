@@ -1,0 +1,129 @@
+.story {
+  position: relative;
+  z-index: 2;
+  height: var(--mission-story-height, 400svh);
+  /* Transparent like the services section: the fullscreen dither dims the hero background. */
+  background: transparent;
+  color: var(--text-primary);
+}
+
+:global(html[data-effects="off"]) .story,
+:global(html[data-effects="failed"]) .story {
+  background: var(--surface-primary);
+}
+
+.stickyFrame {
+  --track-x: 1;
+  --fill-statement: 0;
+  --fill-detail: 0;
+
+  position: sticky;
+  top: 0;
+  height: var(--mission-viewport-height, 100svh);
+  overflow: clip;
+}
+
+.track {
+  display: flex;
+  width: 200vw;
+  height: 100%;
+  transform: translate3d(calc(var(--track-x) * 100vw), 0, 0);
+  will-change: transform;
+}
+
+.panel {
+  box-sizing: border-box;
+  display: flex;
+  width: 100vw;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(24px, 4svh, 40px);
+  padding-right: var(--site-grid-inset);
+  padding-left: var(--text-axis);
+}
+
+.eyebrow {
+  margin: 0;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.statement,
+.detail {
+  max-width: 15em;
+  margin: 0;
+}
+
+.statement {
+  --fill: var(--fill-statement);
+
+  font: var(--role-display-l);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
+}
+
+.detail {
+  --fill: var(--fill-detail);
+
+  max-width: 22em;
+  font: var(--role-display-m);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
+}
+
+/* Each word lights up once the fill passes its position in the reading order. */
+.word {
+  opacity: clamp(0.16, calc(var(--fill) * var(--word-count) - var(--word-index)), 1);
+}
+
+.story[data-mission-static="true"],
+:global(html[data-effects="off"]) .story,
+:global(html[data-effects="failed"]) .story {
+  height: auto;
+}
+
+.story[data-mission-static="true"] .stickyFrame,
+:global(html[data-effects="off"]) .stickyFrame,
+:global(html[data-effects="failed"]) .stickyFrame {
+  position: static;
+  height: auto;
+}
+
+.story[data-mission-static="true"] .track,
+:global(html[data-effects="off"]) .track,
+:global(html[data-effects="failed"]) .track {
+  width: auto;
+  flex-direction: column;
+  transform: none;
+}
+
+.story[data-mission-static="true"] .panel,
+:global(html[data-effects="off"]) .panel,
+:global(html[data-effects="failed"]) .panel {
+  width: auto;
+  padding-block: clamp(64px, 12svh, 120px) 0;
+}
+
+.story[data-mission-static="true"] .panel:last-child,
+:global(html[data-effects="off"]) .panel:last-child,
+:global(html[data-effects="failed"]) .panel:last-child {
+  padding-bottom: clamp(64px, 12svh, 120px);
+}
+
+.story[data-mission-static="true"] .word,
+:global(html[data-effects="off"]) .word,
+:global(html[data-effects="failed"]) .word {
+  opacity: 1;
+}
+
+@media (max-width: 767px) {
+  .statement {
+    max-width: none;
+  }
+
+  .detail {
+    max-width: none;
+  }
+}

@@ -100,6 +100,35 @@ describe("Canvas UI hero glass integration", () => {
     expect(flareShaderSource).toContain("if (noFlareMask > 0.001) return vec3(0.0)");
   });
 
+  it("gives the principle cursor the hero's own glass while it is at rest", () => {
+    const source = readFileSync(join(process.cwd(), "scene/PrinciplePointerModel.tsx"), "utf8");
+    const canvas = readFileSync(join(process.cwd(), "scene/SiteCanvas.tsx"), "utf8");
+    const buffer = canvas.slice(
+      canvas.indexOf("<HeroRefractionBuffer"),
+      canvas.indexOf("</HeroRefractionBuffer>"),
+    );
+
+    expect(source).toContain("<HeroCanvasUiPointerMesh");
+    expect(source).toContain('opticalSource="principlePointer"');
+    expect(source).toContain("createHeroModelGeometry(source.scene)");
+    expect(buffer).toContain("<PrinciplePointerModel");
+    expect(buffer).toContain("active={!principleScene.fullscreen}");
+  });
+
+  it("captures and lights the scene for the cursor outside the hero and contact", () => {
+    const bufferSource = readFileSync(
+      join(process.cwd(), "scene/HeroRefractionBuffer.tsx"),
+      "utf8",
+    );
+    const flareSource = readFileSync(join(process.cwd(), "scene/HeroLensFlare.tsx"), "utf8");
+
+    expect(bufferSource).toContain("opticalSources?.principlePointer.current");
+    expect(flareSource).toContain("opticalSources?.principlePointer.current");
+    expect(flareSource).toContain(
+      "const opticalEnabled = flareEnabled && !!opticalSources?.wordmark.current",
+    );
+  });
+
   it("declares the compatible Drei version as a runtime dependency", () => {
     const packageJson = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8"));
 

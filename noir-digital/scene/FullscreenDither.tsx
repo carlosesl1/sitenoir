@@ -4,11 +4,9 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useLayoutEffect, useMemo, useRef } from "react";
 import { Color, type Mesh, type ShaderMaterial, Vector2 } from "three";
 
-import { useTheme } from "@/features/theme/ThemeProvider";
 import { sceneTransitionStore } from "@/scene/scene-transition";
 
-const DARK_OVERLAY = "#0F1111";
-const LIGHT_OVERLAY = "#FBFAF4";
+const OVERLAY = "#0F1111";
 const PIXEL_SIZE = 4;
 const RADIUS_SCALE = 0.9;
 
@@ -98,7 +96,6 @@ export function resolveStickerFieldActivation(input: StickerFieldActivationInput
 }
 
 export function FullscreenDither() {
-  const { resolvedTheme } = useTheme();
   const size = useThree((state) => state.size);
   const materialRef = useRef<ShaderMaterial | null>(null);
   const meshRef = useRef<Mesh>(null);
@@ -111,7 +108,7 @@ export function FullscreenDither() {
   });
   const uniforms = useMemo(
     () => ({
-      uColor: { value: new Color(DARK_OVERLAY) },
+      uColor: { value: new Color(OVERLAY) },
       uOpacity: { value: 0 },
       uPixelSize: { value: PIXEL_SIZE },
       uRadiusScale: { value: RADIUS_SCALE },
@@ -119,12 +116,6 @@ export function FullscreenDither() {
     }),
     [],
   );
-
-  useLayoutEffect(() => {
-    materialRef.current?.uniforms["uColor"]?.value.set(
-      resolvedTheme === "dark" ? DARK_OVERLAY : LIGHT_OVERLAY,
-    );
-  }, [resolvedTheme]);
 
   useLayoutEffect(() => {
     materialRef.current?.uniforms["uResolution"]?.value.set(

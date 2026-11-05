@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   resolveFullscreenCursorScale,
+  resolvePrincipleGlassTilt,
   resolvePrinciplePointerRectMotion,
   resolvePrinciplePointerRotation,
+  resolvePrinciplePortalOpacity,
 } from "@/scene/principle-pointer-motion";
 
 const viewportHeight = 1000;
@@ -82,5 +84,34 @@ describe("resolveFullscreenCursorScale", () => {
 
   it("protects the scale calculation from an empty model radius", () => {
     expect(Number.isFinite(resolveFullscreenCursorScale(40, 20, 0))).toBe(true);
+  });
+});
+
+describe("resolvePrinciplePortalOpacity", () => {
+  it("leaves only the glass at rest and only the portal before fullscreen", () => {
+    expect(resolvePrinciplePortalOpacity(0)).toBe(0);
+    expect(resolvePrinciplePortalOpacity(0.05)).toBe(0);
+    expect(resolvePrinciplePortalOpacity(0.25)).toBeGreaterThan(0);
+    expect(resolvePrinciplePortalOpacity(0.25)).toBeLessThan(1);
+    expect(resolvePrinciplePortalOpacity(0.45)).toBe(1);
+    expect(resolvePrinciplePortalOpacity(1)).toBe(1);
+  });
+});
+
+describe("resolvePrincipleGlassTilt", () => {
+  it("mirrors the same spot behind the camera wherever the cursor travels", () => {
+    const cameraZ = 28;
+
+    for (const positionY of [-8, -4, 0, 4, 8]) {
+      const tilt = resolvePrincipleGlassTilt(positionY, cameraZ);
+      const normal = [-Math.sin(tilt), Math.cos(tilt)] as const;
+      const length = Math.hypot(positionY, cameraZ);
+      const view = [-positionY / length, cameraZ / length] as const;
+      const facing = normal[0] * view[0] + normal[1] * view[1];
+      const reflected = [2 * facing * normal[0] - view[0], 2 * facing * normal[1] - view[1]];
+
+      expect(reflected[0]).toBeCloseTo(0, 10);
+      expect(reflected[1]).toBeCloseTo(1, 10);
+    }
   });
 });

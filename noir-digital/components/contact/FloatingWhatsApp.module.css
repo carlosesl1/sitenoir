@@ -7,9 +7,7 @@
   width: 52px;
   height: 52px;
   place-items: center;
-  border: 1px solid var(--border-strong);
-  border-radius: 50%;
-  background: var(--color-noir-warm-white);
+  isolation: isolate;
   color: var(--color-noir-black);
   text-decoration: none;
   pointer-events: auto;
@@ -18,9 +16,20 @@
     background-color var(--duration-standard) var(--ease-standard);
 }
 
-:global([data-theme="light"]) .root {
-  background: var(--color-noir-black);
-  color: var(--color-noir-warm-white);
+.root::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: var(--button-surface);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 11px) 0,
+    100% 11px,
+    100% 100%,
+    11px 100%,
+    0 calc(100% - 11px)
+  );
+  content: "";
 }
 
 .icon {
@@ -36,10 +45,6 @@
   border-radius: var(--radius-control);
   background: var(--surface-primary);
   color: var(--text-primary);
-  font-family: var(--font-pixel);
-  font-size: 0.6875rem;
-  line-height: 1;
-  text-transform: uppercase;
   white-space: nowrap;
   opacity: 0;
   visibility: hidden;
@@ -49,6 +54,9 @@
     opacity var(--duration-micro) var(--ease-standard),
     transform var(--duration-micro) var(--ease-standard),
     visibility var(--duration-micro);
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .root:focus-visible {

@@ -28,34 +28,11 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: repeat(3, auto);
   row-gap: 0.04em;
-  font-family: var(--font-display);
-  font-size: 7.2svw;
-  font-stretch: 120%;
-  font-weight: 700;
-  font-variation-settings: "wdth" 120;
-  line-height: 1;
-  letter-spacing: 0;
   text-align: center;
-  text-transform: uppercase;
   color: var(--text-primary);
-}
-
-@media (min-width: 1024px) {
-  .headline {
-    font-size: 6svw;
-  }
-}
-
-@media (min-width: 1280px) {
-  .headline {
-    font-size: 5.6svw;
-  }
-}
-
-@media (min-width: 1536px) {
-  .headline {
-    font-size: 5svw;
-  }
+  font: var(--role-display-l);
+  font-variation-settings: var(--wdth-wide);
+  text-transform: uppercase;
 }
 
 .headline span {
@@ -83,9 +60,8 @@
 .informationFooter {
   position: relative;
   z-index: 12;
-  font-family: var(--font-pixel);
-  font-size: clamp(0.6875rem, 0.72vw, 0.8125rem);
-  letter-spacing: 0.025em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
@@ -102,7 +78,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 7px;
-  padding: 24px clamp(20px, 2.8vw, 48px);
+  padding: 24px clamp(20px, 2.8vw, 48px) 24px calc(var(--text-axis) - var(--site-grid-inset));
 }
 
 .informationCell h3,
@@ -186,15 +162,10 @@
 
 .brandTagline {
   max-width: 27ch;
-  font-size: clamp(0.5625rem, 0.62vw, 0.6875rem);
-  letter-spacing: 0.04em;
   color: var(--text-secondary);
-  line-height: 1.45;
-}
-
-:global([data-theme="light"]) .brandSymbol,
-:global([data-theme="light"]) .brandWordmark {
-  filter: brightness(0);
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
 
 .informationList {
@@ -220,7 +191,7 @@
   display: flex;
   min-width: 0;
   align-items: center;
-  padding: 18px clamp(20px, 2.8vw, 48px);
+  padding: 18px clamp(20px, 2.8vw, 48px) 18px calc(var(--text-axis) - var(--site-grid-inset));
   border-right: 1px solid var(--border-default);
 }
 
@@ -255,11 +226,6 @@
     left: 16px;
   }
 
-  .headline {
-    font-size: clamp(1.6rem, 7.2vw, 2.25rem);
-    line-height: 1;
-  }
-
   .contactCtaSlot {
     width: min(300px, calc(100vw - 60px));
     margin-top: 24px;
@@ -272,7 +238,7 @@
 
   .informationCell {
     min-height: 132px;
-    padding: 20px 16px;
+    padding: 20px 16px 20px calc(var(--text-axis) - var(--site-grid-inset));
     border-right: 0;
     border-bottom: 1px solid var(--border-default);
   }
@@ -305,7 +271,7 @@
   .closingBar > p,
   .legalClosing {
     min-height: 62px;
-    padding: 16px;
+    padding: 16px 16px 16px calc(var(--text-axis) - var(--site-grid-inset));
     border-right: 0;
     border-bottom: 1px solid var(--border-default);
   }
@@ -338,7 +304,9 @@
   }
 
   .headline {
-    font-size: clamp(1.75rem, 3.8vw, 2.25rem);
+    font: var(--role-display-m);
+    font-variation-settings: var(--wdth-wide);
+    text-transform: uppercase;
   }
 
   .sceneAnchor {

@@ -5,7 +5,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { type HeroGlassVariant, resolveHeroGlassVariant } from "@/scene/hero-glass-variant";
 import { resolveSceneQuality, type SceneQuality } from "@/scene/scene-quality";
 import { resetSceneReadiness, signalSceneSettled } from "@/scene/scene-readiness";
-import { scheduleSiteCanvasBoot } from "@/scene/site-canvas-boot";
+import { scheduleSiteCanvasBoot, waitForEntrySymbol } from "@/scene/site-canvas-boot";
 
 let siteCanvasModulePromise: ReturnType<typeof loadSiteCanvasModule> | undefined;
 
@@ -91,7 +91,10 @@ export function LazySiteCanvas({
     setQuality(resolvedQuality);
     let cancelBoot: () => void = () => undefined;
     if (preloadDuringEntry) {
-      setCanvasEnabled(true);
+      cancelBoot = waitForEntrySymbol({
+        activate: () => setCanvasEnabled(true),
+        root: document.documentElement,
+      });
     } else {
       cancelBoot = scheduleSiteCanvasBoot({
         activate: () => setCanvasEnabled(true),

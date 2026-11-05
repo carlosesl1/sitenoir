@@ -7,10 +7,6 @@
   overflow: visible;
 }
 
-:global([data-theme="light"]) .mark {
-  --symbol-ink: #030303;
-}
-
 .source {
   visibility: hidden;
   pointer-events: none;

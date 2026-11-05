@@ -4,10 +4,11 @@ import { aiServices } from "@/data/ai-services";
 import { caseStudiesV2 } from "@/data/case-studies-v2";
 import {
   contactHeadlineLines,
-  heroDescriptionLines,
   heroHeadlineLines,
   heroLabels,
   heroSupportLines,
+  missionEyebrow,
+  missionStatement,
   principleStages,
   principleStatements,
   serviceContent,
@@ -76,7 +77,8 @@ describe("English translation coverage", () => {
       [
         ...heroLabels,
         ...heroSupportLines,
-        ...heroDescriptionLines,
+        missionEyebrow,
+        ...missionStatement,
         ...heroHeadlineLines,
         ...contactHeadlineLines,
         ...principleStatements.flat(),

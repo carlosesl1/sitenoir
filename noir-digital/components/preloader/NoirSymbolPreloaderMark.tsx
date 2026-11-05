@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef } from "react";
 
 import {
+  advanceNoirSymbolClock,
   NOIR_SYMBOL_DURATION_MS,
   NOIR_SYMBOL_FRONTS,
   resolveNoirSymbolFrame,
@@ -118,10 +119,12 @@ export function NoirSymbolPreloaderMark({
         throw new Error("NOIR symbol paths could not be measured");
       }
 
-      const startedAt = performance.now();
+      let elapsedMs = 0;
+      let previousFrameAt: number | null = null;
       const renderFrame = (now: number) => {
         if (disposed) return;
-        const elapsedMs = Math.max(0, now - startedAt);
+        elapsedMs = advanceNoirSymbolClock(elapsedMs, previousFrameAt, now);
+        previousFrameAt = now;
         const frame = resolveNoirSymbolFrame(elapsedMs);
         root.dataset["symbolPhase"] = frame.phase;
         root.dataset["symbolComplete"] = String(frame.complete);

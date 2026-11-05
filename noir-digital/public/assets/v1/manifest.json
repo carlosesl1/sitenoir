@@ -2,11 +2,6 @@
   "pipeline": 1,
   "assets": [
     {
-      "path": "audio/bgm.mp3",
-      "bytes": 935442,
-      "sha256": "e7d844e5313e2c6318916738b35eee92c7bb609cde7fd6e87871e07f5badcb89"
-    },
-    {
       "path": "fonts/DepartureMono.woff2",
       "bytes": 10244,
       "sha256": "1fe93d86d2a662bd0849f3f484b865ddd5633a7947a4806a64d154ffa5f57926"

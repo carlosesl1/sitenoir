@@ -41,6 +41,8 @@ export function AiServicesSection() {
                 data-ai-service={service.id}
                 data-glyph={service.glyph}
               >
+                <span className={styles["halo"]} data-ai-halo="true" aria-hidden="true" />
+
                 <div className={styles["cardMain"]}>
                   <div className={styles["cardCopy"]}>
                     <p className={styles["number"]}>{number}</p>

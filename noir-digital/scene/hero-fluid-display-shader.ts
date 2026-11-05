@@ -11,6 +11,7 @@ uniform vec2 uTrail[16];
 uniform float uTrailStrength[16];
 uniform float uTrailCount;
 uniform vec3 uPointerColor;
+uniform vec3 uPointerSpectrum[6];
 uniform float uPointerOpacity;
 uniform float uPointerDotRadius;
 uniform float uPointerPixelSize;
@@ -68,11 +69,16 @@ vec4 applyPointerOverlay(vec2 uv, vec4 baseColor) {
   vec2 cellId = floor(uv / safePixelSize);
   vec2 cellUv = fract(uv / safePixelSize);
   float highlight = 0.0;
+  float highlightIndex = 0.0;
   for (int index = 0; index < 16; index++) {
     float enabled = step(float(index), uTrailCount - 1.0);
     vec2 pointerCell = floor(uTrail[index] / safePixelSize);
     float weight = clamp(uTrailStrength[index], 0.0, 1.0);
-    highlight = max(highlight, enabled * cellEquals(cellId, pointerCell) * weight);
+    float match = enabled * cellEquals(cellId, pointerCell) * weight;
+    if (match > highlight) {
+      highlight = match;
+      highlightIndex = float(index);
+    }
   }
   float distanceToCenter = distance(cellUv, vec2(0.5));
   float antialias = fwidth(distanceToCenter) * 1.5;
@@ -82,7 +88,21 @@ vec4 applyPointerOverlay(vec2 uv, vec4 baseColor) {
     distanceToCenter
   );
   float alpha = circle * highlight * clamp(uPointerOpacity, 0.0, 1.0);
-  baseColor.rgb = mix(baseColor.rgb, uPointerColor, alpha);
+  // White pixels; older ones open at the edges into the whole spectrum, like light through a prism.
+  float spread = 0.34 * highlightIndex / max(uTrailCount - 1.0, 1.0);
+  vec3 pixelColor = uPointerColor;
+  if (cellUv.x < spread) {
+    float warm = cellUv.x / spread * 2.0;
+    pixelColor = warm < 1.0
+      ? mix(uPointerSpectrum[0], uPointerSpectrum[1], warm)
+      : mix(uPointerSpectrum[1], uPointerSpectrum[2], warm - 1.0);
+  } else if (cellUv.x > 1.0 - spread) {
+    float cool = (cellUv.x - 1.0 + spread) / spread * 2.0;
+    pixelColor = cool < 1.0
+      ? mix(uPointerSpectrum[3], uPointerSpectrum[4], cool)
+      : mix(uPointerSpectrum[4], uPointerSpectrum[5], cool - 1.0);
+  }
+  baseColor.rgb = mix(baseColor.rgb, pixelColor, alpha);
   return baseColor;
 }
 

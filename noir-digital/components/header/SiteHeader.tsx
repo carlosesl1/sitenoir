@@ -5,7 +5,6 @@ import { useRef, useState } from "react";
 import { FloatingWhatsApp } from "@/components/contact/FloatingWhatsApp";
 import { LanguageButton } from "@/components/controls/LanguageButton";
 
-import { ThemeButton } from "@/components/controls/ThemeButton";
 import { HeaderStatus } from "@/components/header/HeaderStatus";
 import { MobileMenu } from "@/components/header/MobileMenu";
 import { useLanguage } from "@/features/i18n/LanguageProvider";
@@ -80,7 +79,6 @@ export function SiteHeader({ sectionLinksBase }: SiteHeaderProps = {}) {
               </a>
             </>
           )}
-          <ThemeButton className={styles["control"]} />
           <LanguageButton className={styles["control"]} />
         </nav>
 

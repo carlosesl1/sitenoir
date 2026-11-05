@@ -27,7 +27,13 @@ export const HERO_OPTICAL_FLARE_ANCHORS = [
   { source: "wordmark", position: [0.129490036, 0.095461898, 0.006286813], gain: 0.82 },
   { source: "wordmark", position: [0.348460341, 0.068727683, 0.006408887], gain: 0.62 },
   { source: "pointer", position: [12.497509003, 2.051774085, 0.000000115], gain: 0.45 },
+  { source: "principlePointer", position: [12.497509003, 2.051774085, 0.000000115], gain: 0.45 },
+  { source: "contact", position: [0.43, 0.27, 0.05], gain: 0.82 },
+  { source: "contact", position: [-0.38, -0.3, 0.05], gain: 0.65 },
+  { source: "contact", position: [0, 0.49, 0.05], gain: 0.62 },
 ] as const;
+
+const COMPACT_FLARE_SOURCES: ReadonlySet<string> = new Set(["pointer", "principlePointer"]);
 
 export function isOpticalSourceVisible(source: Object3D | null): boolean {
   if (!source) return false;
@@ -46,14 +52,15 @@ export function createHeroOpticalFlarePass() {
   const geometry = new InstancedBufferGeometry();
   geometry.index = plane.index;
   geometry.attributes = plane.attributes;
-  geometry.instanceCount = HERO_OPTICAL_FLARE_ANCHORS.length;
-  const centers = new InstancedBufferAttribute(new Float32Array(8), 2);
-  const gains = new InstancedBufferAttribute(new Float32Array(4), 1);
-  const radii = new InstancedBufferAttribute(new Float32Array(4), 1);
+  const anchorCount = HERO_OPTICAL_FLARE_ANCHORS.length;
+  geometry.instanceCount = anchorCount;
+  const centers = new InstancedBufferAttribute(new Float32Array(anchorCount * 2), 2);
+  const gains = new InstancedBufferAttribute(new Float32Array(anchorCount), 1);
+  const radii = new InstancedBufferAttribute(new Float32Array(anchorCount), 1);
   geometry.setAttribute("aCenter", centers);
   geometry.setAttribute("aGain", gains);
   geometry.setAttribute("aRadius", radii);
-  const spectra = new InstancedBufferAttribute(new Float32Array(8), 2);
+  const spectra = new InstancedBufferAttribute(new Float32Array(anchorCount * 2), 2);
   geometry.setAttribute("aSpectrum", spectra);
   const smoothedPointer = new Vector2();
   let pointerActivity = 0;
@@ -127,7 +134,10 @@ export function createHeroOpticalFlarePass() {
         const proximity = Math.exp(-(distanceX * distanceX + distanceY * distanceY) / (reach * reach));
         const response = pointerActivity * (0.15 + proximity * 0.85);
         gains.setX(index, anchor.gain * facing * (1 + response * 0.95));
-        radii.setX(index, radius * (anchor.source === "pointer" ? 0.7 : 1) * (1 + response * 0.65));
+        radii.setX(
+          index,
+          radius * (COMPACT_FLARE_SOURCES.has(anchor.source) ? 0.7 : 1) * (1 + response * 0.65),
+        );
         spectra.setXY(
           index,
           (smoothedPointer.x * 0.75 + smoothedPointer.y * 0.4) * pointerActivity,

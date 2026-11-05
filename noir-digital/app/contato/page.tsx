@@ -4,7 +4,6 @@ import { ContactPage } from "@/components/contact/ContactPage";
 import { SiteHeader } from "@/components/header/SiteHeader";
 import { PrincipleSceneProvider } from "@/features/principles/PrincipleSceneProvider";
 import { ScrollProvider } from "@/features/scroll/ScrollProvider";
-import { ThemeProvider } from "@/features/theme/ThemeProvider";
 import { LazySiteCanvas } from "@/scene/LazySiteCanvas";
 
 export const metadata: Metadata = {
@@ -18,16 +17,14 @@ export const metadata: Metadata = {
 
 export default function ContactRoute() {
   return (
-    <ThemeProvider>
-      <ScrollProvider>
-        <PrincipleSceneProvider>
-          <SiteHeader sectionLinksBase="/" />
-          <main id="main-content">
-            <ContactPage />
-          </main>
-          <LazySiteCanvas ambientOnly />
-        </PrincipleSceneProvider>
-      </ScrollProvider>
-    </ThemeProvider>
+    <ScrollProvider>
+      <PrincipleSceneProvider>
+        <SiteHeader sectionLinksBase="/" />
+        <main id="main-content">
+          <ContactPage />
+        </main>
+        <LazySiteCanvas ambientOnly />
+      </PrincipleSceneProvider>
+    </ScrollProvider>
   );
 }

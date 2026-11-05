@@ -16,17 +16,6 @@
   pointer-events: none;
 }
 
-:global([data-theme="light"]) .atmosphere {
-  background:
-    radial-gradient(circle at 17% 74%, rgb(3 3 3 / 8%), transparent 29%),
-    linear-gradient(
-      90deg,
-      rgb(244 244 240 / 91%),
-      rgb(244 244 240 / 76%) 48%,
-      rgb(244 244 240 / 91%)
-    );
-}
-
 .layout {
   display: grid;
   min-height: 100dvh;
@@ -60,7 +49,7 @@
   container-type: inline-size;
   flex-direction: column;
   padding-right: clamp(28px, 2.4vw, 44px);
-  padding-left: 0;
+  padding-left: calc(var(--text-axis) - var(--site-grid-inset));
 }
 
 .formPanel {
@@ -81,41 +70,32 @@
 .recommended,
 .whatsAppSubtitle,
 .information {
-  font-family: var(--font-pixel);
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
 .sectionLabel,
 .panelHeading {
-  font-size: var(--type-micro);
-  letter-spacing: 0.055em;
   color: var(--text-secondary);
 }
 
 .intro h1 {
-  max-width: 9.2ch;
   margin: clamp(28px, 3.4vh, 42px) 0 24px;
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 13.4cqi, 5.2rem);
-  font-stretch: 120%;
-  font-weight: var(--weight-display);
-  font-variation-settings: "wdth" 120;
-  line-height: 0.9;
-  letter-spacing: var(--tracking-display);
+  font: var(--role-display-m);
+  font-variation-settings: var(--wdth-wide);
   text-transform: uppercase;
   text-wrap: balance;
 }
 
 .intro h1 span {
-  color: #c0fe04;
+  color: var(--text-primary);
 }
 
 .intro > p {
   max-width: 34ch;
   margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
-  line-height: 1.65;
+  font: var(--role-body);
   color: var(--text-secondary);
 }
 
@@ -162,16 +142,9 @@
 
 .brandTagline {
   max-width: 27ch;
-  font-family: var(--font-pixel);
-  font-size: clamp(0.5625rem, 0.62vw, 0.6875rem);
-  line-height: 1.45;
-  letter-spacing: 0.04em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   color: var(--text-secondary);
-}
-
-:global([data-theme="light"]) .brandSymbol,
-:global([data-theme="light"]) .brandWordmark {
-  filter: brightness(0);
 }
 
 .formPanel,
@@ -208,11 +181,6 @@
   gap: 8px;
 }
 
-.field > span {
-  font-size: var(--type-micro);
-  letter-spacing: 0.035em;
-}
-
 .field input,
 .field select,
 .field textarea {
@@ -222,17 +190,10 @@
   outline: none;
   background: rgb(11 13 14 / 78%);
   color: var(--text-primary);
-  font-family: var(--font-interface);
-  font-size: 1rem;
+  font: var(--role-body);
   transition:
     border-color var(--duration-micro) var(--ease-standard),
     background var(--duration-micro) var(--ease-standard);
-}
-
-:global([data-theme="light"]) .field input,
-:global([data-theme="light"]) .field select,
-:global([data-theme="light"]) .field textarea {
-  background: rgb(244 244 240 / 82%);
 }
 
 .field input,
@@ -245,7 +206,6 @@
   min-height: 148px;
   resize: vertical;
   padding: 14px;
-  line-height: 1.55;
 }
 
 .field input:hover,
@@ -311,7 +271,6 @@
 
 .submit,
 .whatsAppAction {
-  font-family: var(--font-pixel);
   cursor: pointer;
 }
 
@@ -346,23 +305,17 @@
 
 .feedback {
   margin: 0;
-  font-size: 0.875rem;
-  line-height: 1.55;
-  letter-spacing: 0.025em;
-}
-
-.feedback {
   padding-left: 12px;
   border-left: 3px solid currentColor;
-  font-family: var(--font-interface);
+  font: var(--role-note);
 }
 
 .success {
-  color: #c0fe04;
+  color: var(--color-spectral-green);
 }
 
 .error {
-  color: #ff8a72;
+  color: var(--color-spectral-red);
 }
 
 .privacyNote {
@@ -370,10 +323,7 @@
   align-items: flex-start;
   gap: 10px;
   margin: 0;
-  font-family: var(--font-display);
-  font-size: 0.8125rem;
-  line-height: 1.45;
-  letter-spacing: 0.025em;
+  font: var(--role-note);
   color: var(--text-secondary);
 }
 
@@ -405,127 +355,123 @@
   flex-direction: column;
 }
 
+/* Same anatomy as the AI cards: plain border, corner marks, light from the corner, icon on top of it. */
 .whatsAppPanel {
-  --whatsapp-mark-size: clamp(54px, 14cqi, 68px);
-
-  display: grid;
   position: relative;
   isolation: isolate;
+  display: grid;
   overflow: hidden;
   container-type: inline-size;
-  min-height: 390px;
-  align-content: space-between;
-  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) 56px;
+  align-items: start;
   margin-top: 22px;
-  padding: clamp(26px, 2.5vw, 42px);
-  border: 1px solid rgb(168 173 178 / 32%);
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 2.5%), transparent 22%),
-    linear-gradient(135deg, rgb(18 20 21 / 98%), rgb(3 3 3 / 96%));
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 3%),
-    0 22px 60px rgb(0 0 0 / 18%);
+  padding: 1.75rem clamp(1.5rem, 2.2vw, 2.25rem) clamp(1.5rem, 2.2vw, 2.25rem);
+  border: 1px solid rgb(168 173 178 / 22%);
+  background: color-mix(in srgb, var(--color-noir-black) 96%, transparent);
   color: rgb(244 244 240 / 96%);
-  clip-path: polygon(
-    14px 0,
-    calc(100% - 20px) 0,
-    100% 20px,
-    100% calc(100% - 12px),
-    calc(100% - 12px) 100%,
-    0 100%,
-    0 14px
-  );
+}
+
+.whatsAppPanel::before,
+.whatsAppPanel::after {
+  position: absolute;
+  z-index: 2;
+  width: 0.42rem;
+  height: 0.42rem;
+  pointer-events: none;
+  content: "";
+}
+
+.whatsAppPanel::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid var(--text-primary);
+  border-left: 1px solid var(--text-primary);
+}
+
+.whatsAppPanel::after {
+  right: -1px;
+  bottom: -1px;
+  border-right: 1px solid var(--text-primary);
+  border-bottom: 1px solid var(--text-primary);
 }
 
 .mobileWhatsAppPanel {
   display: none;
 }
 
-.whatsAppPanel::before {
+/* The same halftone light as the AI cards, at its own size so the faintest dots survive. */
+.whatsAppLight {
   position: absolute;
-  top: -10%;
-  right: -9%;
+  top: -46px;
+  right: -46px;
   z-index: 0;
-  width: 49%;
-  aspect-ratio: 1;
-  background: radial-gradient(circle, rgb(192 254 4 / 22%) 0 0.9px, transparent 1.25px);
-  background-size: 5px 5px;
-  content: "";
-  opacity: 0.52;
-  transform: rotate(16deg);
-  -webkit-mask-image: linear-gradient(145deg, #000 12%, rgb(0 0 0 / 92%) 50%, transparent 92%);
-  mask-image: linear-gradient(145deg, #000 12%, rgb(0 0 0 / 92%) 50%, transparent 92%);
+  width: 280px;
+  height: 280px;
+  background-image: var(--spectrum-linear);
+  -webkit-mask: url("/brand/ai-halftone.svg") center / contain no-repeat;
+  mask: url("/brand/ai-halftone.svg") center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* On narrow cards the icon would land on the largest dots, so the light moves into the corner. */
+@container (max-width: 379px) {
+  .whatsAppLight {
+    top: -72px;
+    right: -72px;
+  }
 }
 
 .recommended {
   position: relative;
   z-index: 1;
-  font-family: var(--font-display);
-  font-size: clamp(0.6875rem, 0.62rem + 0.1vw, 0.75rem);
-  font-weight: 700;
-  letter-spacing: 0.065em;
-  color: #c0fe04;
+  color: var(--text-primary);
 }
 
 .whatsAppPanel h3 {
   max-width: 100%;
   margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 9.5cqi, 2.65rem);
-  font-weight: 720;
-  line-height: 0.9;
-  letter-spacing: var(--tracking-display);
+  font: var(--role-title);
+  font-variation-settings: var(--wdth-wide);
   overflow-wrap: anywhere;
 }
 
 .whatsAppHeading {
   position: relative;
   z-index: 1;
+  grid-column: 1 / -1;
   min-width: 0;
-  max-width: 100%;
+  margin-top: 2.5rem;
 }
 
 .whatsAppMark {
-  position: absolute;
+  position: relative;
   z-index: 1;
-  top: 35%;
-  right: clamp(52px, 12cqi, 68px);
   display: grid;
-  width: var(--whatsapp-mark-size);
+  width: 100%;
   aspect-ratio: 1;
   place-items: center;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
-  color: #c0fe04;
-  transform: translateY(-50%);
+  color: var(--text-primary);
 }
 
 .whatsAppMark svg {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 0 9px rgb(192 254 4 / 16%));
 }
 
 .whatsAppSubtitle {
   margin: 7px 0 0;
-  font-family: var(--font-display);
-  font-size: clamp(0.6875rem, 0.62rem + 0.1vw, 0.75rem);
-  font-weight: 700;
-  letter-spacing: 0.055em;
   color: rgb(244 244 240 / 84%);
 }
 
 .whatsAppPanel > p {
   position: relative;
   z-index: 1;
+  grid-column: 1 / -1;
   min-width: 0;
-  max-width: min(24ch, calc(100% - var(--whatsapp-mark-size) - 12px));
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(0.75rem, 0.7rem + 0.4cqi, 0.875rem);
-  line-height: 1.55;
+  max-width: 36ch;
+  margin: 1rem 0 0;
+  text-wrap: pretty;
+  font: var(--role-note);
   color: rgb(168 173 178 / 78%);
   overflow-wrap: break-word;
 }
@@ -533,22 +479,14 @@
 .whatsAppAction {
   position: relative;
   z-index: 1;
+  grid-column: 1 / -1;
   min-width: 0;
   max-width: 100%;
+  margin-top: 1.75rem;
   color: var(--color-noir-black);
 }
 
 .whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
-  border-color: rgb(222 255 80 / 56%);
-  background: linear-gradient(180deg, #d9ff3c 0%, #c0fe04 56%, #afe900 100%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 48%),
-    inset 0 -3px 6px rgb(72 98 0 / 14%),
-    0 7px 16px rgb(0 0 0 / 22%);
-  font-size: clamp(0.6875rem, 0.5rem + 1cqi, 0.875rem);
-  font-stretch: 100%;
-  font-variation-settings: "wdth" 100;
-  letter-spacing: 0.02em;
   padding-inline: clamp(10px, 4cqi, 18px);
   white-space: nowrap;
 }
@@ -559,13 +497,24 @@
   flex: 0 0 auto;
 }
 
-:global([data-theme="light"]) .whatsAppAction {
-  color: var(--color-noir-black);
+/* Narrow panels: the label keeps the standard button size, the arrow gives way. */
+@container (max-width: 276px) {
+  .whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
+    justify-content: center;
+    padding-inline: 8px;
+    text-align: center;
+  }
+
+  .whatsAppActionSurface .ctaIcon {
+    display: none;
+  }
 }
 
-:global([data-theme="light"]) .whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
-  border-color: rgb(135 181 0 / 42%);
-  background: linear-gradient(180deg, #d6ff38 0%, #b7ef04 52%, #98ca00 100%);
+/* Only a label that still does not fit breaks into two lines. */
+@container (max-width: 240px) {
+  .whatsAppPanel > .whatsAppAction .whatsAppActionSurface {
+    white-space: normal;
+  }
 }
 
 .information {
@@ -578,13 +527,11 @@
 
 .information dl div {
   display: grid;
-  grid-template-columns: minmax(92px, 0.8fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(92px, 0.6fr) minmax(0, 1.4fr);
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   min-height: 38px;
   border-top: 1px solid var(--border-default);
-  font-size: var(--type-micro);
-  letter-spacing: 0.025em;
 }
 
 .information dt {
@@ -594,7 +541,8 @@
 .information dd {
   min-width: 0;
   margin: 0;
-  font-family: var(--font-display);
+  font: var(--role-note);
+  letter-spacing: var(--tracking-none);
   text-align: right;
   text-transform: none;
 }
@@ -628,11 +576,9 @@
     color-mix(in srgb, var(--surface-elevated) 42%, transparent),
     transparent 74%
   );
-  font-family: var(--font-display);
+  font: var(--role-note);
+  letter-spacing: var(--tracking-none);
   color: var(--text-secondary);
-  font-size: var(--type-micro);
-  line-height: 1.45;
-  letter-spacing: 0.025em;
   text-transform: none;
 }
 
@@ -641,7 +587,7 @@
   z-index: 1;
   width: 7px;
   height: 7px;
-  color: #c0fe04;
+  color: var(--text-primary);
 }
 
 .internationalTag p {
@@ -674,9 +620,17 @@
   }
 }
 
+/* A little less side padding keeps the WhatsApp label on one line in narrow panels. */
+@media (max-width: 1279px) {
+  .whatsAppPanel {
+    padding-inline: 1.25rem;
+  }
+}
+
 @media (max-width: 1199px) {
+  /* The floor keeps the headline's longest word inside its column on small tablets. */
   .layout {
-    grid-template-columns: 34% 66%;
+    grid-template-columns: minmax(280px, 34%) minmax(0, 1fr);
   }
 
   .formPanel {
@@ -720,7 +674,7 @@
   .channels {
     --contact-panel-inset: 8px;
 
-    padding: 28px 8px 36px;
+    padding: 28px 8px 36px calc(var(--text-axis) - var(--site-grid-inset));
     border-right: 0;
   }
 
@@ -731,7 +685,6 @@
 
   .intro h1 {
     margin-top: 54px;
-    font-size: clamp(2.55rem, 11vw, 4.4rem);
   }
 
   .mobileWhatsAppPanel {
@@ -772,7 +725,6 @@
   }
 
   .whatsAppPanel {
-    min-height: 350px;
     margin-top: 28px;
   }
 
@@ -796,8 +748,8 @@
 }
 
 @media (max-width: 359px) {
-  .intro h1 {
-    font-size: 2.2rem;
+  .whatsAppPanel {
+    padding-inline: 1rem;
   }
 
   .information dl div {

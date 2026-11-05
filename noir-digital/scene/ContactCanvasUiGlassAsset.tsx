@@ -17,9 +17,8 @@ import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.j
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { mergeGeometries, toCreasedNormals } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
-import { useTheme } from "@/features/theme/ThemeProvider";
-import { CONTACT_FLARE_LAYER } from "@/scene/contact-flare-layer";
 import { resolveContactCanvasUiGeometryScale } from "@/scene/contact-model-scale";
+import { useHeroOpticalFlareSources } from "@/scene/HeroOpticalFlareSources";
 import { useHeroRefraction } from "@/scene/HeroRefractionBuffer";
 import {
   HERO_CANVAS_UI_GLASS_CONFIG as glassConfig,
@@ -32,7 +31,6 @@ import {
   HERO_CANVAS_UI_RIM_VERTEX_SHADER,
 } from "@/scene/hero-canvas-ui-rim-shaders";
 import { HERO_GLASS_CONFIG } from "@/scene/hero-glass-config";
-import { resolveThreeDimensionalColor } from "@/scene/theme-3d-colors";
 import { useSharedOpticalEnvironment } from "@/scene/use-shared-optical-environment";
 
 interface ContactCanvasUiGlassAssetProps {
@@ -41,14 +39,11 @@ interface ContactCanvasUiGlassAssetProps {
   readonly sceneScale: number;
 }
 
-const CONTACT_CURSOR_DARK = "#242a30";
-const CONTACT_GLASS_CONFIG = {
-  anisotropicBlur: 0.12,
+// The symbol's wide bevels mirror the reflectors as solid white bands behind the headline, where
+// the hero's thin chamfers only catch a glint, so this glass takes less of them.
+const CONTACT_REFLECTION = {
   clearcoat: 0.32,
-  clearcoatRoughness: 0.24,
   environmentIntensity: 0.16,
-  roughness: 0.22,
-  transmission: 0.58,
 } as const;
 
 function writeFloat32Positions(geometry: BufferGeometry): void {
@@ -106,14 +101,13 @@ export function ContactCanvasUiGlassAsset({
   path,
   sceneScale,
 }: ContactCanvasUiGlassAssetProps) {
-  const { resolvedTheme } = useTheme();
+  const opticalSources = useHeroOpticalFlareSources();
   const source = useLoader(GLTFLoader, path, (loader) => {
     loader.setMeshoptDecoder(MeshoptDecoder);
   });
   const gl = useThree((state) => state.gl);
   const width = useThree((state) => state.size.width);
   const { texture } = useHeroRefraction();
-  const materialColor = resolveThreeDimensionalColor(resolvedTheme, CONTACT_CURSOR_DARK);
   const geometry = useMemo(() => {
     const scaledGeometry = createContactCanvasUiGeometry(source.scene);
     const geometryScale = resolveContactCanvasUiGeometryScale();
@@ -144,27 +138,27 @@ export function ContactCanvasUiGlassAsset({
   return (
     <group userData={{ contactRefractiveObject: true }}>
       <mesh
+        ref={opticalSources?.contact ?? null}
         geometry={geometry}
         onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
         renderOrder={1}
       >
         <MeshTransmissionMaterial
-          key={resolvedTheme}
-          anisotropicBlur={CONTACT_GLASS_CONFIG.anisotropicBlur}
+          anisotropicBlur={glassConfig.anisotropicBlur}
           backside={glassConfig.backside}
           buffer={texture}
           chromaticAberration={glassConfig.chromaticAberration}
-          clearcoat={CONTACT_GLASS_CONFIG.clearcoat}
-          clearcoatRoughness={CONTACT_GLASS_CONFIG.clearcoatRoughness}
-          color={materialColor}
+          clearcoat={CONTACT_REFLECTION.clearcoat}
+          clearcoatRoughness={glassConfig.clearcoatRoughness}
+          color="#ffffff"
           depthWrite
           envMap={environment.texture}
-          envMapIntensity={CONTACT_GLASS_CONFIG.environmentIntensity}
+          envMapIntensity={CONTACT_REFLECTION.environmentIntensity}
           ior={glassConfig.ior}
-          roughness={CONTACT_GLASS_CONFIG.roughness}
+          roughness={glassConfig.roughness}
           samples={resolveHeroCanvasUiSamples(width)}
           thickness={resolveHeroCanvasUiThickness(sceneScale)}
-          transmission={CONTACT_GLASS_CONFIG.transmission}
+          transmission={glassConfig.transmission}
           transparent
         />
       </mesh>
@@ -172,26 +166,6 @@ export function ContactCanvasUiGlassAsset({
         geometry={geometry}
         onUpdate={(mesh) => mesh.layers.set(HERO_GLASS_CONFIG.renderLayer)}
         renderOrder={2}
-      >
-        <shaderMaterial
-          blending={NormalBlending}
-          depthTest
-          depthWrite={false}
-          fragmentShader={HERO_CANVAS_UI_RIM_FRAGMENT_SHADER}
-          polygonOffset
-          polygonOffsetFactor={rimConfig.polygonOffsetFactor}
-          polygonOffsetUnits={rimConfig.polygonOffsetUnits}
-          side={FrontSide}
-          toneMapped={false}
-          transparent
-          uniforms={rimUniforms}
-          vertexShader={HERO_CANVAS_UI_RIM_VERTEX_SHADER}
-        />
-      </mesh>
-      <mesh
-        geometry={geometry}
-        onUpdate={(mesh) => mesh.layers.set(CONTACT_FLARE_LAYER)}
-        renderOrder={3}
       >
         <shaderMaterial
           blending={NormalBlending}

@@ -11,15 +11,6 @@ const scrollSpyMocks = vi.hoisted(() => ({
   activeId: "visao-geral",
 }));
 
-vi.mock("@/features/theme/ThemeProvider", () => ({
-  useTheme: () => ({
-    cycleTheme: vi.fn(),
-    resolvedTheme: "dark",
-    setTheme: vi.fn(),
-    theme: "dark",
-  }),
-}));
-
 vi.mock("@/features/scroll/ScrollProvider", () => ({
   useScroll: () => ({ scrollToSelector: providerMocks.scrollToSelector }),
 }));

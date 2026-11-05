@@ -1,19 +1,11 @@
 import type { SectionTarget } from "@/features/scroll/scroll-targets";
-import type { ThemeMode } from "@/features/theme/theme-state";
 
 export type ShortcutAction =
-  | { readonly type: "theme"; readonly value: ThemeMode }
   | { readonly type: "scroll"; readonly target: SectionTarget }
   | { readonly type: "none" };
 
 export function resolveShortcut(key: string): ShortcutAction {
   switch (key.toLowerCase()) {
-    case "l":
-      return { type: "theme", value: "light" };
-    case "d":
-      return { type: "theme", value: "dark" };
-    case "a":
-      return { type: "theme", value: "system" };
     case "t":
       return { type: "scroll", target: "home" };
     case "b":

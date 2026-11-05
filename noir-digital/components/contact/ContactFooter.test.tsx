@@ -37,6 +37,14 @@ describe("ContactFooter", () => {
     expect(css).not.toMatch(/\.headline\s*\{[^}]*color:\s*var\(--color-noir-warm-white\)/);
   });
 
+  it("gives its contact action the emphasis style", () => {
+    render(<ContactFooter />);
+    expect(screen.getByRole("link", { name: "Entrar em contato" })).toHaveAttribute(
+      "data-emphasis",
+      "true",
+    );
+  });
+
   it("preserves the email action, approved social links, and the 3D anchor", () => {
     const view = render(<ContactFooter />);
 
@@ -68,8 +76,6 @@ describe("ContactFooter", () => {
       join(process.cwd(), "components/contact/ContactFooter.module.css"),
       "utf8",
     );
-    expect(css).toContain(':global([data-theme="light"]) .brandSymbol');
-    expect(css).toContain(':global([data-theme="light"]) .brandWordmark');
     expect(css).toMatch(/--brand-name-height:\s*clamp\(/);
     expect(css).toMatch(/--brand-symbol-height:\s*calc\(var\(--brand-name-height\)\s*\*\s*1\.2\)/);
     expect(css).toMatch(/\.brandSymbol\s*\{[^}]*height:\s*var\(--brand-symbol-height\)/);

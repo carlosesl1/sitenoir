@@ -7,10 +7,11 @@ import {
   contactPhoneDisplay,
   contactPhoneHref,
   contactWhatsAppHref,
-  heroDescriptionLines,
   heroHeadlineLines,
   heroLabels,
   heroSupportLines,
+  missionEyebrow,
+  missionStatement,
   principleStages,
   principleStatements,
   serviceContent,
@@ -27,18 +28,20 @@ describe("homepage content", () => {
     expect({
       labels: heroLabels,
       support: heroSupportLines,
-      description: heroDescriptionLines,
       headline: heroHeadlineLines,
     }).toEqual({
       labels: ["Design", "Tecnologia", "Posicionamento"],
       support: ["Visibilidade para vender.", "Tecnologia para crescer."],
-      description: [
-        "Unimos posicionamento, design e tecnologia para",
-        "tornar sua empresa mais fácil de encontrar, mais",
-        "confiável de escolher e mais eficiente para crescer.",
-      ],
       headline: ["A estrutura digital", "para sua empresa", "crescer"],
     });
+  });
+
+  it("moves the positioning statement into the mission section", () => {
+    expect(missionEyebrow).toBe("Nossa missão");
+    expect(missionStatement).toEqual([
+      "Ajudar empreendedores a crescer com as inovações mais recentes.",
+      "Unimos posicionamento, design e tecnologia para tornar sua empresa mais fácil de encontrar, mais confiável de escolher e mais eficiente para crescer.",
+    ]);
   });
 
   it("preserves the thirteen approved client logos and stable public asset paths", () => {

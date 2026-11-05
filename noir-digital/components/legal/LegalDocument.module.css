@@ -20,7 +20,7 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: auto 1fr auto;
   column-gap: var(--grid-gutter);
-  padding: 144px var(--site-grid-inset) 48px;
+  padding: 144px var(--site-grid-inset) 48px var(--text-axis);
   border-bottom: 1px solid var(--border-default);
 }
 
@@ -28,9 +28,8 @@
   display: flex;
   grid-column: 1 / -1;
   justify-content: space-between;
-  font-family: var(--font-pixel);
-  font-size: var(--type-micro);
-  letter-spacing: var(--tracking-label);
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--text-secondary);
 }
@@ -48,15 +47,8 @@
   width: 100%;
   max-width: min(12ch, 100%);
   margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(4rem, 7.5vw, 8.75rem);
-  font-stretch: 120%;
-  font-weight: var(--weight-display);
-  font-variation-settings:
-    "wght" 700,
-    "wdth" 120;
-  line-height: 0.88;
-  letter-spacing: -0.055em;
+  font: var(--role-display-l);
+  font-variation-settings: var(--wdth-wide);
   text-transform: uppercase;
   text-wrap: balance;
 }
@@ -65,9 +57,7 @@
   width: 100%;
   max-width: min(58ch, 100%);
   margin: 0;
-  font-family: var(--font-interface);
-  font-size: clamp(0.875rem, 1.05vw, 1rem);
-  line-height: 1.7;
+  font: var(--role-lead);
   color: var(--text-secondary);
 }
 
@@ -77,9 +67,8 @@
   align-self: end;
   gap: 16px;
   margin: 0;
-  font-family: var(--font-pixel);
-  font-size: var(--type-micro);
-  letter-spacing: 0.04em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
@@ -104,7 +93,7 @@
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gutter);
-  padding: 0 var(--site-grid-inset) 128px;
+  padding: 0 var(--site-grid-inset) 128px var(--text-axis);
 }
 
 .rail {
@@ -117,9 +106,8 @@
   max-height: calc(100dvh - 144px);
   padding: 48px 24px 48px 0;
   border-right: 1px solid var(--border-default);
-  font-family: var(--font-pixel);
-  font-size: var(--type-micro);
-  letter-spacing: 0.035em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
@@ -170,31 +158,17 @@
   outline: none;
 }
 
-.counterpartLink {
+.counterpart {
   display: grid;
-  position: relative;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 5px 12px;
-  padding: 16px 36px 16px 0;
+  justify-items: start;
+  gap: 12px;
+  padding: 16px 0;
   border-top: 1px solid var(--border-default);
   border-bottom: 1px solid var(--border-default);
-  color: inherit;
-  text-decoration: none;
 }
 
-.counterpartLink span:first-child {
-  grid-column: 1 / -1;
+.counterpartLabel {
   color: var(--text-secondary);
-}
-
-.counterpartLink strong {
-  font-weight: inherit;
-}
-
-.counterpartLink span:last-child {
-  position: absolute;
-  right: 8px;
-  bottom: 16px;
 }
 
 .documentBody {
@@ -217,9 +191,8 @@
 
 .sectionNumber {
   padding-top: 7px;
-  font-family: var(--font-pixel);
-  font-size: var(--type-micro);
-  letter-spacing: var(--tracking-label);
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   color: var(--text-secondary);
 }
 
@@ -230,29 +203,22 @@
 
 .sectionContent h2 {
   margin: 0 0 32px;
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 2.6vw, 2.75rem);
-  font-weight: var(--weight-heading);
-  line-height: 1;
-  letter-spacing: var(--tracking-heading);
+  font: var(--role-title);
+  letter-spacing: var(--tracking-tight);
   text-wrap: balance;
 }
 
 .sectionContent h3 {
   margin: 40px 0 16px;
-  font-family: var(--font-pixel);
-  font-size: var(--type-label);
-  font-weight: var(--weight-label);
-  letter-spacing: var(--tracking-label);
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--text-secondary);
 }
 
 .sectionContent p,
 .sectionContent li {
-  font-family: var(--font-interface);
-  font-size: clamp(0.875rem, 1vw, 1rem);
-  line-height: 1.75;
+  font: var(--role-body);
 }
 
 .sectionContent p {
@@ -271,10 +237,6 @@
 .sectionContent p + ul,
 .sectionContent ul + p {
   margin-top: 20px;
-}
-
-.sectionContent strong {
-  font-weight: 650;
 }
 
 .sectionContent a {
@@ -297,7 +259,7 @@
 
 .sectionContent li::before {
   position: absolute;
-  top: 0.82em;
+  top: 0.62em;
   left: 0;
   width: 5px;
   height: 5px;
@@ -315,11 +277,10 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
   gap: 24px;
-  padding: 40px var(--site-grid-inset) 96px;
+  padding: 40px var(--site-grid-inset) 96px var(--text-axis);
   border-top: 1px solid var(--border-default);
-  font-family: var(--font-pixel);
-  font-size: var(--type-micro);
-  letter-spacing: 0.04em;
+  font: var(--role-label);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
@@ -346,11 +307,6 @@
 .brandWordmark {
   width: 92px;
   height: auto;
-}
-
-:global([data-theme="light"]) .brandSymbol,
-:global([data-theme="light"]) .brandWordmark {
-  filter: brightness(0);
 }
 
 .footer p {
@@ -447,16 +403,6 @@
     gap: 24px;
   }
 
-  .heroTitle h1 {
-    font-size: clamp(2.5rem, 13vw, 4.75rem);
-    line-height: 0.9;
-  }
-
-  .heroTitle p {
-    font-size: 0.8125rem;
-    line-height: 1.6;
-  }
-
   .heroMeta {
     grid-column: 1 / -1;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -485,24 +431,18 @@
     display: grid;
     position: static;
     max-height: none;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 24px;
     padding: 24px 0;
     border-right: 0;
     border-bottom: 1px solid var(--border-default);
   }
 
-  .railMeta {
-    font-size: 0.52rem;
-    letter-spacing: 0.01em;
-    white-space: nowrap;
-  }
-
   .sectionIndex {
     display: none;
   }
 
-  .counterpartLink {
+  .counterpart {
     align-self: start;
   }
 
@@ -519,17 +459,10 @@
 
   .sectionContent h2 {
     margin-bottom: 24px;
-    font-size: clamp(1.5rem, 7vw, 2rem);
   }
 
   .sectionContent h3 {
     margin-top: 32px;
-  }
-
-  .sectionContent p,
-  .sectionContent li {
-    font-size: 0.8125rem;
-    line-height: 1.7;
   }
 
   .footer {
@@ -554,12 +487,3 @@
   }
 }
 
-@media (max-width: 359px) {
-  .heroTitle h1 {
-    font-size: 2.65rem;
-  }
-
-  .rail {
-    grid-template-columns: 1fr;
-  }
-}

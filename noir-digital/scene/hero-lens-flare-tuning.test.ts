@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveLensFlareTuning } from "@/scene/hero-lens-flare-tuning";
+import { HERO_FLARE_TUNING } from "@/scene/hero-lens-flare-tuning";
 
-describe("resolveLensFlareTuning", () => {
+describe("HERO_FLARE_TUNING", () => {
   it("keeps the hero highlight extraction strict", () => {
-    expect(resolveLensFlareTuning(false)).toEqual({
+    expect(HERO_FLARE_TUNING).toEqual({
       gate: 0.88,
       hotspotPower: 32,
       intensity: 0.7,
@@ -13,16 +13,5 @@ describe("resolveLensFlareTuning", () => {
       streakScale: 1,
       threshold: 0.99,
     });
-  });
-
-  it("keeps the footer RGB flare compact and smooth", () => {
-    const contact = resolveLensFlareTuning(true);
-
-    expect(contact.threshold).toBeLessThan(0.78);
-    expect(contact.gate).toBeLessThan(0.2);
-    expect(contact.intensity).toBeLessThan(0.8);
-    expect(contact.spectrumMix).toBeLessThan(0.5);
-    expect(contact.streakJitter).toBeLessThan(0.2);
-    expect(contact.streakScale).toBeLessThan(0.7);
   });
 });

@@ -13,7 +13,6 @@ import {
 } from "three";
 
 import { pointerStore } from "@/features/pointer/pointer-store";
-import { useTheme } from "@/features/theme/ThemeProvider";
 import {
   BOKEH_FRAGMENT_SHADER,
   OUTPUT_FRAGMENT_SHADER,
@@ -33,7 +32,6 @@ import { sceneTransitionStore, shouldRenderOpticalFrame } from "@/scene/scene-tr
 interface HeroOpticalBackgroundProps {
   readonly active: boolean;
   readonly frameStride: number;
-  readonly forceDark: boolean;
   readonly reducedMotion: boolean;
   readonly resolutionScale: number;
 }
@@ -46,13 +44,11 @@ interface RenderTargets {
 export function HeroOpticalBackground({
   active,
   frameStride,
-  forceDark,
   reducedMotion,
   resolutionScale,
 }: HeroOpticalBackgroundProps) {
   const gl = useThree((state) => state.gl);
   const size = useThree((state) => state.size);
-  const { resolvedTheme } = useTheme();
   const pointer = useMemo(() => new Vector2(0.5, 0.5), []);
   const shatterOrigin = useMemo(() => new Vector2(0.5, 0.5), []);
   const bokehOrigin = useMemo(() => new Vector2(0.5, -0.1), []);
@@ -64,26 +60,16 @@ export function HeroOpticalBackground({
   const activeTime = useRef(0);
   const previousElapsed = useRef<number | null>(null);
 
-  const colors = useMemo(() => {
-    const dark = forceDark || resolvedTheme === "dark";
-    return {
-      background: readOpticalToken(
-        dark ? "--color-optical-dark-background" : "--color-optical-light-background",
-      ),
-      edgeIntensity: dark
-        ? HERO_BACKGROUND_CONFIG.dark.edgeIntensity
-        : HERO_BACKGROUND_CONFIG.light.edgeIntensity,
-      output: readOpticalToken(
-        dark ? "--color-optical-dark-output" : "--color-optical-light-output",
-      ),
-      outputMix: dark
-        ? HERO_BACKGROUND_CONFIG.dark.outputMix
-        : HERO_BACKGROUND_CONFIG.light.outputMix,
-      vignette: readOpticalToken(
-        dark ? "--color-optical-dark-vignette" : "--color-optical-light-vignette",
-      ),
-    };
-  }, [forceDark, resolvedTheme]);
+  const colors = useMemo(
+    () => ({
+      background: readOpticalToken("--color-optical-background"),
+      edgeIntensity: HERO_BACKGROUND_CONFIG.dark.edgeIntensity,
+      output: readOpticalToken("--color-optical-output"),
+      outputMix: HERO_BACKGROUND_CONFIG.dark.outputMix,
+      vignette: readOpticalToken("--color-optical-vignette"),
+    }),
+    [],
+  );
   const colorsRef = useRef(colors);
   colorsRef.current = colors;
 
