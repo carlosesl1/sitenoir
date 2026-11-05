@@ -1,7 +1,8 @@
 import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EntryPreloader } from "@/components/preloader/EntryPreloader";
+import { ENTRY_SCENE_WAIT_MAX_MS, EntryPreloader } from "@/components/preloader/EntryPreloader";
+import { NOIR_SCENE_SETTLED_EVENT } from "@/scene/scene-readiness";
 
 const motionPreference = vi.hoisted(() => ({ reduced: false }));
 const symbolControl = vi.hoisted(() => ({ complete: null as (() => void) | null }));
@@ -69,17 +70,37 @@ describe("EntryPreloader", () => {
     expect(document.documentElement.dataset["entryLoading"]).toBeUndefined();
   });
 
-  it("does not keep usable HTML covered while the WebGL scene is pending", async () => {
+  it("holds the finished symbol until the 3D scene is drawn, so the site opens loaded", async () => {
     window.__NOIR_READY__ = false;
     const view = render(<EntryPreloader />);
     act(() => symbolControl.complete?.());
-    window.dispatchEvent(new Event("load"));
+
+    await act(async () => vi.advanceTimersByTimeAsync(3_000));
+    expect(view.container.firstChild).not.toBeNull();
+    expect(document.documentElement.dataset["entryTextReady"]).toBeUndefined();
+
+    act(() => {
+      window.__NOIR_READY__ = true;
+      window.dispatchEvent(new Event(NOIR_SCENE_SETTLED_EVENT));
+    });
+    await act(async () => vi.advanceTimersByTimeAsync(20));
+    expect(document.documentElement.dataset["entryTextReady"]).toBe("true");
+    await act(async () => vi.advanceTimersByTimeAsync(520));
+    expect(view.container.firstChild).toBeNull();
+  });
+
+  it("opens anyway when the scene takes too long", async () => {
+    window.__NOIR_READY__ = false;
+    const view = render(<EntryPreloader />);
+    act(() => symbolControl.complete?.());
+
+    await act(async () => vi.advanceTimersByTimeAsync(ENTRY_SCENE_WAIT_MAX_MS - 1));
+    expect(document.documentElement.dataset["entryTextReady"]).toBeUndefined();
 
     await act(async () => vi.advanceTimersByTimeAsync(20));
+    expect(document.documentElement.dataset["entryTextReady"]).toBe("true");
     await act(async () => vi.advanceTimersByTimeAsync(520));
-
     expect(view.container.firstChild).toBeNull();
-    expect(document.documentElement.dataset["entryLoading"]).toBeUndefined();
   });
 
   it("keeps the site covered until the symbol is ready", async () => {
