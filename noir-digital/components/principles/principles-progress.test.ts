@@ -33,6 +33,27 @@ describe("resolvePrincipleViewportProgress", () => {
     expect(resolvePrincipleViewportProgress({ sectionTop: -4000, viewportHeight: 1000 })).toBe(1);
   });
 
+  it("ends exactly when the pinned frame releases, whatever the browser bar did", () => {
+    // Sized for a 760px viewport; the address bar then hid and the viewport grew to 816px.
+    const storyHeight = 5 * 760;
+    const viewportHeight = 816;
+
+    expect(
+      resolvePrincipleViewportProgress({
+        sectionTop: viewportHeight - storyHeight,
+        storyHeight,
+        viewportHeight,
+      }),
+    ).toBe(1);
+    expect(
+      resolvePrincipleViewportProgress({
+        sectionTop: (viewportHeight - storyHeight) / 2,
+        storyHeight,
+        viewportHeight,
+      }),
+    ).toBe(0.5);
+  });
+
   it("clamps progress before entry and after the closing frame", () => {
     expect(resolvePrincipleViewportProgress({ sectionTop: 1500, viewportHeight: 1000 })).toBe(0);
     expect(resolvePrincipleViewportProgress({ sectionTop: -6000, viewportHeight: 1000 })).toBe(1);

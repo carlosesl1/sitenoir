@@ -210,6 +210,7 @@ export function SiteCanvas({
           camera={{ position: [0, 0, 32], fov: 38, near: 0.1, far: 120 }}
           dpr={[1, qualityConfig.maximumDpr]}
           frameloop="demand"
+          resize={{ scroll: false }}
           gl={{ alpha: false, antialias: true, powerPreference: "high-performance" }}
           onCreated={({ gl }) => {
             gl.outputColorSpace = SRGBColorSpace;

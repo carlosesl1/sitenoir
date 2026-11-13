@@ -32,15 +32,19 @@ const DETAIL_FILL_END = 0.92;
  */
 export function resolveMissionViewportProgress({
   sectionTop,
+  storyHeight,
   viewportHeight,
   storyViewports = MISSION_STORY_VIEWPORTS,
 }: {
   readonly sectionTop: number;
+  /** Rendered section height, when it no longer equals viewport x storyViewports. */
+  readonly storyHeight?: number;
   readonly viewportHeight: number;
   readonly storyViewports?: number;
 }): number {
   const height = Math.max(1, viewportHeight);
-  return clamp01((height - sectionTop) / (height * Math.max(1, storyViewports)));
+  const travel = storyHeight ?? height * Math.max(1, storyViewports);
+  return clamp01((height - sectionTop) / Math.max(1, travel));
 }
 
 export function resolveMissionProgress(progress: number): MissionProgress {

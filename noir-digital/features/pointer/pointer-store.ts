@@ -40,7 +40,10 @@ export function createPointerStore(): PointerStore {
     for (const listener of listeners) listener();
   };
 
+  // A finger is not a cursor: it lands at a point and vanishes, so following it
+  // makes the scene snap on every tap and stay tilted after the touch ends.
   const updatePointer = (event: PointerEvent) => {
+    if (event.pointerType === "touch") return;
     const width = Math.max(window.innerWidth, 1);
     const height = Math.max(window.innerHeight, 1);
     pendingPointer = Object.freeze({
@@ -55,7 +58,7 @@ export function createPointerStore(): PointerStore {
   };
 
   const markPointerOutside = (event: PointerEvent) => {
-    if (event.relatedTarget !== null) return;
+    if (event.relatedTarget !== null || event.pointerType === "touch") return;
     window.cancelAnimationFrame(animationFrame);
     animationFrame = 0;
     pendingPointer = null;

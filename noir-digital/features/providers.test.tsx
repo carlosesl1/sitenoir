@@ -258,6 +258,23 @@ describe("pointer store", () => {
     expect(store.getSnapshot().inside).toBe(false);
   });
 
+  it("ignores touches, which are not a cursor", () => {
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
+      callback(performance.now());
+      return 1;
+    });
+    const store = createPointerStore();
+    const initial = store.getSnapshot();
+    const touch = (type: string) =>
+      Object.assign(new MouseEvent(type, { clientX: 120, clientY: 300 }), { pointerType: "touch" });
+
+    render(<PointerHarness store={store} />);
+    act(() => window.dispatchEvent(touch("pointermove")));
+
+    expect(store.getSnapshot()).toBe(initial);
+    expect(store.getSnapshot().inside).toBe(false);
+  });
+
   it("coalesces rapid pointer samples into one notification per display frame", () => {
     let scheduledFrame: FrameRequestCallback | undefined;
     vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {

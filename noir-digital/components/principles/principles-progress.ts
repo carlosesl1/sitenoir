@@ -7,6 +7,8 @@ export interface PrincipleProgress {
 
 export interface PrincipleViewportProgressInput {
   readonly sectionTop: number;
+  /** Rendered section height, when it no longer equals viewport x storyViewports. */
+  readonly storyHeight?: number;
   readonly viewportHeight: number;
   readonly storyViewports?: number;
 }
@@ -47,9 +49,12 @@ export function resolvePrincipleStage(progress: number): PrincipleProgressStage 
 
 export function resolvePrincipleViewportProgress({
   sectionTop,
+  storyHeight,
   viewportHeight,
   storyViewports = PRINCIPLES_STORY_VIEWPORTS,
 }: PrincipleViewportProgressInput): number {
-  const travel = Math.max(1, viewportHeight) * Math.max(1, storyViewports - 1);
-  return clampProgress(-sectionTop / travel);
+  const height = Math.max(1, viewportHeight);
+  const travel =
+    storyHeight === undefined ? height * Math.max(1, storyViewports - 1) : storyHeight - height;
+  return clampProgress(-sectionTop / Math.max(1, travel));
 }
