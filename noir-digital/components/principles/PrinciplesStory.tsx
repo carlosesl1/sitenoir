@@ -13,6 +13,7 @@ import {
 import { principleStages, principleStatements } from "@/data/content";
 import { useLanguage } from "@/features/i18n/LanguageProvider";
 import { usePrincipleScene } from "@/features/principles/PrincipleSceneProvider";
+import { resolveViewportBasis, type ViewportBasis } from "@/features/scroll/stable-viewport";
 
 import styles from "./PrinciplesStory.module.css";
 
@@ -147,6 +148,7 @@ export function PrinciplesStory() {
   const copyRevealRef = useRef(false);
   const technologyRevealRef = useRef(false);
   const viewportHeightRef = useRef(0);
+  const storyBasisRef = useRef<ViewportBasis | null>(null);
   const stageRef = useRef<PrincipleProgressStage>("positioning");
   const stickyFrameRef = useRef<HTMLDivElement>(null);
   const orbitRef = useRef<PrincipleOrbitHandle>(null);
@@ -174,11 +176,20 @@ export function PrinciplesStory() {
     const viewportHeight = Math.max(1, window.innerHeight);
     if (viewportHeightRef.current !== viewportHeight) {
       viewportHeightRef.current = viewportHeight;
+      story.style.setProperty("--principles-viewport-height", `${viewportHeight}px`);
+    }
+    // The section keeps its height while only the browser bar moves, so the
+    // page below does not jump; the pinned frame still follows the live viewport.
+    const storyBasis = resolveViewportBasis(storyBasisRef.current, {
+      height: viewportHeight,
+      width: window.innerWidth,
+    });
+    if (storyBasisRef.current !== storyBasis) {
+      storyBasisRef.current = storyBasis;
       story.style.setProperty(
         "--principles-story-height",
-        `${PRINCIPLES_STORY_VIEWPORTS * viewportHeight}px`,
+        `${PRINCIPLES_STORY_VIEWPORTS * storyBasis.height}px`,
       );
-      story.style.setProperty("--principles-viewport-height", `${viewportHeight}px`);
     }
     const rect = story.getBoundingClientRect();
     sectionRectRef.current = {
@@ -188,6 +199,7 @@ export function PrinciplesStory() {
     };
     const nextProgress = resolvePrincipleViewportProgress({
       sectionTop: rect.top,
+      storyHeight: PRINCIPLES_STORY_VIEWPORTS * storyBasis.height,
       viewportHeight,
       storyViewports: PRINCIPLES_STORY_VIEWPORTS,
     });

@@ -10,6 +10,7 @@ import {
 } from "@/components/mission/mission-progress";
 import { missionEyebrow, missionStatement } from "@/data/content";
 import { useLanguage } from "@/features/i18n/LanguageProvider";
+import { resolveViewportBasis, type ViewportBasis } from "@/features/scroll/stable-viewport";
 
 import styles from "./MissionScroll.module.css";
 
@@ -49,6 +50,8 @@ export function MissionScroll() {
   const sectionRef = useRef<HTMLElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const viewportHeightRef = useRef(0);
+  const storyBasisRef = useRef<ViewportBasis | null>(null);
+  const writtenProgressRef = useRef("");
   const [statement, detail] = missionStatement;
 
   const updateStory = useCallback(() => {
@@ -59,17 +62,32 @@ export function MissionScroll() {
     const viewportHeight = Math.max(1, window.innerHeight);
     if (viewportHeightRef.current !== viewportHeight) {
       viewportHeightRef.current = viewportHeight;
+      section.style.setProperty("--mission-viewport-height", `${viewportHeight}px`);
+    }
+    // The section keeps its height while only the browser bar moves, so the
+    // page below does not jump; the pinned frame still follows the live viewport.
+    const storyBasis = resolveViewportBasis(storyBasisRef.current, {
+      height: viewportHeight,
+      width: window.innerWidth,
+    });
+    if (storyBasisRef.current !== storyBasis) {
+      storyBasisRef.current = storyBasis;
       section.style.setProperty(
         "--mission-story-height",
-        `${MISSION_STORY_VIEWPORTS * viewportHeight}px`,
+        `${MISSION_STORY_VIEWPORTS * storyBasis.height}px`,
       );
-      section.style.setProperty("--mission-viewport-height", `${viewportHeight}px`);
     }
 
     const progress = resolveMissionViewportProgress({
       sectionTop: section.getBoundingClientRect().top,
+      storyHeight: MISSION_STORY_VIEWPORTS * storyBasis.height,
       viewportHeight,
     });
+    // This runs on every scroll of the page. Away from the section the progress
+    // sits at 0 or 1, and rewriting the same values would restyle every word.
+    const writtenProgress = progress.toFixed(4);
+    if (writtenProgressRef.current === writtenProgress) return;
+    writtenProgressRef.current = writtenProgress;
     const { fillDetail, fillStatement, trackX } = resolveMissionProgress(progress);
     frame.style.setProperty("--track-x", trackX.toFixed(4));
     frame.style.setProperty("--fill-statement", fillStatement.toFixed(4));

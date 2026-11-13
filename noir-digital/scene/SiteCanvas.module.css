@@ -6,6 +6,15 @@
   pointer-events: none;
 }
 
+/* The largest viewport never changes while a phone's address bar slides, so the
+   3D canvas keeps one size instead of being reallocated mid-scroll. */
+@supports (height: 100lvh) {
+  .canvasShell {
+    bottom: auto;
+    height: 100lvh;
+  }
+}
+
 .canvasShell canvas {
   position: absolute;
   z-index: 0;

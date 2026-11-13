@@ -22,6 +22,23 @@ describe("mission scroll progress", () => {
     ).toBe(1);
   });
 
+  it("measures against the rendered height once the browser bar has moved", () => {
+    // Sized for a 760px viewport; the address bar then hid and the viewport grew to 816px.
+    const storyHeight = MISSION_STORY_VIEWPORTS * 760;
+    const viewportHeight = 816;
+
+    expect(resolveMissionViewportProgress({ sectionTop: 816, storyHeight, viewportHeight })).toBe(
+      0,
+    );
+    expect(
+      resolveMissionViewportProgress({
+        sectionTop: viewportHeight - storyHeight,
+        storyHeight,
+        viewportHeight,
+      }),
+    ).toBe(1);
+  });
+
   it("slides the statement in from the right, then shifts to the detail panel", () => {
     expect(resolveMissionProgress(0).trackX).toBe(1);
     expect(resolveMissionProgress(0.25).trackX).toBe(0);

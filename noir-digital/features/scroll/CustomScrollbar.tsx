@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef } from "react";
 import styles from "./CustomScrollbar.module.css";
 
 const MIN_THUMB_HEIGHT = 26;
+/** Mirrors the stylesheet: the bar is not drawn on phones and touch screens. */
+const HIDDEN_QUERY = "(max-width: 767px), (pointer: coarse)";
 
 export function CustomScrollbar() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -34,8 +36,11 @@ export function CustomScrollbar() {
 
   useEffect(() => {
     let animationFrame = 0;
+    const hiddenQuery =
+      typeof window.matchMedia === "function" ? window.matchMedia(HIDDEN_QUERY) : null;
     const requestUpdate = () => {
-      if (animationFrame !== 0) return;
+      // Measuring the document on every scroll is wasted work while the bar is hidden.
+      if (animationFrame !== 0 || hiddenQuery?.matches) return;
       animationFrame = window.requestAnimationFrame(() => {
         animationFrame = 0;
         updateThumb();
@@ -46,6 +51,7 @@ export function CustomScrollbar() {
     resizeObserver?.observe(document.documentElement);
     window.addEventListener("resize", requestUpdate, { passive: true });
     window.addEventListener("scroll", requestUpdate, { passive: true });
+    hiddenQuery?.addEventListener("change", requestUpdate);
     requestUpdate();
 
     return () => {
@@ -53,6 +59,7 @@ export function CustomScrollbar() {
       resizeObserver?.disconnect();
       window.removeEventListener("resize", requestUpdate);
       window.removeEventListener("scroll", requestUpdate);
+      hiddenQuery?.removeEventListener("change", requestUpdate);
     };
   }, [updateThumb]);
 
