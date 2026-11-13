@@ -68,54 +68,18 @@
   white-space: nowrap;
 }
 
+/* Transitions, not filled keyframe animations or will-change: those keep one
+   compositor layer per letter alive over the animated canvas for as long as the
+   section exists. A transition holds its layer only while the letter fades. */
 .copyCharacter {
   display: inline-block;
   opacity: 0;
-  will-change: opacity;
+  transition: opacity 230ms ease-out var(--character-exit-delay);
 }
 
 .activePanel .copyCharacter {
-  animation: characterReveal 230ms linear var(--character-delay) both;
-}
-
-.exitPanel .copyCharacter {
-  animation: characterHide 230ms linear var(--character-exit-delay) both;
-}
-
-@keyframes characterReveal {
-  0% {
-    opacity: 0;
-  }
-
-  32% {
-    opacity: 0.22;
-  }
-
-  62% {
-    opacity: 0.55;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes characterHide {
-  from {
-    opacity: 1;
-  }
-
-  38% {
-    opacity: 0.55;
-  }
-
-  68% {
-    opacity: 0.22;
-  }
-
-  to {
-    opacity: 0;
-  }
+  opacity: 1;
+  transition: opacity 230ms ease-in var(--character-delay);
 }
 
 .principleOrbit {
@@ -167,6 +131,15 @@
   backdrop-filter: blur(8px);
   content: "";
   pointer-events: none;
+}
+
+/* Blurring the 3D canvas behind each statement re-reads it every frame, which
+   phones cannot afford. A denser plate keeps the text just as readable. */
+@media (max-width: 767px), (pointer: coarse) {
+  .statementGrid p[data-contrast-surface="diffuse"]::before {
+    background: rgb(0 0 0 / 82%);
+    backdrop-filter: none;
+  }
 }
 
 .statementGrid p:nth-child(1) {
@@ -264,6 +237,7 @@
   .copyCharacter {
     opacity: 1;
     transform: none;
+    transition: none;
   }
 }
 
