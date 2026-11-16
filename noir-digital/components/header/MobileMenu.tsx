@@ -96,6 +96,9 @@ export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenu
                 >
                   {t("Serviços")}
                 </a>
+                <a className={styles["mobileLink"]} href="/blog" onClick={onClose}>
+                  {t("Blog")}
+                </a>
                 <a className={styles["mobileLink"]} href="/contato" onClick={onClose}>
                   {t("Contato")}
                 </a>
@@ -116,6 +119,9 @@ export function MobileMenu({ onClose, onNavigate, sectionLinksBase }: MobileMenu
                 >
                   {t("Serviços")}
                 </button>
+                <a className={styles["mobileLink"]} href="/blog" onClick={onClose}>
+                  {t("Blog")}
+                </a>
                 <a className={styles["mobileLink"]} href="/contato" onClick={onClose}>
                   {t("Contato")}
                 </a>

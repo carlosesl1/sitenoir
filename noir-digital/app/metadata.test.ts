@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { caseStudies } from "@/data/case-studies";
+import { getAllBlogPosts } from "@/features/blog/posts";
 
 const robotsPath = resolve(process.cwd(), "public", "robots.txt");
 
@@ -143,6 +144,17 @@ describe("search engine discovery", () => {
         url: `https://noir.example/studio/services/${slug}`,
         changeFrequency: "monthly" as const,
         priority: 0.7,
+      })),
+      {
+        url: "https://noir.example/studio/blog",
+        changeFrequency: "weekly",
+        priority: 0.7,
+      },
+      ...getAllBlogPosts().map(({ date, slug }) => ({
+        url: `https://noir.example/studio/blog/${slug}`,
+        lastModified: date,
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
       })),
     ]);
   });
