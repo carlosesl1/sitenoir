@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { caseStudies } from "@/data/case-studies";
+import { getAllBlogPosts } from "@/features/blog/posts";
 
 export const dynamic = "force-static";
 
@@ -60,6 +61,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: new URL(`services/${slug}`, siteUrl).href,
       changeFrequency: "monthly" as const,
       priority: 0.7,
+    })),
+    {
+      url: new URL("blog", siteUrl).href,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    ...getAllBlogPosts().map(({ date, slug }) => ({
+      url: new URL(`blog/${slug}`, siteUrl).href,
+      lastModified: date,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
     })),
   ];
 }

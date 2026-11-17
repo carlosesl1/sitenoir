@@ -13,6 +13,7 @@ const sourceFiles = SOURCE_GLOBS.flatMap((pattern) => globSync(pattern)).filter(
 // Screens already moved to the type roles. Every screen joins this list as it migrates.
 const MIGRATED_CSS = [
   "components/ai-services/AiServicesSection.module.css",
+  "components/blog/Blog.module.css",
   "components/contact/ContactFooter.module.css",
   "components/contact/ContactPage.module.css",
   "components/contact/FloatingWhatsApp.module.css",

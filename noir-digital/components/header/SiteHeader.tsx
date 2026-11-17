@@ -65,6 +65,9 @@ export function SiteHeader({ sectionLinksBase }: SiteHeaderProps = {}) {
               >
                 {t("Serviços")}
               </a>
+              <a className={styles["control"]} href="/blog">
+                {t("Blog")}
+              </a>
               <a className={styles["control"]} href="/contato">
                 {t("Contato")}
               </a>
@@ -74,6 +77,9 @@ export function SiteHeader({ sectionLinksBase }: SiteHeaderProps = {}) {
               <button className={styles["control"]} type="button" onClick={() => scrollTo("work")}>
                 {t("Serviços")}
               </button>
+              <a className={styles["control"]} href="/blog">
+                {t("Blog")}
+              </a>
               <a className={styles["control"]} href="/contato">
                 {t("Contato")}
               </a>

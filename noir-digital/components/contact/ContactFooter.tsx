@@ -92,6 +92,7 @@ export function ContactFooter() {
             <h3>{t("Links")}</h3>
             <a href="/contato">{t("Contato")}</a>
             <a href="/#selected-work">{t("Serviços")}</a>
+            <a href="/blog">{t("Blog")}</a>
           </nav>
         </div>
 
