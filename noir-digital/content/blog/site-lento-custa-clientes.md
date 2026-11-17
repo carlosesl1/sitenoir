@@ -3,7 +3,7 @@ title: Seu site demora para abrir? Você perde clientes antes de dizer oi
 description: Um site lento não é só um incômodo técnico. Ele faz o visitante desistir antes de conhecer a sua empresa. Veja como identificar o problema e o que resolve de verdade.
 date: 2026-11-16
 image: /blog/site-lento-custa-clientes.webp
-imageAlt: Janela de navegador em vidro escuro com rastros de luz
+imageAlt: Desenho técnico de uma rua de lojas com uma janela de navegador em destaque
 category: Sites
 ---
 

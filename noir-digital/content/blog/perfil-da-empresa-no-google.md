@@ -3,7 +3,7 @@ title: Perfil da Empresa no Google: como ser encontrado por quem está perto
 description: Quando alguém busca um serviço na sua cidade, o Google mostra um mapa antes de qualquer site. Entenda o que faz uma empresa aparecer ali e o que você pode ajustar hoje.
 date: 2026-11-12
 image: /blog/perfil-da-empresa-no-google.webp
-imageAlt: Marcador de mapa em vidro escuro sobre uma malha de pontos
+imageAlt: Desenho técnico de um quarteirão com uma loja em destaque e um marcador de mapa
 category: Google
 ---
 
