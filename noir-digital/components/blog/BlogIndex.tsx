@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import { BlogCard } from "@/components/blog/BlogCard";
 import { BlogFooter } from "@/components/blog/BlogFooter";
 import { type BlogPostSummary, formatBlogDate } from "@/features/blog/post-types";
 import { useLanguage } from "@/features/i18n/LanguageProvider";
@@ -68,25 +69,10 @@ export function BlogIndex({ posts }: { readonly posts: readonly BlogPostSummary[
         </fieldset>
 
         {visiblePosts.length > 0 ? (
-          <ol className={styles["postList"]}>
-            {visiblePosts.map((post) => (
-              <li key={post.slug}>
-                <a className={styles["postRow"]} href={`/blog/${post.slug}`}>
-                  <span className={styles["postMeta"]}>
-                    <span>{formatBlogDate(post.date)}</span>
-                    <span>{t(post.category)}</span>
-                  </span>
-                  <span className={styles["postCopy"]}>
-                    <span className={styles["postTitle"]}>{post.title}</span>
-                    <span className={styles["postDescription"]}>{post.description}</span>
-                  </span>
-                  <span className={styles["postAside"]}>
-                    <span>
-                      {post.readingMinutes} {t("min de leitura")}
-                    </span>
-                    <span aria-hidden="true">↗</span>
-                  </span>
-                </a>
+          <ol className={styles["cardGrid"]}>
+            {visiblePosts.map((post, position) => (
+              <li key={post.slug} data-featured={position === 0 ? "true" : undefined}>
+                <BlogCard featured={position === 0} post={post} priority={position === 0} />
               </li>
             ))}
           </ol>

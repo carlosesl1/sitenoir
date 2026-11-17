@@ -5,6 +5,11 @@ export interface BlogPostSummary {
   /** ISO day, `2026-11-16`. */
   readonly date: string;
   readonly description: string;
+  /** Featured image: on the card in lists and at the top of the article. */
+  readonly image: {
+    readonly alt: string;
+    readonly src: string;
+  };
   readonly readingMinutes: number;
   readonly slug: string;
   readonly title: string;

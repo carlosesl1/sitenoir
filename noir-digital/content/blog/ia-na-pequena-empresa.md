@@ -2,6 +2,8 @@
 title: Onde a inteligência artificial ajuda de verdade uma pequena empresa
 description: Sem promessa de mágica. Três usos de IA que já funcionam no dia a dia de uma empresa pequena, e os cuidados para não trocar um problema por outro.
 date: 2026-11-09
+image: /blog/ia-na-pequena-empresa.webp
+imageAlt: Esfera de vidro escuro com retícula de pontos e núcleo de luz
 category: IA
 ---
 

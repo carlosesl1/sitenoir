@@ -9,6 +9,8 @@ const POSTS_DIRECTORY = join(process.cwd(), "content", "blog");
 const WORDS_PER_MINUTE = 200;
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+/** Covers live in `public/blog/` and are addressed from the site root. */
+const IMAGE_PATTERN = /^\/blog\/[a-z0-9-]+\.(?:avif|webp|jpg|jpeg|png)$/;
 
 export function createBlogPost(slug: string, source: string): BlogPost {
   if (!SLUG_PATTERN.test(slug)) {
@@ -26,11 +28,17 @@ export function createBlogPost(slug: string, source: string): BlogPost {
     throw new Error(`Blog post "${slug}": "date" must look like 2026-11-16.`);
   }
 
+  const image = field("image");
+  if (!IMAGE_PATTERN.test(image)) {
+    throw new Error(`Blog post "${slug}": "image" must look like /blog/nome-do-arquivo.webp.`);
+  }
+
   return {
     blocks,
     category: field("category"),
     date,
     description: field("description"),
+    image: { alt: field("imageAlt"), src: image },
     readingMinutes: Math.max(1, Math.round(wordCount / WORDS_PER_MINUTE)),
     slug,
     title: field("title"),
@@ -59,6 +67,7 @@ export function toBlogPostSummary(post: BlogPostSummary): BlogPostSummary {
     category: post.category,
     date: post.date,
     description: post.description,
+    image: post.image,
     readingMinutes: post.readingMinutes,
     slug: post.slug,
     title: post.title,

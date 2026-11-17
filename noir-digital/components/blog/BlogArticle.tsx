@@ -1,7 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import type { ReactNode } from "react";
 
+import { BLOG_COVER_HEIGHT, BLOG_COVER_WIDTH, BlogCard } from "@/components/blog/BlogCard";
 import { BlogFooter } from "@/components/blog/BlogFooter";
 import { SpectrumContactCta } from "@/components/contact/SpectrumContactCta";
 import type { BlogBlock, BlogInline } from "@/features/blog/markdown";
@@ -95,6 +97,17 @@ export function BlogArticle({
         </dl>
       </header>
 
+      <figure className={styles["cover"]}>
+        <Image
+          src={post.image.src}
+          alt={post.image.alt}
+          width={BLOG_COVER_WIDTH}
+          height={BLOG_COVER_HEIGHT}
+          priority
+          sizes="(max-width: 767px) calc(100vw - 34px), 92vw"
+        />
+      </figure>
+
       <div className={styles["articleGrid"]}>
         <div className={styles["articleBody"]}>
           {post.blocks.map((block, index) => (
@@ -114,25 +127,10 @@ export function BlogArticle({
           <h2 id="blog-related-heading" className={styles["relatedHeading"]}>
             {t("Continue lendo")}
           </h2>
-          <ol className={styles["postList"]}>
+          <ol className={styles["cardGrid"]}>
             {related.map((item) => (
               <li key={item.slug}>
-                <a className={styles["postRow"]} href={`/blog/${item.slug}`}>
-                  <span className={styles["postMeta"]}>
-                    <span>{formatBlogDate(item.date)}</span>
-                    <span>{t(item.category)}</span>
-                  </span>
-                  <span className={styles["postCopy"]}>
-                    <span className={styles["postTitle"]}>{item.title}</span>
-                    <span className={styles["postDescription"]}>{item.description}</span>
-                  </span>
-                  <span className={styles["postAside"]}>
-                    <span>
-                      {item.readingMinutes} {t("min de leitura")}
-                    </span>
-                    <span aria-hidden="true">↗</span>
-                  </span>
-                </a>
+                <BlogCard post={item} />
               </li>
             ))}
           </ol>

@@ -4,18 +4,22 @@ Cada post é um arquivo Markdown em `content/blog/`. O nome do arquivo vira o en
 
 ## Cabeçalho
 
-Todo post começa com este bloco. Os quatro campos são obrigatórios, e o build falha com uma mensagem clara se faltar algum.
+Todo post começa com este bloco. Os seis campos são obrigatórios, e o build falha com uma mensagem clara se faltar algum.
 
 ```md
 ---
 title: Título do artigo
 description: Resumo de até 200 caracteres. Aparece na lista, no Google e ao compartilhar.
 date: 2026-11-16
+image: /blog/meu-post.webp
+imageAlt: O que a imagem mostra, em uma frase
 category: Sites
 ---
 ```
 
 - `date` ordena a lista (mais recente primeiro) e segue o formato `ano-mês-dia`.
+- `image` é a imagem de destaque: aparece no cartão da lista e no topo do artigo. Salve o arquivo em `public/blog/`, de preferência em WebP, 1600 × 900 px (16:9). Outras proporções são cortadas para 16:9.
+- `imageAlt` descreve a imagem para quem usa leitor de tela.
 - `category` cria o filtro na lista. Reaproveite as categorias que já existem antes de criar outra.
 
 ## Texto

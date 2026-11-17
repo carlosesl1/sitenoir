@@ -15,6 +15,8 @@ const post = (slug: string, category: string, date: string) =>
       `title: Artigo ${slug}`,
       `description: Resumo de ${slug}.`,
       `date: ${date}`,
+      `image: /blog/${slug}.webp`,
+      `imageAlt: Capa de ${slug}`,
       `category: ${category}`,
       "---",
       "",
@@ -46,6 +48,11 @@ describe("blog index", () => {
     ]);
     expect(links[0]).toHaveTextContent("16.11.2026");
     expect(links[0]).toHaveTextContent("Artigo sites-a");
+    expect(
+      within(links[0] as HTMLElement).getByRole("img", { name: "Capa de sites-a" }),
+    ).toBeTruthy();
+    expect(links[0]).toHaveAttribute("data-featured", "true");
+    expect(links[1]).not.toHaveAttribute("data-featured");
   });
 
   it("filters the list by category and back", () => {
@@ -93,6 +100,7 @@ describe("blog article", () => {
       "datetime",
       "2026-11-16",
     );
+    expect(screen.getAllByRole("img", { name: "Capa de sites-a" })).toHaveLength(1);
     expect(screen.getByRole("heading", { name: "Continue lendo" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Artigo google-a/ })).toHaveAttribute(
       "href",

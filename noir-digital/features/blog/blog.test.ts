@@ -1,3 +1,6 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { parseInline, parseMarkdown, slugifyHeading } from "@/features/blog/markdown";
@@ -9,6 +12,8 @@ const HEADER = [
   "title: Um título: com dois pontos",
   "description: Resumo do artigo.",
   "date: 2026-11-16",
+  "image: /blog/capa.webp",
+  "imageAlt: Descrição da capa",
   "category: Sites",
   "---",
   "",
@@ -85,6 +90,7 @@ describe("blog posts", () => {
     expect(post).toMatchObject({
       category: "Sites",
       date: "2026-11-16",
+      image: { alt: "Descrição da capa", src: "/blog/capa.webp" },
       readingMinutes: 2,
       slug: "meu-post",
       title: "Um título: com dois pontos",
@@ -94,6 +100,9 @@ describe("blog posts", () => {
   it("explains what is wrong with a post that cannot be published", () => {
     expect(() => createBlogPost("meu-post", "Sem cabeçalho.")).toThrow('missing "date"');
     expect(() => createBlogPost("Meu Post", HEADER)).toThrow("lowercase letters");
+    expect(() =>
+      createBlogPost("meu-post", HEADER.replace("/blog/capa.webp", "https://exemplo.com/a.png")),
+    ).toThrow('"image" must look like');
     expect(() => createBlogPost("meu-post", HEADER.replace("2026-11-16", "16/11/2026"))).toThrow(
       '"date" must look like',
     );
@@ -117,6 +126,7 @@ describe("blog posts", () => {
     for (const post of posts) {
       expect(post.blocks.length, post.slug).toBeGreaterThan(3);
       expect(post.description.length, post.slug).toBeLessThanOrEqual(200);
+      expect(existsSync(join(process.cwd(), "public", post.image.src)), post.image.src).toBe(true);
     }
   });
 });
